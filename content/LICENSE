@@ -1,0 +1,28 @@
+Process Reference Model for Machine Learning Applications
+Copyright (c) 2026 Antonio Crespí Tobeña
+
+The content in this directory is licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+
+You are free to share and adapt it for any purpose, including commercially,
+as long as you give appropriate credit, provide a link to the license, and
+indicate if changes were made. Credit it as:
+
+  Crespí Tobeña, A. (2026). A Process Reference Model for Machine Learning
+  Applications [Doctoral thesis, Universitat de les Illes Balears].
+
+Material not covered by this license
+------------------------------------
+
+The following material is not the author's work. It is reproduced for
+reference and attribution, remains under its owners' terms, and is NOT
+licensed under CC BY 4.0:
+
+- The names of processes and activities quoted from ISO/IEC/IEEE 12207,
+  ISO/IEC/IEEE 15288 and ISO/IEC 5338 (the "standard", "standardProcess" and
+  "activity" fields under "standards" in the process files). Copyright ISO,
+  IEC and IEEE.
+- The bibliographic data in studies.yaml and references.yaml (titles, authors
+  and venues of the cited works).

@@ -19,5 +19,6 @@
     "diff": "8.0.4",
     "yaml": "2.9.1"
   },
-  "private": true
+  "private": true,
+  "license": "MIT"
 }

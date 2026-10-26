@@ -10,6 +10,26 @@ A website to explore the Process Reference Model (PRM) for Machine Learning from
 - **Tailoring**: select processes and activities for a project, see inputs left without a producer, and export a Markdown checklist, CSV or JSON. The selection lives in the link.
 - **English, Spanish and Catalan**, with a notice wherever a translation is still missing.
 
+## How to cite
+
+If you use the PRM, cite the thesis:
+
+> Crespí Tobeña, A. (2026). *A Process Reference Model for Machine Learning Applications* [Doctoral thesis, Universitat de les Illes Balears].
+
+```bibtex
+@phdthesis{crespi2026prm,
+  author = {Crespí Tobeña, Antonio},
+  title  = {A Process Reference Model for Machine Learning Applications},
+  school = {Universitat de les Illes Balears},
+  year   = {2026}
+}
+```
+
+## License
+
+- The PRM content in `content/` is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The names of processes and activities quoted from the ISO/IEC standards and the bibliographic data of cited works are excluded; see [`content/LICENSE`](content/LICENSE).
+- The source code of the website is licensed under the [MIT License](LICENSE).
+
 ## Development
 
 ```sh

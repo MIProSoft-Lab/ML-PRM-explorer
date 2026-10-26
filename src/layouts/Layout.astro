@@ -118,6 +118,7 @@ const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env
     <footer class="site-footer">
       <div class="container">
         <span>{t('footer.thesis')} · {site.author}{site.institution && ` · ${site.institution}`}</span>
+        <a class="license" href="https://creativecommons.org/licenses/by/4.0/" rel="license">{t('footer.license')}</a>
         <span>
           {repo && <a href={repo}>{t('footer.source')}</a>}
           {repo && ' · '}

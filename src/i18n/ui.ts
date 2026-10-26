@@ -157,6 +157,7 @@ const en = {
   'i18n.untranslated': 'This content has not been translated into {language} yet. It is shown in English.',
   'footer.thesis': 'Doctoral thesis',
   'footer.source': 'Source',
+  'footer.license': 'Content under CC BY 4.0 · Code under MIT',
   'notFound': 'Page not found',
   'notFound.back': 'Back to the home page',
 };
@@ -311,6 +312,7 @@ const es: Partial<Record<UiKey, string>> = {
   'i18n.untranslated': 'Este contenido todavía no está traducido al {language}. Se muestra en inglés.',
   'footer.thesis': 'Tesis doctoral',
   'footer.source': 'Código fuente',
+  'footer.license': 'Contenido bajo CC BY 4.0 · Código bajo MIT',
   'notFound': 'Página no encontrada',
   'notFound.back': 'Volver a la página principal',
 };
@@ -463,6 +465,7 @@ const ca: Partial<Record<UiKey, string>> = {
   'i18n.untranslated': 'Aquest contingut encara no està traduït al {language}. Es mostra en anglès.',
   'footer.thesis': 'Tesi doctoral',
   'footer.source': 'Codi font',
+  'footer.license': 'Contingut sota CC BY 4.0 · Codi sota MIT',
   'notFound': 'Pàgina no trobada',
   'notFound.back': 'Torna a la pàgina principal',
 };
