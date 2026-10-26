@@ -1,0 +1,539 @@
+references:
+- key: CRISP-DM-P14
+  authors: >-
+    Chapman, Pete and Clinton, Julian and Kerber, Randy and Khabaza, Thomas and Reinartz, Thomas and Shearer,
+    Colin and Wirth, Rüdiger
+  title: 'CRISP-DM 1.0: Step-by-Step Data Mining Guide'
+  year: '2000'
+- key: ISO12207
+  authors: ISO/IEC/IEEE 12207
+  title: Systems and Software Engineering — Software Life Cycle Processes
+  year: '2026'
+  publisher: International Organization for Standardization (ISO), Geneva, Switzerland
+  url: https://www.iso.org/standard/63712.html
+- key: ISO5338
+  authors: ISO/IEC 5338
+  title: >-
+    Information Technology — Artificial Intelligence — AI System Life Cycle Processes
+  year: '2023'
+  publisher: International Organization for Standardization (ISO), Geneva, Switzerland
+  url: https://www.iso.org/standard/81118.html
+- key: Schelter2017
+  authors: >-
+    Schelter, Sebastian and Böse, Joos-Hendrik and Kirschnick, Johannes and Klein, Thoralf and Seufert,
+    Stephan
+  title: Automatically Tracking Metadata and Provenance of Machine Learning Experiments
+  year: '2017'
+  url: >-
+    https://www.amazon.science/publications/automatically-tracking-metadata-and-provenance-of-machine-learning-experiments
+- key: TDSP-P15
+  authors: Microsoft
+  title: Team Data Science Process (TDSP)
+  year: '2016'
+  url: >-
+    https://learn.microsoft.com/en-us/azure/architecture/data-science-process/overview
+- key: akkiraju2020-P10
+  authors: >-
+    Akkiraju, Rama and Sinha, Vibha and Xu, Anbang and Mahmud, Jalal and Gundecha, Pritam and Liu, Zhe
+    and Liu, Xiaotong and Schumacher, John
+  title: 'Characterizing Machine Learning Processes: A Maturity Framework'
+  year: '2020'
+  venue: Business Process Management
+  publisher: Springer International Publishing
+  doi: 10.1007/978-3-030-58666-9_2
+- key: amershiSE4ML2019-P4
+  authors: >-
+    Amershi, Saleema and Begel, Andrew and Bird, Christian and DeLine, Robert and Gall, Harald and Kamar,
+    Ece and Nagappan, Nachiappan and Nushi, Besmira and Zimmermann, Thomas
+  title: 'Software Engineering for Machine Learning: A Case Study'
+  year: '2019'
+  doi: 10.1109/ICSE-SEIP.2019.00042
+  url: https://ieeexplore.ieee.org/document/8804457
+- key: artsteinIntercoderAgreementComputational2008
+  authors: Artstein, Ron and Poesio, Massimo
+  title: Inter-Coder Agreement for Computational Linguistics
+  year: '2008'
+  venue: Comput. Linguist.
+  doi: 10.1162/coli.07-034-R2
+  url: https://dl.acm.org/doi/10.1162/coli.07-034-R2
+- key: ashmore2021-P8
+  authors: Ashmore, Rob and Calinescu, Radu and Paterson, Colin
+  title: 'Assuring the Machine Learning Lifecycle: Desiderata, Methods, and Challenges'
+  year: '2021'
+  venue: ACM Comput. Surv.
+  doi: 10.1145/3453444
+  url: https://dl.acm.org/doi/10.1145/3453444
+- key: baylorTFXTensorFlowBasedProductionScale2017
+  authors: >-
+    Baylor, Denis and Breck, Eric and Cheng, Heng-Tze and Fiedel, Noah and Foo, Chuan Yu and Haque, Zakaria
+    and Haykal, Salem and Ispir, Mustafa and Jain, Vihan and Koc, Levent and Koo, Chiu Yuen and Lew, Lukasz
+    and Mewald, Clemens and Modi, Akshay Naresh and Polyzotis, Neoklis and Ramesh, Sukriti and Roy, Sudip
+    and Whang, Steven Euijong and Wicke, Martin and Wilkiewicz, Jarek and Zhang, Xin and Zinkevich, Martin
+  title: 'TFX: A TensorFlow-Based Production-Scale Machine Learning Platform'
+  year: '2017'
+  venue: >-
+    Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining
+  publisher: Association for Computing Machinery
+  doi: 10.1145/3097983.3098021
+  url: https://doi.org/10.1145/3097983.3098021
+- key: benderDataStatementsNatural2018
+  authors: Bender, Emily M. and Friedman, Batya
+  title: >-
+    Data Statements for Natural Language Processing: Toward Mitigating System Bias and Enabling Better
+    Science
+  year: '2018'
+  venue: Transactions of the Association for Computational Linguistics
+  doi: 10.1162/tacl_a_00041
+  url: https://doi.org/10.1162/tacl_a_00041
+- key: bernhardtActiveLabelCleaning2022
+  authors: >-
+    Bernhardt, Mélanie and Castro, Daniel C. and Tanno, Ryutaro and Schwaighofer, Anton and Tezcan, Kerem
+    C. and Monteiro, Miguel and Bannur, Shruthi and Lungren, Matthew P. and Nori, Aditya and Glocker,
+    Ben and Alvarez-Valle, Javier and Oktay, Ozan
+  title: Active Label Cleaning for Improved Dataset Quality under Resource Constraints
+  year: '2022'
+  venue: Nature Communications
+  publisher: Nature Publishing Group
+  doi: 10.1038/s41467-022-28818-3
+  url: https://www.nature.com/articles/s41467-022-28818-3
+- key: breckMLTestScore2017
+  authors: >-
+    Breck, Eric and Cai, Shanqing and Nielsen, Eric and Salib, Michael and Sculley, D.
+  title: >-
+    The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction
+  year: '2017'
+  doi: 10.1109/BigData.2017.8258038
+  url: https://ieeexplore.ieee.org/document/8258038
+- key: chepurko2020
+  authors: >-
+    Chepurko, Nadiia and Marcus, Ryan and Zgraggen, Emanuel and Fernandez, Raul Castro and Kraska, Tim
+    and Karger, David
+  title: 'ARDA: Automatic Relational Data Augmentation for Machine Learning'
+  year: '2020'
+  venue: Proceedings of the VLDB Endowment
+  doi: 10.14778/3397230.3397235
+  url: https://dl.acm.org/doi/10.14778/3397230.3397235
+- key: coteDataCleaningMachine2024
+  authors: >-
+    Côté, Pierre-Olivier and Nikanjam, Amin and Ahmed, Nafisa and Humeniuk, Dmytro and Khomh, Foutse
+  title: 'Data Cleaning and Machine Learning: A Systematic Literature Review'
+  year: '2024'
+  venue: Automated Software Engineering
+  doi: 10.1007/s10515-024-00453-w
+  url: https://doi.org/10.1007/s10515-024-00453-w
+- key: das2021-P6
+  authors: Das, Saikat and Shiva, Sajjan
+  title: Machine Learning Application Lifecycle Augmented with Explanation and Security
+  year: '2021'
+  venue: >-
+    2021 IEEE 12th Annual Ubiquitous Computing, Electronics & Mobile Communication Conference (UEMCON)
+  doi: 10.1109/UEMCON53757.2021.9666619
+  url: https://ieeexplore.ieee.org/document/9666619
+- key: desilva2022-P16
+  authors: De Silva, Daswin and Alahakoon, Damminda
+  title: 'An Artificial Intelligence Life Cycle: From Conception to Production'
+  year: '2022'
+  venue: Patterns
+  doi: 10.1016/j.patter.2022.100489
+  url: https://www.sciencedirect.com/science/article/pii/S2666389922000745
+- key: dongBigDataIntegration2015
+  authors: Dong, Xin Luna and Srivastava, Divesh
+  title: Big Data Integration
+  year: '2015'
+  publisher: Springer International Publishing
+  doi: 10.1007/978-3-031-01853-4
+  url: https://link.springer.com/10.1007/978-3-031-01853-4
+- key: foidlDataSmellsCategories2022
+  authors: Foidl, Harald and Felderer, Michael and Ramler, Rudolf
+  title: >-
+    Data Smells: Categories, Causes and Consequences, and Detection of Suspicious Data in AI-Based Systems
+  year: '2022'
+  venue: >-
+    Proceedings of the 1st International Conference on AI Engineering: Software Engineering for AI
+  publisher: Association for Computing Machinery
+  doi: 10.1145/3522664.3528590
+  url: https://dl.acm.org/doi/10.1145/3522664.3528590
+- key: fredrikssonDataLabelingEmpirical2020
+  authors: >-
+    Fredriksson, Teodor and Mattos, David Issa and Bosch, Jan and Olsson, Helena Holmström
+  title: >-
+    Data Labeling: An Empirical Investigation into Industrial Challenges and Mitigation Strategies
+  year: '2020'
+  venue: Product-Focused Software Process Improvement
+  publisher: Springer International Publishing
+  doi: 10.1007/978-3-030-64148-1_13
+- key: gamaSurveyConceptDrift2014
+  authors: >-
+    Gama, Joao and Zliobaite, Indre and Bifet, Albert and Pechenizkiy, Mykola and Bouchachia, Abdelhamid
+  title: A Survey on Concept Drift Adaptation
+  year: '2014'
+  venue: ACM Comput. Surv.
+  doi: 10.1145/2523813
+  url: https://dl.acm.org/doi/10.1145/2523813
+- key: haakman2021-P11
+  authors: >-
+    Haakman, Mark and Cruz, Luís and Huijgens, Hennie and family=Deursen, given=Arie, prefix=van, useprefix=true
+  title: AI Lifecycle Models Need to Be Revised
+  year: '2021'
+  venue: Empirical Software Engineering
+  doi: 10.1007/s10664-021-09993-1
+  url: https://doi.org/10.1007/s10664-021-09993-1
+- key: haliburtonUncoveringLabelerBias2025
+  authors: >-
+    Haliburton, Luke and Leusmann, Jan and Welsch, Robin and Ghebremedhin, Sinksar and Isaakidis, Petros
+    and Schmidt, Albrecht and Mayer, Sven
+  title: Uncovering Labeler Bias in Machine Learning Annotation Tasks
+  year: '2025'
+  venue: AI and Ethics
+  doi: 10.1007/s43681-024-00572-w
+  url: https://doi.org/10.1007/s43681-024-00572-w
+- key: hutchinsonAccountabilityMachineLearning2021
+  authors: >-
+    Hutchinson, Ben and Smart, Andrew and Hanna, Alex and Denton, Remi and Greer, Christina and Kjartansson,
+    Oddur and Barnes, Parker and Mitchell, Margaret
+  title: >-
+    Towards Accountability for Machine Learning Datasets: Practices from Software Engineering and Infrastructure
+  year: '2021'
+  venue: >-
+    Proceedings of the 2021 ACM Conference on Fairness, Accountability, and Transparency
+  publisher: Association for Computing Machinery
+  doi: 10.1145/3442188.3445918
+  url: https://dl.acm.org/doi/10.1145/3442188.3445918
+- key: kandelWranglerInteractiveVisual2011
+  authors: Kandel, Sean and Paepcke, Andreas and Hellerstein, Joseph and Heer, Jeffrey
+  title: 'Wrangler: Interactive Visual Specification of Data Transformation Scripts'
+  year: '2011'
+  venue: Proceedings of the SIGCHI Conference on Human Factors in Computing Systems
+  publisher: Association for Computing Machinery
+  doi: 10.1145/1978942.1979444
+  url: https://dl.acm.org/doi/10.1145/1978942.1979444
+- key: kazman1998
+  authors: >-
+    Kazman, R. and Klein, M. and Barbacci, M. and Longstaff, T. and Lipson, H. and Carriere, J.
+  title: The Architecture Tradeoff Analysis Method
+  year: '1998'
+  venue: >-
+    Proceedings. Fourth IEEE International Conference on Engineering of Complex Computer Systems (Cat.
+    No.98EX193)
+  doi: 10.1109/ICECCS.1998.706657
+  url: https://ieeexplore.ieee.org/document/706657
+- key: khanOverviewETLTechniques2024
+  authors: Khan, Bilal and Jan, Saifullah and Khan, Wahab and Chughtai, Muhammad
+  title: >-
+    An Overview of ETL Techniques, Tools, Processes and Evaluations in Data Warehousing
+  year: '2024'
+  venue: Journal on Big Data
+  publisher: Tech Science Press
+  doi: 10.32604/jbd.2023.046223
+  url: https://www.techscience.com/jbd/v6n1/55252
+- key: krossOrientingFramingBridging2021
+  authors: Kross, Sean and Guo, Philip
+  title: >-
+    Orienting, Framing, Bridging, Magic, and Counseling: How Data Scientists Navigate the Outer Loop of
+    Client Collaborations in Industry and Academia
+  year: '2021'
+  venue: Proc. ACM Hum.-Comput. Interact.
+  doi: 10.1145/3476052
+  url: https://dl.acm.org/doi/10.1145/3476052
+- key: kumar2016
+  authors: Kumar, Arun and Naughton, Jeffrey and Patel, Jignesh M. and Zhu, Xiaojin
+  title: To Join or Not to Join? Thinking Twice about Joins before Feature Selection
+  year: '2016'
+  venue: Proceedings of the 2016 International Conference on Management of Data (SIGMOD)
+  doi: 10.1145/2882903.2882952
+- key: liDataAugmentationMLdriven2021
+  authors: Li, Yuliang and Wang, Xiaolan and Miao, Zhengjie and Tan, Wang-Chiew
+  title: Data Augmentation for ML-Driven Data Preparation and Integration
+  year: '2021'
+  venue: Proc. VLDB Endow.
+  doi: 10.14778/3476311.3476403
+  url: https://dl.acm.org/doi/10.14778/3476311.3476403
+- key: maady2023-P2
+  authors: >-
+    Ma'ady, Mochamad Nizar Palefi and Hidayat, Alifiansyah Arrizqy and Anaking, Purnama and Kusumawati,
+    Aris and Nasrullah, Muhammad and Istyanto, Noerma Pudji and Asfari, Ully
+  title: >-
+    Making Sense of Developing Artificial Intelligence-Based System in Software Development Life Cycle
+    Manner and Addressing Risk Factors
+  year: '2023'
+  venue: >-
+    2023 6th International Conference of Computer and Informatics Engineering (IC2IE)
+  doi: 10.1109/IC2IE60547.2023.10331070
+  url: https://ieeexplore.ieee.org/document/10331070
+- key: murainaNecessityExploratoryData2023
+  authors: >-
+    Muraina, Ismail Olaniyi and Adesanya, Olayemi Muyideen and Agoi, Moses Adeolu and Abam, Solomon Onen
+  title: >-
+    The Necessity of Exploratory Data Analysis: How Are Preprocessing Activities Beneficial to Data Analysts
+    and Professional Researchers in Academia?
+  year: '2023'
+  venue: International Journal of Scientific Research in Computer Science and Engineering
+  doi: 10.26438/ijsrcse/v11i3.2228
+  url: https://ijsrcse.isroset.org/index.php/j/article/view/528
+- key: nahar2022
+  authors: Nahar, Nadia and Zhou, Shurui and Lewis, Grace and Kästner, Christian
+  title: >-
+    Collaboration Challenges in Building ML-Enabled Systems: Communication, Documentation, Engineering,
+    and Process
+  year: '2022'
+  venue: Proceedings of the 44th International Conference on Software Engineering
+  publisher: Association for Computing Machinery
+  doi: 10.1145/3510003.3510209
+  url: https://dl.acm.org/doi/10.1145/3510003.3510209
+- key: nascimento2019-P12
+  authors: >-
+    Nascimento, Elizamary de Souza and Ahmed, Iftekhar and Oliveira, Edson and Palheta, Márcio Piedade
+    and Steinmacher, Igor and Conte, Tayana
+  title: >-
+    Understanding Development Process of Machine Learning Systems: Challenges and Solutions
+  year: '2019'
+  venue: >-
+    2019 ACM/IEEE International Symposium on Empirical Software Engineering and Measurement (ESEM)
+  doi: 10.1109/ESEM.2019.8870157
+  url: https://ieeexplore.ieee.org/document/8870157
+- key: nazabalDataEngineeringData2020
+  authors: >-
+    Nazabal, Alfredo and Williams, Christopher K. I. and Colavizza, Giovanni and Smith, Camila Rangel
+    and Williams, Angus
+  title: >-
+    Data Engineering for Data Analytics: A Classification of the Issues, and Case Studies
+  year: '2020'
+  venue: arXiv Preprint
+  publisher: arXiv
+  doi: 10.48550/arXiv.2004.12929
+  url: http://arxiv.org/abs/2004.12929
+- key: polletiHierarchicalFallbackArchitecture2025
+  authors: >-
+    Polleti, Gustavo and Santana, Marlesson and Sant, Felipe Sassi Del and Fontes, Eduardo
+  title: >-
+    Hierarchical Fallback Architecture for High Risk Online Machine Learning Inference
+  year: '2025'
+  venue: arXiv Preprint
+  publisher: arXiv
+  doi: 10.48550/arXiv.2501.17834
+  url: http://arxiv.org/abs/2501.17834
+- key: polyzotis2018-P17
+  authors: Polyzotis, Neoklis and Roy, Sudip and Euijong, WhangSteven and Zinkevich, Martin
+  title: Data Lifecycle Challenges in Production Machine Learning
+  year: '2018'
+  venue: ACM SIGMOD Record
+  publisher: ACMPUB27New York, NY, USA
+  doi: 10.1145/3299887.3299891
+  url: https://dl.acm.org/doi/10.1145/3299887.3299891
+- key: prasad2022-P7
+  authors: Prasad, Janvi and Jain, Arushi and Zachariah, Ushus Elizabeth
+  title: Comparative Evaluation of Machine Learning Development Lifecycle Tools
+  year: '2022'
+  venue: >-
+    2022 International Conference on Recent Trends in Microelectronics, Automation, Computing and Communications
+    Systems (ICMACC)
+  doi: 10.1109/ICMACC54824.2022.10093671
+  url: https://ieeexplore.ieee.org/document/10093671
+- key: ranawana2021-P18
+  authors: Ranawana, Romesh and Karunananda, Asoka S.
+  title: >-
+    An Agile Software Development Life Cycle Model for Machine Learning Application Development
+  year: '2021'
+  venue: 2021 5th SLAAI International Conference on Artificial Intelligence (SLAAI-ICAI)
+  doi: 10.1109/SLAAI-ICAI54477.2021.9664736
+  url: https://ieeexplore.ieee.org/document/9664736
+- key: recupitoUnmaskingDataSecrets2024
+  authors: >-
+    Recupito, Gilberto and Rapacciuolo, Raimondo and Di Nucci, Dario and Palomba, Fabio
+  title: >-
+    Unmasking Data Secrets: An Empirical Investigation into Data Smells and Their Impact on Data Quality
+  year: '2024'
+  venue: >-
+    Proceedings of the IEEE/ACM 3rd International Conference on AI Engineering - Software Engineering
+    for AI
+  publisher: Association for Computing Machinery
+  doi: 10.1145/3644815.3644960
+  url: https://dl.acm.org/doi/10.1145/3644815.3644960
+- key: roh2021
+  authors: Roh, Yuji and Heo, Geon and Whang, Steven Euijong
+  title: >-
+    A Survey on Data Collection for Machine Learning: A Big Data - AI Integration Perspective
+  year: '2021'
+  venue: IEEE Transactions on Knowledge and Data Engineering
+  doi: 10.1109/TKDE.2019.2946162
+  url: https://ieeexplore.ieee.org/document/8862913
+- key: sabouCorpusAnnotationCrowdsourcing2014
+  authors: Sabou, Marta and Bontcheva, Kalina and Derczynski, Leon and Scharl, Arno
+  title: 'Corpus Annotation through Crowdsourcing: Towards Best Practice Guidelines'
+  year: '2014'
+  venue: >-
+    Proceedings of the Ninth International Conference on Language Resources and Evaluation (LREC'14)
+  publisher: European Language Resources Association (ELRA)
+  url: https://aclanthology.org/L14-1412/
+- key: schlegel2023-P9
+  authors: Schlegel, Marius and Sattler, Kai-Uwe
+  title: 'Management of Machine Learning Lifecycle Artifacts: A Survey'
+  year: '2023'
+  venue: SIGMOD Rec.
+  doi: 10.1145/3582302.3582306
+  url: https://dl.acm.org/doi/10.1145/3582302.3582306
+- key: sculleyHiddenTechnicalDebt2015
+  authors: >-
+    Sculley, D. and Holt, Gary and Golovin, Daniel and Davydov, Eugene and Phillips, Todd and Ebner, Dietmar
+    and Chaudhary, Vinay and Young, Michael and Crespo, Jean-Francois and Dennison, Dan
+  title: Hidden Technical Debt in Machine Learning Systems
+  year: '2015'
+  publisher: MIT Press
+- key: seenivasanETLWorldUnstructured2021
+  authors: Seenivasan, Dhamotharan
+  title: 'ETL in a World of Unstructured Data: Advanced Techniques for Data Integration'
+  year: '2021'
+  venue: International Journal of Management, IT and Engineering (IJMIE)
+  publisher: Social Science Research Network
+  doi: 10.2139/ssrn.5148188
+  url: https://papers.ssrn.com/abstract=5148188
+- key: sensLargeScaleStudyModel2025
+  authors: Sens, Yorick and Knopp, Henriette and Peldszus, Sven and Berger, Thorsten
+  title: A Large-Scale Study of Model Integration in ML-Enabled Software Systems
+  year: '2025'
+  venue: >-
+    Proceedings of the IEEE/ACM 47th International Conference on Software Engineering
+  publisher: IEEE Press
+  doi: 10.1109/ICSE55347.2025.00185
+  url: https://dl.acm.org/doi/10.1109/ICSE55347.2025.00185
+- key: serban2022
+  authors: Serban, Alex and Visser, Joost
+  title: Adapting Software Architectures to Machine Learning Challenges
+  year: '2022'
+  doi: 10.48550/arXiv.2105.12422
+  url: http://arxiv.org/abs/2105.12422
+- key: shahriar2023-P3
+  authors: Shahriar, Sakib and Allana, Sonal and Hazratifard, Seyed Mehdi and Dara, Rozita
+  title: >-
+    A Survey of Privacy Risks and Mitigation Strategies in the Artificial Intelligence Life Cycle
+  year: '2023'
+  venue: IEEE Access
+  doi: 10.1109/ACCESS.2023.3287195
+  url: https://ieeexplore.ieee.org/document/10155147
+- key: shenEntityLinkingKnowledge2015
+  authors: Shen, Wei and Wang, Jianyong and Han, Jiawei
+  title: 'Entity Linking with a Knowledge Base: Issues, Techniques, and Solutions'
+  year: '2015'
+  venue: IEEE Transactions on Knowledge and Data Engineering
+  doi: 10.1109/TKDE.2014.2327028
+  url: https://ieeexplore.ieee.org/document/6823700
+- key: shengGetAnotherLabel2008
+  authors: Sheng, Victor S. and Provost, Foster and Ipeirotis, Panagiotis G.
+  title: >-
+    Get Another Label? Improving Data Quality and Data Mining Using Multiple, Noisy Labelers
+  year: '2008'
+  venue: >-
+    Proceedings of the 14th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining
+  publisher: Association for Computing Machinery
+  doi: 10.1145/1401890.1401965
+  url: https://dl.acm.org/doi/10.1145/1401890.1401965
+- key: siebert2022
+  authors: >-
+    Siebert, Julien and Joeckel, Lisa and Heidrich, Jens and Trendowicz, Adam and Nakamichi, Koji and
+    Ohashi, Kyoko and Namba, Isao and Yamamoto, Rieko and Aoyama, Mikio
+  title: Construction of a Quality Model for Machine Learning Systems
+  year: '2022'
+  venue: Software Quality Journal
+  doi: 10.1007/s11219-021-09557-y
+  url: https://doi.org/10.1007/s11219-021-09557-y
+- key: sneedProcessAssessingData2011
+  authors: Sneed, Harry M. and Majnar, Rudolf
+  title: A Process for Assessing Data Quality
+  year: '2011'
+  publisher: Association for Computing Machinery
+  doi: 10.1145/2024587.2024599
+  url: https://dl.acm.org/doi/10.1145/2024587.2024599
+- key: snowCheapFastbutIt2008
+  authors: Snow, Rion and O'Connor, Brendan and Jurafsky, Daniel and Ng, Andrew Y.
+  title: >-
+    Cheap and Fast—but Is It Good? Evaluating Non-Expert Annotations for Natural Language Tasks
+  year: '2008'
+  venue: >-
+    Proceedings of the Conference on Empirical Methods in Natural Language Processing
+  publisher: Association for Computational Linguistics
+  url: https://dl.acm.org/doi/10.5555/1613715.1613751
+- key: souza2019-P5
+  authors: >-
+    Souza, Renan and Azevedo, Leonardo and Lourenço, Vítor and Soares, Elton and Thiago, Raphael and Brandão,
+    Rafael and Civitarese, Daniel and Brazil, Emilio and Moreno, Marcio and Valduriez, Patrick and Mattoso,
+    Marta and Cerqueira, Renato and Netto, Marco A.S.
+  title: >-
+    Provenance Data in the Machine Learning Lifecycle in Computational Science and Engineering
+  year: '2019'
+  venue: 2019 IEEE/ACM Workflows in Support of Large-Scale Science (WORKS)
+  doi: 10.1109/WORKS49585.2019.00006
+  url: https://ieeexplore.ieee.org/document/8943505
+- key: spjuth2021-P1
+  authors: Spjuth, Ola and Frid, Jens and Hellander, Andreas
+  title: 'The Machine Learning Life Cycle and the Cloud: Implications for Drug Discovery'
+  year: '2021'
+  venue: Expert Opinion on Drug Discovery
+  publisher: Taylor & Francis
+  doi: 10.1080/17460441.2021.1932812
+  url: https://doi.org/10.1080/17460441.2021.1932812
+- key: stonebrakerMachineLearningBig2019
+  authors: Stonebraker, M. and Rezig, E.
+  title: 'Machine Learning and Big Data: What Is Important?'
+  year: '2019'
+  venue: IEEE Data Eng. Bull.
+  url: https://www.semanticscholar.org/paper/Machine-Learning-and-Big-Data
+- key: studerCRISPMLQ2021-P13
+  authors: >-
+    Studer, Stefan and Bui, Thanh Binh and Drescher, Christian and Hanuschkin, Alexander and Winkler,
+    Ludwig and Peters, Steven and Müller, Klaus-Robert
+  title: >-
+    Towards CRISP-ML(Q): A Machine Learning Process Model with Quality Assurance Methodology
+  year: '2021'
+  venue: Machine Learning and Knowledge Extraction
+  publisher: Multidisciplinary Digital Publishing Institute
+  doi: 10.3390/make3020020
+  url: https://www.mdpi.com/2504-4990/3/2/20
+- key: washizaki2022
+  authors: >-
+    Washizaki, Hironori and Khomh, Foutse and Guéhéneuc, Yann-Gaël and Takeuchi, Hironori and Natori,
+    Naotake and Doi, Takuo and Okuda, Satoshi
+  title: Software-Engineering Design Patterns for Machine Learning Applications
+  year: '2022'
+  venue: Computer
+  doi: 10.1109/MC.2021.3137227
+  url: https://ieeexplore.ieee.org/document/9734272
+- key: whangDataCollectionQuality2023
+  authors: Whang, Steven Euijong and Roh, Yuji and Song, Hwanjun and Lee, Jae-Gil
+  title: >-
+    Data Collection and Quality Challenges in Deep Learning: A Data-Centric AI Perspective
+  year: '2023'
+  venue: The VLDB Journal
+  doi: 10.1007/s00778-022-00775-9
+  url: https://doi.org/10.1007/s00778-022-00775-9
+- key: wongsuphasawatGoalsProcessChallenges2019
+  authors: Wongsuphasawat, Kanit and Liu, Yang and Heer, Jeffrey
+  title: 'Goals, Process, and Challenges of Exploratory Data Analysis: An Interview Study'
+  year: '2019'
+  venue: arXiv Preprint
+  publisher: arXiv
+  doi: 10.48550/arXiv.1911.00568
+  url: http://arxiv.org/abs/1911.00568
+- key: yuliantoExtractTransformLoad2019
+  authors: Yulianto, Ardhian Agung
+  title: >-
+    Extract Transform Load (ETL) Process in Distributed Database Academic Data Warehouse
+  year: '2019'
+  venue: Aptikom Journal on Computer Science and Information Technologies
+  doi: 10.11591/APTIKOM.J.CSIT.36
+  url: https://aptikomjournal.com/index.php/CSIT/article/view/36
+- key: zhaDatacentricArtificialIntelligence2025
+  authors: >-
+    Zha, Daochen and Bhat, Zaid Pervaiz and Lai, Kwei-Herng and Yang, Fan and Jiang, Zhimeng and Zhong,
+    Shaochen and Hu, Xia
+  title: 'Data-Centric Artificial Intelligence: A Survey'
+  year: '2025'
+  venue: ACM Comput. Surv.
+  doi: 10.1145/3711118
+  url: https://doi.org/10.1145/3711118
+- key: zhangMachineLearningTesting2022
+  authors: Zhang, Jie M. and Harman, Mark and Ma, Lei and Liu, Yang
+  title: 'Machine Learning Testing: Survey, Landscapes and Horizons'
+  year: '2022'
+  venue: IEEE Transactions on Software Engineering
+  doi: 10.1109/TSE.2019.2962027
+  url: https://ieeexplore.ieee.org/document/9000651

@@ -1,0 +1,163 @@
+id: P09
+number: 9
+origin: decomposed
+name: Data Collection Process
+purpose: >-
+  The purpose of the *Data Collection Process* is to extract raw data from the identified internal and
+  external sources and gather it into a common storage area. It creates one or more raw datasets ready
+  for exploration and cleaning.
+outcomes:
+- id: a
+  text: Data extracted from sources and stored in a staging area.
+- id: b
+  text: Raw data accompanied by metadata and documentation.
+- id: c
+  text: Extraction logs and monitoring information available.
+- id: d
+  text: A Data Collection Record documenting decisions and parameters.
+inputs:
+- workProduct: data-catalog
+  name: Data Catalog
+  description: >-
+    The inventory of internal and external sources, with their mapping to the data requirements, documentation
+    status, quality assessments, and legal and ethical reviews.
+  serves:
+  - a
+  - b
+outputs:
+- workProduct: raw-dataset
+  name: Raw Dataset
+  description: The extracted data stored in a staging area.
+  serves:
+  - a
+- workProduct: data-collection-record
+  name: Data Collection Record
+  description: >-
+    The data mapping, unique identifiers, metadata, extraction logs, and monitoring information, with
+    the decisions and parameters of the collection.
+  serves:
+  - b
+  - c
+  - d
+activities:
+- id: A1
+  title: Establish connections, retrieve data, and identify unique identifiers
+  description: >-
+    Connect to sources to pull data, accounting for the differing quality and trustworthiness of the systems
+    involved and for the storage, processing, and exposure characteristics particular to each data type,
+    and confirm that the extraction does not degrade the performance or response time of source systems
+    still serving production traffic. Identify from the outset the primary keys or attributes that uniquely
+    identify the records of each source, so that the collected data can later be joined, reconciled across
+    sources, and traced back to its origin.
+- id: A2
+  title: Select extraction strategy
+  description: >-
+    Choose between full or incremental extraction and batch or real-time modes, letting the recency defined
+    for the acquisition determine how much history is drawn and how often extraction recurs. Distinguish
+    full extraction from partial extraction with and without an update notification, and label the corresponding
+    load type as an initial load, an incremental load, or a full refresh. Record the strategy and frequency
+    per source rather than per project.
+  primaryStudies:
+  - P14
+  literature:
+  - khanOverviewETLTechniques2024
+  - yuliantoExtractTransformLoad2019
+  - seenivasanETLWorldUnstructured2021
+- id: A3
+  title: Create data mapping and documentation
+  description: >-
+    Specify which data fields are pulled and record source metadata, stating the selection criteria, and
+    which attributes are necessary for the stated goal, which have been marked as irrelevant, how many
+    the chosen extraction technique can handle, and how much history is drawn even where more is available.
+    Establish a data map expressing the relationship between source and destination, recording for each
+    source its update strategy, load frequency, and expected volume, and for each column its target column,
+    type, constraints, and any transformation applied. Record alongside them the access rights, ownership,
+    controllers, third parties, usage purpose, and retention attaching to each source.
+  primaryStudies:
+  - P3
+  - P14
+  literature:
+  - khanOverviewETLTechniques2024
+  - yuliantoExtractTransformLoad2019
+- id: A4
+  title: Handle unstructured sources
+  description: >-
+    Apply parsing, OCR, or scraping tools to capture text or images, deciding how free-text entries are
+    encoded or grouped and how multi-modal inputs are handled, and accounting for information that exists
+    only outside the systems the team can query. Match the technique to the form of the source, using
+    optical character recognition for scanned pages and images, document parsing for portable and word-processor
+    formats, language processing for text, speech-to-text and feature extraction for audio, and frame
+    extraction for video, and reach web sources either through a programmatic interface or by scraping
+    where none exists. Account for the effect on the destination, since this material raises storage cost,
+    threatens integrity, and can leave an indexed structure that later queries do not fit.
+  primaryStudies:
+  - P14
+  literature:
+  - seenivasanETLWorldUnstructured2021
+- id: A5
+  title: Manage external source volatility and access protocols
+  description: >-
+    For sources outside the organization's control, define how changes in their structure, format, or
+    availability are detected and handled, so that a silent change in a source neither corrupts the collected
+    data nor breaks the pipeline. Respect the access protocols each source imposes, including authentication,
+    rate limits, terms of service, and restrictions on automated retrieval, and confirm that the licensing
+    and legal conditions reviewed when the source was identified still hold at the time of collection.
+    Record the retrieval date or version of externally collected data, so that later changes in the source
+    can be traced.
+- id: A6
+  title: Log and monitor extraction
+  description: >-
+    Track extracted records and errors to detect anomalies, validating arriving data against the agreed
+    schema. Reconcile the records retrieved against the source, verify data types, and verify extraction
+    by comparing record counts between source and target, query for records present in one and absent
+    from the other.
+  primaryStudies:
+  - P5
+  - P13
+  - P17
+  literature:
+  - khanOverviewETLTechniques2024
+  - yuliantoExtractTransformLoad2019
+- id: A7
+  title: Maintain data collection record
+  description: >-
+    Document all decisions, strategies, and parameters used during extraction, recording where each dataset
+    was acquired and by what method, the problems encountered and the solutions adopted, and the relative
+    importance of the attributes selected, so that the chain from raw input to the model built on it can
+    be queried afterwards. Store the result so that the traceability of the acquisition is established,
+    and make the collected data available for reuse by other projects through repositories that store
+    it and registries that record where it has been used.
+  primaryStudies:
+  - P3
+  - P14
+  literature:
+  - khanOverviewETLTechniques2024
+  - yuliantoExtractTransformLoad2019
+changes:
+- annotation: A-27
+  text: Identify the primary key from the very beginning
+  redVotes: 4
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: updated
+    target: A1
+    text: identify the unique identifiers needed to link records
+  - kind: updated
+    target: Output
+    text: Data Collection Record includes the identifiers
+- annotation: A-28
+  text: 'External data scraping: volatility, legality, and access protocols'
+  redVotes: 1
+  yellowVotes: 2
+  decision: adopted
+  changes:
+  - kind: added
+    target: A5
+    text: Manage external source volatility and access protocols
+- annotation: A-29
+  text: Documentation can also be used as an input to create agents
+  redVotes: 0
+  yellowVotes: 3
+  decision: rejected
+  changes: []

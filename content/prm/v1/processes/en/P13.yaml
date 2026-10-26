@@ -1,0 +1,130 @@
+id: P13
+number: 13
+origin: decomposed
+name: Data Labeling Process
+purpose: >-
+  The purpose of the *Data Labeling Process* is to assign correct target values or categories to individual
+  data samples. These labels allow supervised models to learn the relationship between input data and
+  expected outputs.
+outcomes:
+- id: a
+  text: A labeled dataset where samples are assigned target values.
+- id: b
+  text: A Labeling Guideline Document describing objectives and instructions.
+- id: c
+  text: Labeling metadata, including annotators, tools, and timestamps.
+- id: d
+  text: Quality control results for the assigned labels.
+- id: e
+  text: >-
+    A Data Labeling Record documenting the complete labeling process and configuration.
+inputs:
+- workProduct: enriched-dataset
+  name: Enriched Dataset
+  description: The dataset prepared for annotation.
+  serves:
+  - a
+- workProduct: data-requirements-specification
+  name: Data Requirements Specification
+  description: The requirements defining the target values.
+  serves:
+  - a
+  - b
+outputs:
+- workProduct: labeled-dataset
+  name: Labeled Dataset
+  description: The dataset with target values or categories assigned to each sample.
+  serves:
+  - a
+- workProduct: data-labeling-record
+  name: Data Labeling Record
+  description: >-
+    The labeling guidelines, annotator metadata, quality control results, and process configuration.
+  serves:
+  - b
+  - c
+  - d
+  - e
+activities:
+- id: A1
+  title: Plan labeling activities
+  description: >-
+    Select data subsets, specify objectives, and design annotation guidelines. Select the data worth labeling,
+    and plan whether labels have to be reused in other tasks. Decide who labels the data, weighing in-house
+    annotators, domain experts, and crowd workers against cost, quality, the understanding of the problem
+    required, the confidentiality of the data, and the composition of the labeling pool. Choose and evaluate
+    the labeling method and tools. Write definitions and instructions, and refine the guidelines through
+    feedback from annotators.
+  primaryStudies:
+  - P3
+  - P10
+  literature:
+  - fredrikssonDataLabelingEmpirical2020
+  - haliburtonUncoveringLabelerBias2025
+  - sabouCorpusAnnotationCrowdsourcing2014
+  - zhaDatacentricArtificialIntelligence2025
+  - hutchinsonAccountabilityMachineLearning2021
+- id: A2
+  title: Train annotators
+  description: >-
+    Brief annotators, provide practice, and perform calibration exercises, evaluating that they are competent
+    in the domain and trained in the use of the labeling tool. Train annotators to follow the written
+    instructions rather than their own understanding of the purpose, calibrate them against gold standard
+    labels to estimate and correct the bias of each annotator, and screen contributors through competency
+    tests.
+  literature:
+  - artsteinIntercoderAgreementComputational2008
+  - snowCheapFastbutIt2008
+  - sabouCorpusAnnotationCrowdsourcing2014
+- id: A3
+  title: Assign labels
+  description: >-
+    Execute labeling using methods such as manual annotation, crowdsourcing, semi-supervised labeling,
+    active learning, or model pre-annotation validated by humans. Where labels are noisy, acquire several
+    labels for selected items and integrate them, for instance by majority voting, and include questions
+    with verifiable answers to discourage low-effort responses. Where labels are generated programmatically,
+    take into account that more automation can reduce label accuracy.
+  primaryStudies:
+  - P10
+  literature:
+  - roh2021
+  - zhaDatacentricArtificialIntelligence2025
+  - snowCheapFastbutIt2008
+  - shengGetAnotherLabel2008
+  - fredrikssonDataLabelingEmpirical2020
+- id: A4
+  title: Validate labels
+  description: >-
+    Assess agreement, compare against gold standards, and review low-quality labels, scaling the depth
+    of review and correction to the risk of the application. Measure agreement with chance-corrected coefficients,
+    embed gold standard items to assess each annotator, and have labels validated by domain experts. Identify
+    likely mislabels from the data, considering the sources of label noise, and check whether agreement
+    within the labeling pool may hide a shared bias.
+  primaryStudies:
+  - P3
+  - P8
+  literature:
+  - artsteinIntercoderAgreementComputational2008
+  - sabouCorpusAnnotationCrowdsourcing2014
+  - snowCheapFastbutIt2008
+  - haliburtonUncoveringLabelerBias2025
+  - fredrikssonDataLabelingEmpirical2020
+- id: A5
+  title: Document labeling process
+  description: >-
+    Record guidelines, tool configurations, and quality assurance methods in the Data Labeling Record,
+    together with the demographic characteristics of the annotators and guideline developers, how the
+    planned labeling was carried out and what unforeseen circumstances arose, and when each label was
+    assigned, since labels can become incorrect over time.
+  primaryStudies:
+  - P9
+  literature:
+  - benderDataStatementsNatural2018
+  - hutchinsonAccountabilityMachineLearning2021
+  - haliburtonUncoveringLabelerBias2025
+standards:
+- standard: ISO/IEC 5338
+  activity: b) Conduct data labelling
+- standard: ISO/IEC 5338
+  activity: e) Document data lineage and data provenance
+  note: Spread through all data processes

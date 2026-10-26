@@ -1,0 +1,187 @@
+id: P24
+number: 24
+origin: standards-and-literature
+name: Maintenance Process
+purpose: >-
+  The purpose of the *Maintenance Process* is to sustain the capability of the Machine Learning system
+  to provide its service. It analyzes reported deviations and takes the corrective, adaptive, perfective,
+  and preventive actions needed, including retraining, coordinating the work through the data, model,
+  and transition processes.
+outcomes:
+- id: a
+  text: A maintenance strategy defined as an annex to the architecture documentation.
+- id: b
+  text: Maintenance needs classified and attributed to the data, the model, or the code.
+- id: c
+  text: Impact of each change assessed before implementation.
+- id: d
+  text: >-
+    Operational capability restored after failure through rollback, fallback, or degraded operation.
+- id: e
+  text: Changes implemented, including retraining or continuous learning of the model.
+- id: f
+  text: >-
+    Changes regression tested and revised models assessed against the original evaluation framework.
+- id: g
+  text: Restored capability confirmed against the indicators that triggered the change.
+- id: h
+  text: >-
+    Maintenance records and trends linking each action to the affected elements and model lineage.
+inputs:
+- workProduct: maintenance-requests
+  name: Maintenance Requests
+  description: Issues escalated from operation that need a change.
+  serves:
+  - b
+  - c
+- workProduct: monitoring-records
+  name: Monitoring Records
+  description: Drift and performance evidence.
+  serves:
+  - b
+  - g
+- workProduct: integrated-system
+  name: Integrated System
+  description: The system whose capability is sustained.
+  serves:
+  - c
+  - d
+  - e
+- workProduct: system-architecture-documentation
+  name: System Architecture Documentation
+  description: Retraining triggers, validation gates, and rollback mechanisms.
+  serves:
+  - a
+  - d
+- workProduct: evaluation-framework
+  name: Evaluation Framework
+  description: Criteria to reassess a revised model.
+  serves:
+  - f
+  - g
+outputs:
+- workProduct: maintenance-records
+  name: Maintenance Records
+  description: Actions, outcomes, trends, and model lineage.
+  serves:
+  - b
+  - c
+  - g
+  - h
+activities:
+- id: A1
+  title: Define the maintenance strategy
+  description: >-
+    Establish the priorities, schedules, and approval authority for each type of maintenance action, building
+    on the retraining and recovery mechanisms already defined. Determine how often the model is to be
+    updated, taking into account the expected rate of change of the data and the environment and the tolerable
+    loss of quality over time. Identify the skills required to maintain both the model and the rest of
+    the system, and define the measures used to assess the effectiveness of maintenance. Whenever possible,
+    forecast the obsolescence of elements and technologies.
+  primaryStudies:
+  - P4
+  - P11
+  literature:
+  - breckMLTestScore2017
+- id: A2
+  title: Analyze maintenance needs
+  description: >-
+    Review the maintenance requests, monitoring records, and other reports to identify the corrective,
+    adaptive, perfective, or preventive actions required. Determine whether each problem originates in
+    the data, the model, or the code, and whether it can be resolved by updating the model or requires
+    the problem itself to be reconsidered. Base this attribution on the provenance of the data and the
+    model rather than on configuration versions alone, and distinguish data that is erroneous from expectations
+    that are no longer valid.
+  primaryStudies:
+  - P5
+  - P16
+  - P17
+- id: A3
+  title: Assess change impact
+  description: >-
+    Evaluate the effect of each proposed change on data structures, interfaces, documentation, and the
+    performance, safety, and security of the system before it is implemented. Consider that a change to
+    any input, setting, or data selection can alter the behavior of the model as a whole, and identify
+    the models and systems that depend on its outputs, whether declared or not. Assess whether the change
+    may degrade behavior that was previously acceptable, and weigh its cost and risk against the risk
+    of leaving the problem in place.
+  primaryStudies:
+  - P10
+  - P16
+  literature:
+  - sculleyHiddenTechnicalDebt2015
+- id: A4
+  title: Restore operational capability
+  description: >-
+    When the model causes a failure, return the system to an acceptable operational state, either by reverting
+    to a previous model version that is known to perform adequately or by repairing the model in service.
+    Control the restoration as an emergency change under release management. Keep the restoration of service
+    separate from the analysis of the cause, reproducing the fault in a separate environment so that the
+    root cause can be identified and addressed through the regular maintenance activities.
+  primaryStudies:
+  - P13
+  literature:
+  - breckMLTestScore2017
+- id: A5
+  title: Implement the change
+  description: >-
+    Carry out the selected maintenance actions, invoking the data and model processes when the change
+    requires new data, revised data preparation, or retraining, and applying continuous learning only
+    under the conditions defined in the strategy. Apply data corrections consistently to all the data
+    affected, so that the model is not retrained on a mixture of corrected and uncorrected data. Ensure
+    that the data, computing resources, labeling capacity, and skilled personnel needed to produce a revised
+    model are available, and that archived data and artifacts remain intact and accessible.
+  primaryStudies:
+  - P4
+  - P8
+  - P17
+- id: A6
+  title: Verify and release the change
+  description: >-
+    Test the changes to confirm that it has not introduced new issues or degraded previously satisfied
+    requirements. Reassess any revised model against the criteria with which the original model was accepted,
+    using both earlier and updated test cases so that successive versions remain comparable, and against
+    a simple baseline to confirm that its complexity remains justified. Release the change through the
+    transition process, and confirm restored capability once the indicators that triggered the change
+    have returned within their thresholds.
+  primaryStudies:
+  - P10
+  literature:
+  - breckMLTestScore2017
+- id: A7
+  title: Record maintenance results
+  description: >-
+    Document the maintenance actions taken, their outcomes, and any anomalies or incidents encountered,
+    and identify trends across incidents and actions that can inform operation, maintenance, and similar
+    projects. Link each record to the affected system elements and to the lineage of the model, including
+    the data it was trained on, the configuration used, and the evaluation it passed. Maintain traceability
+    between maintenance actions and lifecycle artifacts, and collect the information needed to assess
+    the satisfaction of users with the system and its maintenance.
+  primaryStudies:
+  - P5
+  - P10
+standards:
+- standard: ''
+  activity: a) Prepare for maintenance
+  prmActivity: A1
+- standard: ''
+  activity: b) Perform maintenance
+  prmActivity: A2
+- standard: ''
+  activity: b) Perform maintenance
+  prmActivity: A3
+- standard: ''
+  activity: b) Perform maintenance
+  prmActivity: A4
+- standard: ''
+  activity: b) Perform maintenance
+  prmActivity: A5
+- standard: ''
+  activity: b) Perform maintenance
+  prmActivity: A6
+- standard: ''
+  activity: c) Perform logistics support
+  prmActivity: A5
+- standard: ''
+  activity: d) Manage results of maintenance
+  prmActivity: A7

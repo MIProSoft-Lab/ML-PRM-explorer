@@ -1,0 +1,112 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Cited from '../../components/Cited.astro';
+import { studies, references, getProcesses, defaultVersion, versions } from '../../lib/content';
+import { localePaths } from '../../lib/paths';
+import { fullCite, referenceByKey, referenceUrl } from '../../lib/refs';
+import { inline } from '../../lib/text';
+import { useTranslations, href, type Locale } from '../../i18n/ui';
+
+export const getStaticPaths = localePaths;
+const locale = Astro.props.locale as Locale;
+const t = useTranslations(locale);
+
+// Where each study and reference is cited, in the default version when it
+// is cited there and in the earlier versions otherwise.
+const citedBy = new Map<string, { version: string; process: string; activity: string }[]>();
+const order = [defaultVersion, ...versions.map((v) => v.id).filter((v) => v !== defaultVersion)];
+for (const version of order) {
+  for (const { data: p } of getProcesses(version, locale)) {
+    for (const a of p.activities) {
+      for (const key of [...(a.primaryStudies ?? []), ...(a.literature ?? [])]) {
+        const list = citedBy.get(key) ?? [];
+        if (list.length && list[0].version !== version) continue;
+        list.push({ version, process: p.id, activity: a.id });
+        citedBy.set(key, list);
+      }
+    }
+  }
+}
+const literature = references.filter((r) => !studies.some((s) => s.reference === r.key)).sort((a, b) => a.authors.localeCompare(b.authors));
+---
+
+<Layout locale={locale} title={t('refs.title')} section="references">
+  <h1>{t('refs.title')}</h1>
+
+  <h2>{t('refs.studies')}</h2>
+  <ol class="refs">
+    {
+      studies.map((s) => {
+        const ref = s.reference ? referenceByKey.get(s.reference) : undefined;
+        const url = ref && referenceUrl(ref);
+        return (
+          <li id={s.id}>
+            <span class="key">{s.id}</span>
+            <div>
+              {url ? <a href={url}>{s.title}</a> : <span>{s.title}</span>} <span class="muted">({s.year})</span>
+              {ref && <div class="small muted" set:html={inline(fullCite(ref))} />}
+              <Cited locale={locale} items={citedBy.get(s.id)} />
+            </div>
+          </li>
+        );
+      })
+    }
+  </ol>
+
+  <h2>{t('refs.literature')}</h2>
+  <ol class="refs literature">
+    {
+      literature.map((r) => {
+        const url = referenceUrl(r);
+        return (
+          <li id={r.key}>
+            <div>
+              <span set:html={inline(fullCite(r))} /> {url && <a class="small" href={url}>↗</a>}
+              <Cited locale={locale} items={citedBy.get(r.key)} />
+            </div>
+          </li>
+        );
+      })
+    }
+  </ol>
+</Layout>
+
+<script>
+  const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  target?.classList.add('highlight');
+</script>
+
+<style>
+  .refs {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    max-width: 900px;
+  }
+
+  .refs li {
+    display: grid;
+    grid-template-columns: 3em 1fr;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    scroll-margin-top: 16px;
+  }
+
+  .refs li:target,
+  .refs li.highlight {
+    background: var(--surface-2);
+    outline: 1px solid var(--accent);
+  }
+
+  .literature li {
+    grid-template-columns: 1fr;
+  }
+
+  .key {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+</style>

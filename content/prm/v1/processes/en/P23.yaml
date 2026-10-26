@@ -1,0 +1,191 @@
+id: P23
+number: 23
+origin: standards-only
+name: Operation Process
+purpose: >-
+  The purpose of the *Operation Process* is to use the Machine Learning system in production to deliver
+  its services. It keeps the system available within agreed service levels, manages the people and resources
+  needed to run it, and handles the incidents and support requests that arise during use.
+outcomes:
+- id: a
+  text: >-
+    An operation strategy defined, with enabling systems and qualified operators available.
+- id: b
+  text: >-
+    The system used in its operational environment, serving predictions in the established mode.
+- id: c
+  text: Runtime resources managed against cost and performance objectives.
+- id: d
+  text: Production data and serving payloads captured and governed for downstream reuse.
+- id: e
+  text: >-
+    Operational procedures and contingency measures applied under degraded conditions.
+- id: f
+  text: >-
+    Incidents and support requests recorded, tracked, and escalated when a change is needed.
+- id: g
+  text: >-
+    Operation records produced and traced to requirements and architectural decisions.
+inputs:
+- workProduct: deployment-artifacts
+  name: Deployment Artifacts
+  description: The packaged model and live instance to operate.
+  serves:
+  - a
+  - b
+- workProduct: integrated-system
+  name: Integrated System
+  description: The software system the model is embedded in.
+  serves:
+  - b
+  - e
+- workProduct: system-architecture-documentation
+  name: System Architecture Documentation
+  description: Serving mode and fallback strategy.
+  serves:
+  - a
+  - b
+  - e
+- workProduct: monitoring-records
+  name: Monitoring Records
+  description: Drift, performance, and incident information.
+  serves:
+  - c
+  - f
+- workProduct: alerting-configuration
+  name: Alerting Configuration
+  description: The rules and thresholds operators respond to.
+  serves:
+  - e
+  - f
+outputs:
+- workProduct: live-model-outputs
+  name: Live Model Outputs
+  description: Predictions served on production data.
+  serves:
+  - b
+  - d
+- workProduct: operational-procedures
+  name: Operational Procedures
+  description: Runbooks, contingency procedures, and user documentation.
+  serves:
+  - a
+  - e
+- workProduct: operation-records
+  name: Operation Records
+  description: Service performance, resource use, incidents, and requests.
+  serves:
+  - c
+  - f
+  - g
+- workProduct: maintenance-requests
+  name: Maintenance Requests
+  description: Issues that operating procedures cannot resolve.
+  serves:
+  - f
+activities:
+- id: A1
+  title: Prepare for operation
+  description: >-
+    Define the operation strategy, including the expected capacity, availability, and response time of
+    the services, the operational modes and contingency operations, and the measures that give insight
+    into operational performance, based on the serving and fallback arrangements defined in the architecture.
+    Identify and obtain the enabling systems needed to operate the system. Define the qualification requirements
+    of operators, train and assign them, and establish how they cooperate with the teams responsible for
+    the data and the model, taking into account that the model may run in a different form from the one
+    used in development.
+  primaryStudies:
+  - P4
+  - P10
+  - P16
+- id: A2
+  title: Operate the system and manage runtime resources
+  description: >-
+    Use the system in its operational environment according to its established serving mode, so that the
+    services are delivered within the agreed service levels. Allocate and adjust the computing, memory,
+    storage, and energy resources required to sustain the service, balancing capacity and performance
+    against the cost of operation. Act on the resource consumption and performance measured by the continuous
+    validation process, and identify opportunities to reduce the cost of operation without degrading the
+    service.
+  primaryStudies:
+  - P1
+  - P9
+  - P18
+- id: A3
+  title: Govern production data and serving payloads
+  description: >-
+    Determine which input and output data produced during operation are captured, in what proportion,
+    and for what purpose, considering their potential reuse for monitoring, analysis, and future training.
+    Preserve the traceability of the captured data to the requests and model versions that produced it,
+    and protect its integrity so that it cannot be altered before it is used. Control access to the captured
+    data at the same level as the source data, consider how the model may influence the data it later
+    learns from, and ensure that obligations such as data deletion requests are applied to everything
+    derived from that data.
+  primaryStudies:
+  - P3
+  - P10
+  literature:
+  - breckMLTestScore2017
+  - sculleyHiddenTechnicalDebt2015
+- id: A4
+  title: Apply operational procedures and contingency measures
+  description: >-
+    Develop, and automate where feasible, the procedures for routine operation, including service and
+    change requests, troubleshooting, and incident reporting, so as to reduce the risk of operational
+    anomalies. Apply the contingency measures defined in the architecture, such as degraded operating
+    modes or alternative models, when failures in the data sources, infrastructure, or surrounding systems
+    prevent normal service while the model itself remains valid. Ensure that operators know the expected
+    performance of each contingency mode before entering it, and maintain these procedures in a continuity
+    plan.
+  primaryStudies:
+  - P18
+  literature:
+  - polletiHierarchicalFallbackArchitecture2025
+- id: A5
+  title: Handle incidents and support users
+  description: >-
+    Record and triage incidents, complaints, and service requests, distinguishing faults in the service
+    from errors that are expected from a probabilistic model, and examining reported cases against the
+    model version that produced them. Restore normal operation through validated operating procedures
+    or temporary workarounds, and escalate questions about model behavior to the teams responsible for
+    the model. Raise a maintenance request whenever an issue requires a change to the data, the model,
+    or the code, and inform users about the limitations and risks of the system to support its correct
+    use.
+  primaryStudies:
+  - P3
+  - P8
+  - P11
+  literature:
+  - breckMLTestScore2017
+- id: A6
+  title: Record and report operation results
+  description: >-
+    Document service performance, availability, resource consumption, and cost, together with the incidents,
+    support requests, and anomalies encountered, and report them against the agreed service levels. Link
+    each record to the model version in service at the time, and maintain traceability between the operational
+    services and the requirements, operational concept, and released versions. Make the records available
+    to the processes that depend on them, in particular to inform maintenance actions and decisions on
+    the frequency of training and the choice of algorithm.
+  primaryStudies:
+  - P1
+  - P9
+  - P16
+standards:
+- standard: ''
+  activity: a) Prepare for operation
+  prmActivity: A1
+- standard: ''
+  activity: b) Perform operation
+  prmActivity: A2
+- standard: ''
+  activity: b) Perform operation
+  prmActivity: A3
+- standard: ''
+  activity: b) Perform operation
+  prmActivity: A4
+- standard: ''
+  activity: d) Support the customer
+  prmActivity: A5
+- standard: ''
+  activity: c) Manage results of operation
+  prmActivity: A6

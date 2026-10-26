@@ -1,0 +1,173 @@
+id: P12
+number: 12
+origin: decomposed
+name: Data Enrichment Process
+purpose: >-
+  The purpose of the *Data Enrichment Process* is to augment existing datasets with additional or improved
+  information to increase their value and utility. It involves integrating external sources or transforming
+  existing attributes to support better feature representations.
+outcomes:
+- id: a
+  text: >-
+    An enriched dataset combining original data with additional or transformed attributes.
+- id: b
+  text: >-
+    A Data Enrichment Record documenting all enrichment operations, methods, and tools.
+- id: c
+  text: Records of resolved conflicts, redundancies, and inconsistencies.
+- id: d
+  text: A summary report describing the strategy and resulting dataset characteristics.
+inputs:
+- workProduct: cleaned-dataset
+  name: Cleaned Dataset
+  description: The verified data with its quality issues resolved.
+  serves:
+  - a
+- workProduct: exploratory-data-analysis-report
+  name: Exploratory Data Analysis Report
+  description: The characteristics, patterns, and weak signals found in the data.
+  serves:
+  - a
+  - d
+outputs:
+- workProduct: enriched-dataset
+  name: Enriched Dataset
+  description: The dataset with integrated sources, engineered features, and augmented samples.
+  serves:
+  - a
+- workProduct: data-enrichment-record
+  name: Data Enrichment Record
+  description: >-
+    The enrichment strategy, the operations applied, the conflicts resolved, and the provenance of each
+    feature.
+  serves:
+  - b
+  - c
+  - d
+activities:
+- id: A1
+  title: Identify enrichment needs
+  description: >-
+    Analyze the dataset to spot missing information or attributes that could add value, locating facts
+    that no attribute represents and attributes with weak signal. Justify each derived attribute by the
+    knowledge it represents, the requirements of the algorithm, or the gaps revealed by modeling, and
+    use the results of an initial model to identify the limitations of the dataset. Weigh whether adding
+    features is needed at all, since it may increase runtime and redundancy.
+  primaryStudies:
+  - P14
+  - P16
+  - P17
+  literature:
+  - kumar2016
+- id: A2
+  title: Integrate data sources
+  description: >-
+    Merge datasets based on shared keys, applying the attribute mappings, matching rules, and fusion rules
+    defined for the merge. Join tables that hold different information about the same objects, aggregate
+    records where a different level of detail is needed, and bring all records to the same granularity
+    before combining them, starting from the data mapping produced during collection. Handle keys that
+    do not align perfectly, consider searching a data repository automatically for tables to join, and
+    reconsider the data selection criteria in light of what integration reveals. Assess the privacy risk
+    of combining data about individuals, since cross-referencing sources can identify them.
+  primaryStudies:
+  - P3
+  - P11
+  - P14
+  - P16
+  literature:
+  - chepurko2020
+- id: A3
+  title: Align schemas
+  description: >-
+    Map attributes across datasets that refer to the same concept, automating the matching where the number
+    of attributes makes manual mapping infeasible, reusing existing mappings to provide training examples
+    for matching models, and identifying synonymous attributes where matching is used to fill in missing
+    attribute values.
+  literature:
+  - stonebrakerMachineLearningBig2019
+  - liDataAugmentationMLdriven2021
+- id: A4
+  title: Resolve entities
+  description: >-
+    Identify records corresponding to the same entity without exact key matches, defining the rules that
+    match records across the sources being integrated. Avoid comparing every record against every other
+    at scale, generate examples for matching through rules or modeling, and have the generated matches
+    validated by personnel with knowledge of the domain.
+  literature:
+  - dongBigDataIntegration2015
+  - stonebrakerMachineLearningBig2019
+  - liDataAugmentationMLdriven2021
+- id: A5
+  title: Fuse data values
+  description: >-
+    Reconcile multiple values into a single representation, defining for each attribute provided by more
+    than one source how its values are selected or aggregated according to their reliability, recency,
+    or confidence. Record each conflict found together with the rule used to resolve it.
+  primaryStudies:
+  - P14
+  literature:
+  - dongBigDataIntegration2015
+  - stonebrakerMachineLearningBig2019
+- id: A6
+  title: Integrate unstructured data
+  description: >-
+    Link raw inputs such as text or images to external structured knowledge bases, mapping each entity
+    mention directly to its entry in a knowledge base, since unstructured inputs carry no attributes to
+    align or match. Generate candidate entries for each mention and rank them, accounting for name variations
+    and ambiguity, and label mentions without a corresponding entry as unlinkable rather than forcing
+    a match.
+  literature:
+  - shenEntityLinkingKnowledge2015
+- id: A7
+  title: Engineer features
+  description: >-
+    Derive new attributes or representations from raw data through the inclusion, aggregation, and transformation
+    of raw variables, such as normalization, bucketization, encoding of nominal and ordinal values, and
+    feature crosses, or through learned representations such as embeddings and latent topics, chosen according
+    to the data and the training algorithm. Select the features the model uses, comparing each against
+    a baseline and removing those that contribute little, including irrelevant features brought in by
+    joins. Confirm that each feature can be generated at serving time, that its use is permitted, that
+    its benefit justifies its cost, dependencies, and effect on latency, and that it does not leak the
+    target.
+  primaryStudies:
+  - P13
+  - P14
+  - P15
+  - P17
+  literature:
+  - roh2021
+  - chepurko2020
+- id: A8
+  title: Augment data
+  description: >-
+    Generate modified copies of data to diversify the dataset, through label-preserving transformations
+    in the input space, the feature space, or at a meta-level, through interpolation or generation of
+    synthetic samples, or through oversampling and undersampling to address class imbalance. Use augmentation
+    to cover conditions that cannot be collected safely, such as sensor errors and failures. Verify that
+    synthetic data represents the operational domain and does not introduce artifacts, and evaluate the
+    effect of each augmentation measure on an initial model.
+  primaryStudies:
+  - P8
+  - P13
+  - P16
+  literature:
+  - liDataAugmentationMLdriven2021
+- id: A9
+  title: Document transformations
+  description: >-
+    Record the origin and changes applied to each piece of data in the Data Enrichment Record, consolidating
+    the sources integrated and the rules applied in merging them, the features developed with pointers
+    to the code that generates them, and the augmentation applied. Track the state of each iteration so
+    that the enrichment can be explained and repeated in production, and capture the preprocessing and
+    transformation steps as provenance linking each dataset to the activities that used and generated
+    it.
+  primaryStudies:
+  - P15
+  literature:
+  - stonebrakerMachineLearningBig2019
+standards:
+- standard: ISO/IEC 5338
+  activity: e) Document data lineage and data provenance
+  note: Spread through all data processes
+- standard: ISO/IEC 5338
+  activity: f) Clean, merge and prepare data

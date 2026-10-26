@@ -1,0 +1,270 @@
+id: P03
+number: 3
+origin: standards-and-literature
+name: System Requirements Definition Process
+purpose: >-
+  The purpose of the *System Requirements Definition Process* is to turn stakeholder needs into a set
+  of verifiable system requirements that describe what the ML system must do. It defines functional behavior,
+  data needs, interfaces, and quality targets to create a baseline for design and testing.
+outcomes:
+- id: a
+  text: Defined, consistent, and feasible system requirements.
+- id: b
+  text: Documented functions, data, performance, and interface requirements.
+- id: c
+  text: Established technical cost and performance targets.
+- id: d
+  text: >-
+    Traceability links connecting stakeholder needs to system requirements and design.
+inputs:
+- workProduct: stakeholder-requirements-specification
+  name: Stakeholder Requirements Specification
+  description: The agreed stakeholder requirements and their context of use.
+  serves:
+  - a
+  - b
+  - c
+  - d
+- workProduct: technical-problem-statement
+  name: Technical Problem Statement
+  description: The problem, success criteria, and operational concept.
+  serves:
+  - a
+  - c
+- workProduct: cost-and-resource-constraint-record
+  name: Cost and Resource Constraint Record
+  description: >-
+    The estimated computational requirements, training costs, and inference resource limits of the selected
+    solution class.
+  serves:
+  - c
+outputs:
+- workProduct: system-requirements-specification
+  name: System Requirements Specification
+  description: >-
+    The functional, performance, and quality requirements of the system and its technical cost baseline,
+    with their traceability.
+  serves:
+  - a
+  - b
+  - c
+  - d
+- workProduct: data-requirements-specification
+  name: Data Requirements Specification
+  description: >-
+    The expected values, formats, quality, and metadata of the data the system needs.
+  serves:
+  - a
+  - b
+- workProduct: architecture-requirements-specification
+  name: Architecture Requirements Specification
+  description: >-
+    The interface requirements and the Service Level Indicators and Objectives that the architecture has
+    to support.
+  serves:
+  - b
+  - c
+  - d
+activities:
+- id: A1
+  title: Review technical needs and stakeholder requirements
+  description: >-
+    Analyze the stakeholder requirements together with the technical problem statement to find their implications
+    for data, resources, and the operational environment, and identify which expectations cannot be met
+    by a deterministic specification alone. Use the cost and resource constraints established for the
+    selected solution class as boundaries for the requirements that follow. Define the strategy that will
+    be used to identify, express, and manage the system requirements under the selected lifecycle model,
+    accepting that part of the requirement set will only become visible once an initial model exists.
+    Identify the enabling systems and tooling needed to record and maintain the requirements, since artifact
+    management platforms rarely cover this activity.
+- id: A2
+  title: Define functional behavior
+  description: >-
+    Describe how the system collects and processes data, trains models, and delivers outputs, expressing
+    the functional boundary in terms of the inputs it accepts and the responses it produces. Fix the output
+    specification of each Machine Learning component early so that the surrounding pipeline can be designed
+    independently of model development. Specify the level of autonomy of the system, stating which decisions
+    remain with a human operator and which thresholds that operator can adjust, and define the deterministic
+    fallback rules that apply when the model produces unexpected or out-of-range results.
+  primaryStudies:
+  - P4
+  - P8
+  - P9
+  - P11
+  - P18
+- id: A3
+  title: Identify data and information requirements
+  description: >-
+    Specify the data sources, storage, labeling, and quality criteria the system depends on, stating the
+    expected condition of the data through admissible feature values, accepted formats, and tolerated
+    proportions of missing values, with bounds set to admit plausible real-world observations while rejecting
+    the rest. Express these conditions as a schema so that later processes can verify incoming data against
+    them. Extend the specification to metadata, covering ownership, access rights, usage purpose, and
+    retention, and define the data structures and integration requirements needed for sources to be combined
+    coherently.
+  primaryStudies:
+  - P3
+  - P8
+  - P10
+  - P12
+  - P13
+- id: A4
+  title: Define performance and quality requirements
+  description: >-
+    Set measurable targets for accuracy, latency, robustness, and fairness, together with the input conditions
+    under which those targets are expected to hold, and state the metrics used to evaluate each one rather
+    than leaving their selection to later processes. Define the acceptable error budget and the classes
+    of error that carry the greatest operational impact. Complement predictive targets with quality attributes
+    such as explainability, scalability, and model complexity, and with resource constraints covering
+    inference hardware, computational budget, and the infrastructure the deployed system requires. Derive
+    from the cost and resource constraints a technical cost baseline for training and operation, against
+    which later design and verification decisions can be checked.
+  primaryStudies:
+  - P1
+  - P3
+  - P6
+  - P8
+  - P10
+  - P11
+  - P13
+- id: A5
+  title: Define architecture requirements
+  description: >-
+    Integrate the functional behavior, the data requirements, and the interface specifications into a
+    coherent description of what the architecture has to support. Identify how the system interacts with
+    APIs, users, and other components, specifying the data flows that connect Machine Learning components
+    to conventional software modules and the format in which predictions are exposed. Define the Service
+    Level Indicators that measure the technical aspects of the service, such as inference latency or request
+    throughput, and the Service Level Objectives that set their acceptable values, together with the availability,
+    access control, logging, and auditability expected of the serving interface, so that training and
+    serving code are developed against a shared specification and operations receive a verifiable baseline.
+- id: A6
+  title: Analyze and refine requirements
+  description: >-
+    Check the system requirements for consistency, feasibility, and verifiability, resolving conflicts
+    and trade-offs between predictive quality and the remaining quality attributes before development
+    proceeds. Consider risks such as data drift, distribution shift, and the divergence between training
+    and operational conditions, and confirm that the specification remains achievable under them. Plan
+    for controlled refinement of the requirement set as data and model requirements become clearer during
+    development, so that changes discovered through data handling are recorded.
+  primaryStudies:
+  - P2
+  - P7
+  - P8
+  - P11
+  - P12
+  - P13
+- id: A7
+  title: Establish traceability
+  description: >-
+    Create bidirectional links between stakeholder needs and system requirements, extending them to the
+    datasets, model versions, and verification methods through which each requirement will be demonstrated.
+    Record the rationale behind the requirement decisions and obtain explicit agreement on the resulting
+    baseline. Because the Machine Learning workflow provides no formal hierarchical decomposition of requirements,
+    and available tooling offers little support for this activity, establish traceability as an explicit
+    project agreement supported by provenance records rather than assuming it from the development infrastructure.
+  primaryStudies:
+  - P5
+  - P8
+  - P9
+  - P11
+changes:
+- annotation: A-09
+  text: Insufficient process inputs (e.g., context)
+  redVotes: 1
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: added
+    target: Input
+    text: Technical Problem Statement
+  - kind: added
+    target: Input
+    text: Cost and Resource Constraint Record
+- annotation: A-10
+  text: Training and operational costs as a process output
+  redVotes: 1
+  yellowVotes: 1
+  decision: partial
+  changes:
+  - kind: updated
+    target: A4
+    text: technical cost baseline
+  - kind: updated
+    target: Output
+    text: System Requirements Specification includes the cost baseline
+- annotation: A-11
+  text: The process name lacks an active verb
+  redVotes: 0
+  yellowVotes: 0
+  decision: rejected
+  changes:
+  - kind: updated
+    text: – (print error in the workshop materials)
+- annotation: A-12
+  text: The process lacks a technical perspective
+  redVotes: 1
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: updated
+    target: A1
+    text: Review technical needs and stakeholder requirements
+- annotation: A-13
+  text: Missing process output for A2
+  redVotes: 0
+  yellowVotes: 1
+  decision: rejected
+  changes: []
+- annotation: A-14
+  text: Delete A2
+  redVotes: 0
+  yellowVotes: 0
+  decision: rejected
+  changes: []
+- annotation: A-15
+  text: Consolidate A2, A3, and A5 into a single activity
+  redVotes: 0
+  yellowVotes: 2
+  decision: partial
+  changes:
+  - kind: updated
+    target: A5
+    text: Define architecture requirements
+  - kind: added
+    target: Output
+    text: Architecture Requirements Specification
+- annotation: A-16
+  text: >-
+    Redundancy between A3 of the *Stakeholder Needs and Requirements Definition Process* and A6 of the
+    *System Requirements Definition Process*
+  redVotes: 0
+  yellowVotes: 0
+  decision: partial
+  changes:
+  - kind: updated
+    target: A6
+    text: scope limited to system requirements
+- annotation: A-17
+  text: >-
+    Feedback on system requirements (Chief Technology Officer, CTO, to Operations transition)
+  redVotes: 2
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: updated
+    target: A5
+    text: >-
+      Service Level Indicators (SLIs) and Service Level Objectives (SLOs) as an operational baseline
+- annotation: A-18
+  raisedElsewhere: true
+  text: Missing Service Level Agreements
+  redVotes: 0
+  yellowVotes: 0
+  decision: partial
+  changes:
+  - kind: updated
+    text: A5 defines the SLIs and SLOs the architecture has to support
+  - kind: added
+    target: Output
+    text: Architecture Requirements Specification

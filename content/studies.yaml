@@ -1,0 +1,116 @@
+studies:
+- id: P1
+  title: 'The Machine Learning life cycle and the cloud: implications for drug discovery'
+  year: 2021
+  source: Google Scholar
+  type: journal
+  reference: spjuth2021-P1
+- id: P2
+  title: >-
+    Making Sense of Developing Artificial Intelligence-Based System in Software Development Life Cycle
+    Manner and Addressing Risk Factors
+  year: 2023
+  source: IEEE Xplore
+  type: conference
+  reference: maady2023-P2
+- id: P3
+  title: >-
+    A Survey of Privacy Risks and Mitigation Strategies in the Artificial Intelligence Life Cycle
+  year: 2023
+  source: IEEE Xplore
+  type: journal
+  reference: shahriar2023-P3
+- id: P4
+  title: 'Software Engineering for Machine Learning: A Case Study'
+  year: 2019
+  source: Snowballing
+  type: conference
+  reference: amershiSE4ML2019-P4
+- id: P5
+  title: >-
+    Provenance Data in the Machine Learning Lifecycle in Computational Science and Engineering
+  year: 2019
+  source: IEEE Xplore
+  type: conference
+  reference: souza2019-P5
+- id: P6
+  title: Machine Learning application lifecycle augmented with explanation and security
+  year: 2021
+  source: IEEE Xplore
+  type: conference
+  reference: das2021-P6
+- id: P7
+  title: Comparative Evaluation of Machine Learning Development Lifecycle Tools
+  year: 2022
+  source: IEEE Xplore
+  type: conference
+  reference: prasad2022-P7
+- id: P8
+  title: 'Assuring the Machine Learning lifecycle: Desiderata, methods, and challenges'
+  year: 2021
+  source: ACM Portal
+  type: journal
+  reference: ashmore2021-P8
+- id: P9
+  title: 'Management of Machine Learning lifecycle artifacts: A survey'
+  year: 2023
+  source: ACM Portal
+  type: journal
+  reference: schlegel2023-P9
+- id: P10
+  title: 'Characterizing Machine Learning processes: A maturity framework'
+  year: 2020
+  source: Snowballing
+  type: conference
+  reference: akkiraju2020-P10
+- id: P11
+  title: AI lifecycle models need to be revised
+  year: 2021
+  source: Springer Link
+  type: journal
+  reference: haakman2021-P11
+- id: P12
+  title: >-
+    Understanding Development Process of Machine Learning Systems: Challenges and Solutions
+  year: 2019
+  source: Snowballing
+  type: conference
+  reference: nascimento2019-P12
+- id: P13
+  title: >-
+    Towards CRISP-ML(Q): A Machine Learning Process Model with Quality Assurance Methodology
+  year: 2021
+  source: Snowballing
+  type: journal
+  reference: studerCRISPMLQ2021-P13
+- id: P14
+  title: 'CRISP-DM 1.0: Step-by-step data mining guide'
+  year: 2000
+  source: Snowballing
+  type: journal
+  reference: CRISP-DM-P14
+- id: P15
+  title: What is the Team Data Science Process?
+  year: 2016
+  source: Snowballing
+  type: online
+  reference: TDSP-P15
+- id: P16
+  title: 'An Artificial Intelligence Life Cycle: From Conception to Production'
+  year: 2022
+  source: Snowballing
+  type: journal
+  reference: desilva2022-P16
+- id: P17
+  title: 'Data Lifecycle Challenges in Production Machine Learning: A Survey'
+  year: 2018
+  source: ACM Portal
+  type: journal
+  reference: polyzotis2018-P17
+- id: P18
+  title: >-
+    An Agile Software Development Life Cycle Model for Machine Learning Application Development
+  year: 2021
+  source: IEEE Xplore
+  type: conference
+  reference: ranawana2021-P18

@@ -1,0 +1,139 @@
+id: P06
+number: 6
+origin: standards-only
+name: System Analysis Process
+purpose: >-
+  The purpose of the *System Analysis Process* is to transform system requirements into an analytical
+  understanding of the system to support architectural and design decisions. It identifies how the system
+  will fulfill its functions and quality characteristics by analyzing the operational context, constraints,
+  interactions, specific ML data dependencies, and the trade-offs between alternative technical approaches.
+outcomes:
+- id: a
+  text: >-
+    Identified and documented system elements, interactions, constraints, and the data dependencies between
+    them.
+- id: b
+  text: >-
+    Produced analytical models, data-flow diagrams, trade-off studies, and risk assessments.
+- id: c
+  text: >-
+    Established relationships between requirements, analytical findings, and architectural decisions.
+inputs:
+- workProduct: system-requirements-specification
+  name: System Requirements Specification
+  description: >-
+    The functional, performance, and quality requirements of the system and its technical cost baseline.
+  serves:
+  - a
+  - b
+  - c
+- workProduct: data-requirements-specification
+  name: Data Requirements Specification
+  description: >-
+    The expected values, formats, quality, and metadata of the data the system needs.
+  serves:
+  - a
+  - b
+outputs:
+- workProduct: system-analysis-report
+  name: System Analysis Report
+  description: >-
+    The analytical models, data-flow diagrams, data-dependency chains, trade-off studies, and risk assessments
+    that support design decisions.
+  serves:
+  - a
+  - b
+  - c
+activities:
+- id: A1
+  title: Review requirements and operational environment
+  description: >-
+    Identify functional and non-functional aspects that drive architectural choices, and state as an explicit
+    question the problem each analysis is meant to resolve, so that its objectives and the expected utility
+    of its result are fixed before any method is applied. This evaluation checks whether conflicting stakeholder
+    expectations, data availability limits, and deployment boundaries have been identified and resolved
+    early in the lifecycle. Select which characteristics warrant analysis by weighing the severity of
+    the associated risk against its probability rather than analyzing every characteristic uniformly.
+  primaryStudies:
+  - P8
+  - P10
+  - P13
+  literature:
+  - siebert2022
+  - nahar2022
+- id: A2
+  title: Decompose system into logical elements
+  description: >-
+    Break the system into logical elements, distinguishing between traditional software components and
+    ML elements such as data ingestion, training pipelines, and inference services. By isolating ML modules
+    from deterministic application logic, engineering teams can analyze individual subsystem boundaries
+    and dependencies, while accounting for the entanglement and eroded boundaries that prevent Machine
+    Learning components from being analyzed in full isolation. Direct the effort toward the sensitivity
+    points, and scale the depth of each analysis to the criticality of the decision it supports and the
+    complexity of the element concerned.
+  primaryStudies:
+  - P4
+  - P8
+  literature:
+  - sculleyHiddenTechnicalDebt2015
+  - kazman1998
+- id: A3
+  title: Model system dynamics and interactions
+  description: >-
+    Represent how data, control, and feedback mechanisms interact through the system, including model
+    interactions and retraining triggers. Identify the data-dependency chains along which a change in
+    one element propagates to others, and the points where data dependencies or stochastic outputs may
+    affect the stability of the system. Behavioral modeling examines how prediction outputs flow into
+    application workflows and how continuous feedback loops operate over time, including those through
+    which a deployed system shapes the data it will later be trained on.
+  primaryStudies:
+  - P13
+- id: A4
+  title: Perform trade-off and impact analysis
+  description: >-
+    Assess alternative approaches regarding model complexity, predictive performance, explainability,
+    resource consumption, and operational cost, using the technical cost baseline defined in the system
+    requirements. This analysis weighs competing system qualities, such as balancing model accuracy against
+    computational efficiency, latency, and interpretability requirements, identifying the elements that
+    affect several qualities at once so that the cost of favoring one is made evident. Fix and justify
+    the criterion by which each quality is measured before the comparison is made, since for contested
+    properties such as fairness the choice of definition determines the outcome. Review the results for
+    validity with the relevant experts, record the conclusions and recommendations, and maintain traceability
+    between each result and the requirement it comes from.
+  primaryStudies:
+  - P3
+  - P9
+  - P13
+  - P16
+  - P17
+  literature:
+  - kazman1998
+  - siebert2022
+changes:
+- annotation: A-22
+  text: The definition of outcomes, activities, and inputs is too abstract
+  redVotes: 1
+  yellowVotes: 0
+  decision: partial
+  changes:
+  - kind: added
+    target: Input
+    text: Data Requirements Specification
+  - kind: updated
+    target: Purpose
+    text: includes the trade-offs between technical approaches
+  - kind: updated
+    target: Outcomes (a) and (b)
+    text: data dependencies and trade-off studies
+  - kind: updated
+    target: A2
+    text: names the Machine Learning elements
+  - kind: updated
+    target: A3
+    text: data-dependency chains and stability
+  - kind: updated
+    target: A4
+    text: model complexity and operational cost
+  - kind: updated
+    target: Output
+    text: System Analysis Report contents

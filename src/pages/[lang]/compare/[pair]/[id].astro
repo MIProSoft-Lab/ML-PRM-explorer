@@ -1,0 +1,158 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { getProcess, processIds } from '../../../../lib/content';
+import { diffProcess, wordDiff, type Pair } from '../../../../lib/diff';
+import { compareProcessPaths } from '../../../../lib/paths';
+import { escapeHtml, plain } from '../../../../lib/text';
+import { useTranslations, href, type Locale } from '../../../../i18n/ui';
+
+export const getStaticPaths = compareProcessPaths;
+const { locale, from, to, slug } = Astro.props as { locale: Locale; from: string; to: string; slug: string };
+const { id } = Astro.params as { id: string };
+const t = useTranslations(locale);
+
+const a = processIds(from).includes(id) ? getProcess(from, id, locale) : undefined;
+const b = processIds(to).includes(id) ? getProcess(to, id, locale) : undefined;
+const empty = { ...(b ?? a)!.data, purpose: '', outcomes: [], inputs: [], outputs: [], activities: [] };
+const d = diffProcess(a?.data ?? empty, b?.data ?? empty);
+const translated = (a?.translated ?? true) && (b?.translated ?? true);
+const name = (b ?? a)!.data.name;
+
+// Render one side or the diff of a pair as HTML.
+function render<T>(p: Pair<T>, text: (x: T) => string) {
+  if (p.status === 'added') return `<ins>${escapeHtml(plain(text(p.to!)))}</ins>`;
+  if (p.status === 'removed') return `<del>${escapeHtml(plain(text(p.from!)))}</del>`;
+  if (p.status === 'same') return escapeHtml(plain(text(p.to!)));
+  return wordDiff(text(p.from!), text(p.to!));
+}
+
+const ioText = (io: { name: string; description: string; serves: string[] }) =>
+  `${io.name}: ${io.description}${io.serves.length ? ` (${io.serves.join(', ')})` : ''}`;
+const sections = [
+  { key: 'outcomes', pairs: d.outcomes, label: (x: any) => `(${x.id})`, text: (x: any) => x.text },
+  { key: 'inputs', pairs: d.inputs, label: () => '', text: ioText },
+  { key: 'outputs', pairs: d.outputs, label: () => '', text: ioText },
+  { key: 'activities', pairs: d.activities, label: (x: any) => x.id, text: (x: any) => `${x.title}. ${x.description}` },
+] as const;
+const changes = b?.data.changes ?? [];
+---
+
+<Layout locale={locale} title={`${name} · ${from} → ${to}`} section="compare" translated={translated}>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href={href(locale, 'compare', slug)}>{t('compare.title')} {from} → {to}</a> / {id}
+  </nav>
+  <h1><span class="pid">{id}</span> {name}</h1>
+  <p class="links small">
+    {a && <a href={href(locale, from, 'processes', id)}>{from}</a>}
+    {a && b && ' · '}
+    {b && <a href={href(locale, to, 'processes', id)}>{to}</a>}
+    {changes.length > 0 && <> · <a href={`${href(locale, to, 'processes', id)}#changes`}>{changes.length} {t('compare.annotations')}</a></>}
+  </p>
+  <p class="legend small">
+    <span><ins>{t('change.added')}</ins></span>
+    <span><del>{t('change.removed')}</del></span>
+  </p>
+
+  <label class="show-same no-print small"><input type="checkbox" id="show-same" /> {t('compare.showUnchanged')}</label>
+
+  <section class:list={['diff-section', { same: d.purpose === 'same' }]}>
+    <h2>{t('process.purpose')}</h2>
+    <p class="prose" set:html={d.purpose === 'same' ? escapeHtml(plain(b?.data.purpose ?? '')) : wordDiff(a?.data.purpose ?? '', b?.data.purpose ?? '')} />
+  </section>
+
+  {
+    sections.map((s) => {
+      const allSame = s.pairs.every((p) => p.status === 'same');
+      return (
+        <section class:list={['diff-section', { same: allSame }]}>
+          <h2>{t(`process.${s.key}`)}</h2>
+          <ul class="pairs">
+            {s.pairs.map((p) => {
+              const item = (p.to ?? p.from) as any;
+              const fromLabel = p.from ? s.label(p.from as any) : '';
+              const toLabel = p.to ? s.label(p.to as any) : '';
+              return (
+                <li class:list={[`status-${p.status}`, { same: p.status === 'same' }]}>
+                  {(fromLabel || toLabel) && (
+                    <span class="label">{fromLabel && toLabel && fromLabel !== toLabel ? `${fromLabel} → ${toLabel}` : toLabel || fromLabel}</span>
+                  )}
+                  <span class="text" set:html={render(p, s.text as any)} />
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      );
+    })
+  }
+</Layout>
+
+<script>
+  const box = document.querySelector<HTMLInputElement>('#show-same')!;
+  const apply = () => document.body.classList.toggle('show-same', box.checked);
+  box.addEventListener('change', apply);
+  apply();
+</script>
+
+<style>
+  .pid {
+    font-family: var(--mono);
+    font-size: 0.7em;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .legend {
+    gap: 12px;
+  }
+
+  .show-same {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    margin: 8px 0;
+    color: var(--muted);
+  }
+
+  :global(body:not(.show-same)) .same {
+    display: none !important;
+  }
+
+  .pairs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+    max-width: 900px;
+  }
+
+  .pairs li {
+    display: grid;
+    grid-template-columns: 4.5em 1fr;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+
+  .pairs li.status-same {
+    color: var(--muted);
+  }
+
+  .label {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding-top: 2px;
+  }
+
+  .pairs li:not(:has(.label)) {
+    grid-template-columns: 1fr;
+  }
+
+  .text {
+    line-height: 1.65;
+  }
+</style>

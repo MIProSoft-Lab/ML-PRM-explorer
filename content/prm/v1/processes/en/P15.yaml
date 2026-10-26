@@ -1,0 +1,131 @@
+id: P15
+number: 15
+origin: decomposed
+name: Model Training Process
+purpose: >-
+  The purpose of the *Model Training Process* is to instantiate selected modeling techniques and fit them
+  to the prepared datasets. It applies models to the training set in a controlled manner to create an
+  artifact that is reproducible, transparent, and ready for evaluation.
+outcomes:
+- id: a
+  text: >-
+    A dataset partitioned into training, test, and validation sets to prevent data leakage.
+- id: b
+  text: Instances of the selected modeling techniques trained on the prepared data.
+- id: c
+  text: A record of training configurations, including hyperparameters and random seeds.
+- id: d
+  text: Interpretability and transparency measures incorporated into the models.
+- id: e
+  text: A Model Training Record summarizing procedures and results.
+- id: f
+  text: Trained models and metadata stored for evaluation.
+inputs:
+- workProduct: model-selection-record
+  name: Model Selection Record
+  description: The techniques selected for training.
+  serves:
+  - b
+- workProduct: labeled-dataset
+  name: Labeled Dataset
+  description: The labeled and processed dataset.
+  serves:
+  - a
+  - b
+- workProduct: optimized-model-configuration
+  name: Optimized Model Configuration
+  description: The configuration for a new version of the model.
+  serves:
+  - b
+  - c
+  optional: true
+outputs:
+- workProduct: model-artifact
+  name: Model Artifact
+  description: The fitted model, with its transparency measures.
+  serves:
+  - b
+  - d
+  - f
+- workProduct: dataset-partitions
+  name: Dataset Partitions
+  description: The training, validation, and test sets.
+  serves:
+  - a
+  - f
+- workProduct: model-training-record
+  name: Model Training Record
+  description: The configurations, random seeds, procedures, and results of training.
+  serves:
+  - c
+  - d
+  - e
+  - f
+activities:
+- id: A1
+  title: Create data splits
+  description: >-
+    Partition data into training and test sets (and optionally validation sets), using a holdout or a
+    train, validation, and test split, or cross-validation for smaller datasets. Hold back a test set
+    disjoint from the training and validation sets for the final evaluation, and consider using stratified
+    sampling when class are unbalanced or the balance is important.
+  primaryStudies:
+  - P3
+  - P13
+  - P14
+  - P15
+  - P16
+- id: A2
+  title: Initialize and fit model
+  description: >-
+    Instantiate algorithms and minimize loss functions on the training set, aligning the objective with
+    the business success criteria and applying regularization to prevent overfitting while avoiding underfitting.
+    Record the parameter settings with the rationale for each choice, describe the resulting model and
+    any difficulties in interpreting it, and fit the model again with the Optimized Model Configuration
+    where a new version is required.
+  primaryStudies:
+  - P3
+  - P13
+  - P14
+- id: A3
+  title: Improve transparency
+  description: >-
+    Use interpretable models or explainability techniques, adding intrinsic or extrinsic explanation methods
+    where the selected technique is not interpretable by itself. Weigh model-agnostic against model-specific
+    methods, consider using the explanations to refine the model, and select methods that do not compromise
+    privacy.
+  primaryStudies:
+  - P3
+  - P6
+  - P8
+  - P16
+- id: A4
+  title: Document configuration
+  description: >-
+    Record hyperparameter settings, random seeds, the algorithm, the dataset, and the runtime environment,
+    including software versions and hardware.
+  primaryStudies:
+  - P8
+  - P13
+- id: A5
+  title: Store model and records
+  description: >-
+    Store the Model Artifact and the Dataset Partitions along with the Model Training Record in a controlled
+    location under configuration management, versioning the training data, settings, and code together,
+    recording any anomalies, and keeping each model traceable to the dataset records it was built from.
+  primaryStudies:
+  - P9
+  - P10
+standards:
+- standard: ISO/IEC/IEEE 12207
+  activity: a) Prepare for implementation
+  standardProcess: Implementation Process
+- standard: ISO/IEC/IEEE 12207
+  activity: b) Perform implementation
+  standardProcess: Implementation Process
+- standard: ISO/IEC/IEEE 12207
+  activity: c) Manage results of implementation
+  standardProcess: Implementation Process
+- standard: ISO/IEC 5338
+  activity: b) Model training
+  standardProcess: Implementation Process

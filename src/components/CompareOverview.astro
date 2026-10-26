@@ -1,0 +1,130 @@
+---
+import { getProcess, processIds } from '../lib/content';
+import { diffProcess } from '../lib/diff';
+import { versionPairs } from '../lib/paths';
+import { useTranslations, href, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  from: string;
+  to: string;
+}
+
+const { locale, from, to } = Astro.props;
+const t = useTranslations(locale);
+const pairs = versionPairs();
+const slug = `${from}-vs-${to}`;
+const ids = [...new Set([...processIds(from), ...processIds(to)])].sort();
+const rows = ids.map((id) => {
+  const inFrom = processIds(from).includes(id);
+  const inTo = processIds(to).includes(id);
+  const a = inFrom ? getProcess(from, id, locale).data : undefined;
+  const b = inTo ? getProcess(to, id, locale).data : undefined;
+  const d = a && b ? diffProcess(a, b) : undefined;
+  return { id, name: (b ?? a)!.name, inFrom, inTo, d, annotations: b?.changes?.length ?? 0 };
+});
+---
+
+<h1>{t('compare.title')}</h1>
+<p class="muted prose">{t('compare.intro')}</p>
+
+{
+  pairs.length > 1 && (
+    <nav class="pills pair-nav" aria-label={t('compare.title')}>
+      {pairs.map((p) => (
+        <a href={href(locale, 'compare', p.slug)} aria-current={p.slug === slug ? 'page' : undefined}>
+          {p.from} → {p.to}
+        </a>
+      ))}
+    </nav>
+  )
+}
+
+<ul class="overview">
+  {
+    rows.map((r) => (
+      <li>
+        <a class="card row" href={href(locale, 'compare', slug, r.id)}>
+          <span class="num">{r.id}</span>
+          <span class="name">{r.name}</span>
+          <span class="summary small">
+            {!r.inFrom && <span class="badge add">{t('compare.added', { version: to })}</span>}
+            {!r.inTo && <span class="badge del">{t('compare.removed', { version: to })}</span>}
+            {r.d && !r.d.changed && <span class="muted">{t('compare.unchanged')}</span>}
+            {r.d?.counts.added ? <span class="badge add">+{r.d.counts.added}</span> : null}
+            {r.d?.counts.removed ? <span class="badge del">−{r.d.counts.removed}</span> : null}
+            {r.d?.counts.changed ? (
+              <span class="badge">
+                ~{r.d.counts.changed} {t('compare.changedFields')}
+              </span>
+            ) : null}
+            {r.annotations > 0 && (
+              <span class="muted">
+                · {r.annotations} {t('compare.annotations')}
+              </span>
+            )}
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .pair-nav {
+    margin: 8px 0 16px;
+  }
+
+  .overview {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    max-width: 900px;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    padding: 10px 14px;
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: none;
+  }
+
+  .row:hover {
+    border-color: var(--accent);
+  }
+
+  .num {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .name {
+    font-weight: 600;
+    flex: 1 1 260px;
+  }
+
+  .summary {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .add {
+    background: var(--ins-bg);
+    color: var(--ins-text);
+    border-color: transparent;
+  }
+
+  .del {
+    background: var(--del-bg);
+    color: var(--del-text);
+    border-color: transparent;
+  }
+</style>

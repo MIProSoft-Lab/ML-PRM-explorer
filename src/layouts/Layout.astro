@@ -1,0 +1,129 @@
+---
+import '../styles/global.css';
+import { site, pick, validate, versions, defaultVersion } from '../lib/content';
+import { useTranslations, languageNames, languageIn, locales, href, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  section?: 'processes' | 'workProducts' | 'lifecycles' | 'tailor' | 'compare' | 'references';
+  /** Current PRM version and where each version's equivalent page lives. */
+  version?: string;
+  versionLinks?: Record<string, string>;
+  /** False when the page shows English text in place of a missing translation. */
+  translated?: boolean;
+}
+
+const { locale, title, description, section, version, versionLinks, translated = true } = Astro.props;
+const t = useTranslations(locale);
+const siteTitle = pick(site.title, locale);
+const pageTitle = title ? `${title} · ${siteTitle}` : siteTitle;
+
+// Fail the build on broken cross-references, once per build.
+const errors = (globalThis as any).__prmValidation ??= validate();
+if (errors.length) throw new Error(`Content errors:\n${errors.join('\n')}`);
+
+// Same page in the other languages.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const rest = Astro.url.pathname.slice(base.length).split('/').slice(2).join('/');
+const languageLinks = locales.map((l) => ({ locale: l, href: `${base}/${l}/${rest}` }));
+
+const navVersion = version ?? defaultVersion;
+const nav = [
+  ['processes', href(locale, navVersion)],
+  ['workProducts', href(locale, navVersion, 'work-products')],
+  ['lifecycles', href(locale, 'lifecycles')],
+  ['tailor', href(locale, 'tailor')],
+  ['compare', href(locale, 'compare')],
+  ['references', href(locale, 'references')],
+] as const;
+const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env.PUBLIC_REPO}` : undefined;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description ?? pick(site.intro, locale)} />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    {languageLinks.map((l) => <link rel="alternate" hreflang={l.locale} href={l.href} />)}
+  </head>
+  <body>
+    <a class="skip" href="#main">{t('nav.skip')}</a>
+    <header class="site-header">
+      <div class="container bar">
+        <a class="brand" href={href(locale)}>
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+            <rect x="1" y="1" width="7" height="7" rx="2" fill="var(--origin-sl-bg)" />
+            <rect x="10" y="1" width="7" height="7" rx="2" fill="var(--origin-dec-bg)" />
+            <rect x="19" y="1" width="7" height="7" rx="2" fill="var(--origin-so-bg)" />
+            <rect x="1" y="10" width="7" height="7" rx="2" fill="var(--origin-so-bg)" />
+            <rect x="10" y="10" width="7" height="7" rx="2" fill="var(--origin-dec-bg)" />
+            <rect x="19" y="10" width="7" height="7" rx="2" fill="var(--origin-sl-bg)" />
+            <rect x="1" y="19" width="7" height="7" rx="2" fill="var(--origin-dec-bg)" />
+            <rect x="10" y="19" width="7" height="7" rx="2" fill="var(--origin-sl-bg)" />
+          </svg>
+          <span>{siteTitle}</span>
+        </a>
+        <div class="switchers">
+          {
+            version && versionLinks && (
+              <nav class="pills" aria-label={t('nav.version')}>
+                {versions.map((v) =>
+                  versionLinks[v.id] ? (
+                    <a href={versionLinks[v.id]} aria-current={v.id === version ? 'true' : undefined}>
+                      {v.id}
+                    </a>
+                  ) : null,
+                )}
+              </nav>
+            )
+          }
+          <nav class="pills" aria-label={t('nav.language')}>
+            {
+              languageLinks.map((l) => (
+                <a href={l.href} hreflang={l.locale} lang={l.locale} title={languageNames[l.locale]} aria-current={l.locale === locale ? 'true' : undefined}>
+                  {l.locale.toUpperCase()}
+                </a>
+              ))
+            }
+          </nav>
+        </div>
+      </div>
+      <nav class="main-nav" aria-label="Main">
+        <div class="container">
+          <ul>
+            {
+              nav.map(([key, url]) => (
+                <li>
+                  <a href={url} aria-current={section === key ? 'page' : undefined}>
+                    {t(`nav.${key}`)}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </nav>
+    </header>
+    <main id="main">
+      <div class="container">
+        {!translated && <p class="notice">{t('i18n.untranslated', { language: languageIn(locale, locale) })}</p>}
+        <slot />
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <span>{t('footer.thesis')} · {site.author}{site.institution && ` · ${site.institution}`}</span>
+        <span>
+          {repo && <a href={repo}>{t('footer.source')}</a>}
+          {repo && ' · '}
+          <a href={`${base}/admin/`}>{t('nav.admin')}</a>
+        </span>
+      </div>
+    </footer>
+  </body>
+</html>

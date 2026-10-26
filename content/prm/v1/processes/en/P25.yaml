@@ -1,0 +1,131 @@
+id: P25
+number: 25
+origin: standards-only
+name: Disposal Process
+purpose: >-
+  The purpose of the *Disposal Process* is to define the activities for when a Machine Learning system
+  or model reaches the end of its life. It manages the orderly removal of models and artifacts from production
+  while ensuring traceability, compliance, and the preservation of knowledge.
+outcomes:
+- id: a
+  text: Identified and documented decommissioning triggers and scope.
+- id: b
+  text: Securely deactivated prediction services and infrastructure.
+- id: c
+  text: Archived or securely deleted model artifacts according to policy.
+- id: d
+  text: Preserved provenance metadata and logs for auditability.
+- id: e
+  text: Retained documentation and artifacts for future reproducibility.
+- id: f
+  text: Released resources and concluded technical ownership.
+inputs:
+- workProduct: integrated-system
+  name: Integrated System
+  description: The operational components to decommission.
+  serves:
+  - a
+  - b
+  - f
+- workProduct: system-architecture-documentation
+  name: System Architecture Documentation
+  description: Deployment and data structure to plan the retirement.
+  serves:
+  - a
+  - b
+  - c
+outputs:
+- workProduct: decommissioning-record
+  name: Decommissioning Record
+  description: Triggers, scope, dispositions, and actions taken.
+  serves:
+  - a
+  - b
+  - f
+- workProduct: archived-assets
+  name: Archived Assets
+  description: Data, model artifacts, lineage, and logs kept for reference or audit.
+  serves:
+  - c
+  - d
+  - e
+activities:
+- id: A1
+  title: Identify decommissioning triggers
+  description: >-
+    Determine the reasons for retiring the model or system, whether they arise from a replacement, a loss
+    of fitness for purpose, a change in the problem or environment, or the end of the need it served.
+    Establish the scope of the retirement, including every element that exists only to support the retired
+    model, and identify whether the retirement affects a single model version or the system as a whole.
+    Assign the responsibilities for the decommissioning and for the retention or destruction of data and
+    intellectual property, and identify the stakeholders that have to be informed.
+  primaryStudies:
+  - P1
+  - P14
+  - P16
+- id: A2
+  title: Plan decommissioning
+  description: >-
+    Define the sequence of actions required to withdraw the model from use, according to the way it was
+    deployed and to the dependencies recorded in the architecture and deployment documentation. Identify
+    every system and stakeholder that depends on the outputs of the model, including those whose dependency
+    is not formally declared, and notify them with sufficient time to adapt.
+  primaryStudies:
+  - P8
+  - P9
+  literature:
+  - sculleyHiddenTechnicalDebt2015
+- id: A3
+  title: Manage data and artifacts
+  description: >-
+    Decide the disposition of each dataset, model, and associated artifact, choosing between reuse, archiving,
+    or destruction according to the applicable retention requirements, legal obligations, and organizational
+    policies. Complete archiving before releasing the infrastructure that holds the assets, and preserve
+    their integrity and metadata in storage. Where data is to be destroyed, extend the destruction to
+    every copy, including backups and data held by third parties, and assess the models trained on that
+    data so that its effect is handled consistently.
+  primaryStudies:
+  - P3
+  - P9
+  - P10
+  literature:
+  - breckMLTestScore2017
+- id: A4
+  title: Preserve knowledge
+  description: >-
+    Retain the information needed to understand, reproduce, or reuse the retired model, including its
+    documentation, evaluation results, and data and configuration lineage, even when the underlying data
+    cannot be kept. Record the operating knowledge and project experience of the people involved, so that
+    it can inform similar systems in the future. Consider whether the retired model or its components
+    can serve as the basis for a successor, and whether the intellectual property it represents requires
+    protection.
+  primaryStudies:
+  - P4
+  - P14
+  - P16
+- id: A5
+  title: Document decommissioning
+  description: >-
+    Record in the Decommissioning Record the triggers, scope, and actions taken, the disposition of each
+    asset with the requirement that justified it, the stakeholders and dependent systems that were notified,
+    and the release of resources and ownership. Confirm that the safety, security, and privacy concerns
+    associated with the retirement have been addressed, and keep the record available for as long as the
+    retired model or its data may be subject to audit or inquiry.
+  primaryStudies:
+  - P3
+standards:
+- standard: ''
+  activity: a) Prepare for disposal
+  prmActivity: A1
+- standard: ''
+  activity: a) Prepare for disposal
+  prmActivity: A2
+- standard: ''
+  activity: b) Perform disposal
+  prmActivity: A3
+- standard: ''
+  activity: b) Perform disposal
+  prmActivity: A4
+- standard: ''
+  activity: c) Finalize the disposal
+  prmActivity: A5

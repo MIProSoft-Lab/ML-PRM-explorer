@@ -1,0 +1,182 @@
+id: P10
+number: 10
+origin: decomposed
+name: Exploratory Data Analysis Process
+purpose: >-
+  The purpose of the *Exploratory Data Analysis Process* is to characterize the collected data and determine
+  whether it is fit for the objectives of the project before any transformation is applied to it. This
+  process establishes what the data contains, how it is structured and distributed, and which defects,
+  latent risks, and relationships are relevant to the processes that follow, and serves as the decision
+  point at which the project proceeds with the available data, returns to the collection of data, or is
+  re-scoped.
+outcomes:
+- id: a
+  text: Identified statistical and structural characteristics of the dataset.
+- id: b
+  text: Detected issues such as missing values, outliers, or inconsistencies.
+- id: c
+  text: Identified quality risks and data smells.
+- id: d
+  text: Documented findings on patterns and relationships.
+- id: e
+  text: Produced an Exploratory Data Analysis Report and a Data Quality Report.
+- id: f
+  text: Established traceability between profiling results and future cleaning actions.
+inputs:
+- workProduct: raw-dataset
+  name: Raw Dataset
+  description: The data collected in the staging area.
+  serves:
+  - a
+  - b
+  - c
+  - d
+outputs:
+- workProduct: exploratory-data-analysis-report
+  name: Exploratory Data Analysis Report
+  description: >-
+    The statistical characteristics, visualizations, patterns, and relationships found in the data.
+  serves:
+  - a
+  - d
+  - e
+- workProduct: data-quality-report
+  name: Data Quality Report
+  description: >-
+    The defects, missing values, outliers, and data smells found, each linked to the check that detected
+    it.
+  serves:
+  - b
+  - c
+  - e
+  - f
+activities:
+- id: A1
+  title: Perform data profiling
+  description: >-
+    Compute statistics such as counts, means, and data types. Perform a volumetric analysis of the tables
+    and their relations, and compute for each attribute its type, value range, and distribution statistics,
+    including average, minimum, maximum, standard deviation, variance, mode, and skewness, relating each
+    result to the meaning of the attribute in domain terms and to its relevance for the project goals.
+    Confirm that the data has the expected shape before any model is trained, checking that continuous
+    features have plausible ranges and most common values, that categorical features draw on their expected
+    domain, that each feature is present in enough examples, and that each entity has the expected number
+    of values. Describe the data on a meta-level as well, expanding its format, units, and meaning with
+    domain knowledge.
+  primaryStudies:
+  - P13
+  - P14
+  - P17
+  literature:
+  - foidlDataSmellsCategories2022
+  - wongsuphasawatGoalsProcessChallenges2019
+- id: A2
+  title: Visualize data
+  description: >-
+    Use charts to inspect distributions, trends, and patterns, and to check whether features were measured
+    consistently, whether the data was collected consistently over the period of interest or contains
+    blocks of missing observations, and whether an attribute shows inconsistencies that its summary statistics
+    hide. Produce a standard summary view for every variable before writing custom exploration, report
+    missing values next to each chart since plotting tools may drop them without notice, and account for
+    the risk of false discoveries when many views are inspected.
+  primaryStudies:
+  - P14
+  - P15
+  - P16
+  - P17
+  literature:
+  - wongsuphasawatGoalsProcessChallenges2019
+- id: A3
+  title: Analyze feature relationships
+  description: >-
+    Examine correlations and interactions between variables, and between each variable and the target,
+    ranking the variables by the strength of that relationship. Check attributes for linear, cyclic, probabilistic,
+    and differential relationships, identify multicollinear and redundant attributes, and characterize
+    the sub-populations relevant to the goal. Treat an unexpectedly strong relationship between a feature
+    and the target as a possible sign of leakage, and have a domain expert review relationships that may
+    be spurious. Record the findings as hypotheses for later processes rather than removing variables
+    at this stage.
+  primaryStudies:
+  - P8
+  - P13
+  - P14
+  - P15
+  - P16
+  literature:
+  - wongsuphasawatGoalsProcessChallenges2019
+  - recupitoUnmaskingDataSecrets2024
+- id: A4
+  title: Detect outliers and anomalies
+  description: >-
+    Flag values that deviate significantly from expected norms, selecting the detection method according
+    to the type of relationship present in the data. For each flagged value, record whether it more likely
+    reflects noise, an entry or measurement error, or a genuine but rare phenomenon, and review values
+    that conflict with domain common sense. Extend the search to regions of the input space, such as isolated
+    regions containing a single class or features concentrated in a narrow range.
+  primaryStudies:
+  - P8
+  - P14
+  - P16
+  literature:
+  - murainaNecessityExploratoryData2023
+  - wongsuphasawatGoalsProcessChallenges2019
+  - recupitoUnmaskingDataSecrets2024
+- id: A5
+  title: Verify data type and structure
+  description: >-
+    Check whether features match the expected formats and validate assumptions against the data requirements
+    and the data dictionary, covering expected ranges or value lists, accepted formats, and the maximum
+    proportion of missing values, and treat non-conforming records as anomalies. Check keys and their
+    overlap across tables, coverage of the expected values, blank fields and the meaning given to missing
+    values, special values used as codes, and, for flat files, the delimiter and the number of fields
+    per record. Verify types explicitly, and check the structure for missing identifiers, repeated attributes,
+    and incompatible types.
+  primaryStudies:
+  - P14
+  - P15
+  literature:
+  - foidlDataSmellsCategories2022
+- id: A6
+  title: Identify data smells
+  description: >-
+    Look for heuristic patterns, such as imbalanced classes, that signal risks, covering believability,
+    understandability, consistency, redundancy, and distribution smells such as dummy values, numbers
+    encoded as strings, ambiguous date formats, inconsistent casing or abbreviations, correlated features,
+    unique identifiers, extreme values, circular domains represented as linear, and sensitive features.
+    Compute the smell density of each attribute to prioritize attention, and run the detection offline
+    rather than inside production data validation. Compare the class and feature balance with the balance
+    expected in production while retaining edge cases, and check for bias with respect to protected attributes
+    and their proxies and for signs of poisoned data.
+  primaryStudies:
+  - P3
+  - P8
+  literature:
+  - foidlDataSmellsCategories2022
+  - recupitoUnmaskingDataSecrets2024
+- id: A7
+  title: Document findings
+  description: >-
+    Compile insights into an Exploratory Data Analysis Report and quality issues into a Data Quality Report.
+    For each area explored, record the expected regularities, the method used, the regularities found,
+    any surprises, and the conclusions for cleaning, transformation, and the project goals. For each dataset,
+    record the approach taken, the results, the thresholds applied, and possible solutions to each issue.
+    Link each quality issue to the check that detected it so the *Data Cleaning Process* can report how
+    it was addressed, and document the issues deliberately left untreated. Review the reports with stakeholders
+    to rank the risks and decide whether the project proceeds, returns to data collection, or is re-scoped.
+  primaryStudies:
+  - P11
+  - P13
+  - P14
+  - P15
+  literature:
+  - sneedProcessAssessingData2011
+  - krossOrientingFramingBridging2021
+  - wongsuphasawatGoalsProcessChallenges2019
+standards:
+- standard: ISO/IEC 5338
+  activity: c) Analyse and explore data for understanding
+- standard: ISO/IEC 5338
+  activity: d) Analyse data quality
+- standard: ISO/IEC 5338
+  activity: e) Document data lineage and data provenance
+  note: Spread through all data processes

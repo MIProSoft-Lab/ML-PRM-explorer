@@ -1,0 +1,634 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { versions, defaultVersion, getProcesses, getWorkProducts, lifecycleIds, getLifecycle, pick } from '../../lib/content';
+import { localePaths } from '../../lib/paths';
+import { plain } from '../../lib/text';
+import { useTranslations, href, type Locale, type UiKey } from '../../i18n/ui';
+
+export const getStaticPaths = localePaths;
+const locale = Astro.props.locale as Locale;
+const t = useTranslations(locale);
+
+// Everything the client needs, for every version.
+const data = {
+  defaultVersion,
+  base: href(locale),
+  versions: versions.map((v) => ({
+    id: v.id,
+    title: pick(v.title, locale),
+    processes: getProcesses(v.id, locale).map(({ data: p }) => ({
+      id: p.id,
+      name: p.name,
+      origin: p.origin,
+      purpose: plain(p.purpose),
+      activities: p.activities.map((a) => ({ id: a.id, title: plain(a.title) })),
+      inputs: p.inputs.map((i) => i.workProduct),
+    })),
+    workProducts: Object.fromEntries(
+      getWorkProducts(v.id, locale).map((w) => [w.id, { name: w.name, external: w.external, producers: w.producers.map((p) => p.process) }]),
+    ),
+  })),
+  lifecycles: lifecycleIds().map((id) => {
+    const l = getLifecycle(id, locale).data;
+    return { id, name: l.name, version: l.prmVersion, processes: l.phases.flatMap((p) => p.processes) };
+  }),
+};
+
+const keys: UiKey[] = [
+  'tailor.selected',
+  'tailor.allCovered',
+  'tailor.copied',
+  'tailor.copyLink',
+  'tailor.rationale',
+  'tailor.excluded',
+  'tailor.start.all',
+  'tailor.start.none',
+  'tailor.project',
+  'tailor.version',
+  'process.activities',
+  'process.producedBy',
+  'nav.lifecycles',
+];
+const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
+---
+
+<Layout locale={locale} title={t('tailor.title')} section="tailor">
+  <h1>{t('tailor.title')}</h1>
+  <p class="muted prose">{t('tailor.intro')}</p>
+  <noscript><p class="notice">{t('tailor.noscript')}</p></noscript>
+
+  <div class="controls card no-print">
+    <label>
+      <span>{t('tailor.project')}</span>
+      <input type="text" id="project" />
+    </label>
+    <label>
+      <span>{t('tailor.version')}</span>
+      <select id="version">
+        {versions.map((v) => <option value={v.id}>{v.id} · {pick(v.title, locale)}</option>)}
+      </select>
+    </label>
+    <label>
+      <span>{t('tailor.start')}</span>
+      <select id="start"></select>
+    </label>
+  </div>
+
+  <div class="layout">
+    <section class="no-print">
+      <div class="bulk">
+        <button type="button" id="all">{t('tailor.selectAll')}</button>
+        <button type="button" id="none">{t('tailor.selectNone')}</button>
+      </div>
+      <ol id="processes" class="processes"></ol>
+    </section>
+
+    <aside class="side no-print">
+      <div class="card sticky">
+        <p id="summary" class="summary"></p>
+        <h2>{t('tailor.export')}</h2>
+        <div class="exports">
+          <button type="button" data-export="md">{t('tailor.markdown')}</button>
+          <button type="button" data-export="csv">{t('tailor.csv')}</button>
+          <button type="button" data-export="json">{t('tailor.json')}</button>
+          <button type="button" id="print">{t('tailor.print')}</button>
+          <button type="button" id="copy" class="primary button">{t('tailor.copyLink')}</button>
+        </div>
+        <h2>{t('tailor.missingInputs')}</h2>
+        <p class="small muted">{t('tailor.missingInputsNote')}</p>
+        <ul id="missing" class="missing small"></ul>
+      </div>
+    </aside>
+  </div>
+
+  <div id="print-view" class="print-only"></div>
+
+  <script type="application/json" id="tailor-data" set:html={JSON.stringify({ data, strings })} />
+</Layout>
+
+<script>
+  type Proc = {
+    id: string;
+    name: string;
+    origin: string;
+    purpose: string;
+    activities: { id: string; title: string }[];
+    inputs: string[];
+  };
+  type Version = {
+    id: string;
+    title: string;
+    processes: Proc[];
+    workProducts: Record<string, { name: string; external: boolean; producers: string[] }>;
+  };
+  type Data = {
+    defaultVersion: string;
+    base: string;
+    versions: Version[];
+    lifecycles: { id: string; name: string; version: string; processes: string[] }[];
+  };
+
+  const { data, strings } = JSON.parse(document.getElementById('tailor-data')!.textContent!) as {
+    data: Data;
+    strings: Record<string, string>;
+  };
+  const s = (k: string, vars: Record<string, string | number> = {}) =>
+    Object.entries(vars).reduce((acc, [key, v]) => acc.replace(`{${key}}`, String(v)), strings[k] ?? k);
+  const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
+  const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  // --- State, kept in the URL hash so a selection can be shared ---------
+
+  interface State {
+    version: string;
+    project: string;
+    selected: Set<string>;
+    /** Excluded activities of selected processes, as "P01.A3". */
+    excluded: Set<string>;
+    rationale: Record<string, string>;
+  }
+
+  const version = (id: string) => data.versions.find((v) => v.id === id) ?? data.versions.find((v) => v.id === data.defaultVersion)!;
+
+  function fromHash(): State {
+    const h = new URLSearchParams(location.hash.slice(1));
+    const v = version(h.get('v') ?? data.defaultVersion);
+    const lc = data.lifecycles.find((l) => l.id === h.get('lc'));
+    const all = v.processes.map((p) => p.id);
+    const selected = h.has('p') ? h.get('p')!.split(',').filter(Boolean) : lc ? lc.processes : all;
+    let rationale: Record<string, string> = {};
+    try {
+      rationale = JSON.parse(h.get('r') ?? '{}');
+    } catch {}
+    return {
+      version: v.id,
+      project: h.get('n') ?? '',
+      selected: new Set(selected.filter((id) => all.includes(id))),
+      excluded: new Set((h.get('x') ?? '').split(',').filter(Boolean)),
+      rationale,
+    };
+  }
+
+  let state = fromHash();
+
+  function toHash() {
+    const h = new URLSearchParams();
+    h.set('v', state.version);
+    if (state.project) h.set('n', state.project);
+    h.set('p', [...state.selected].join(','));
+    if (state.excluded.size) h.set('x', [...state.excluded].join(','));
+    const r = Object.fromEntries(Object.entries(state.rationale).filter(([id, text]) => text && !state.selected.has(id)));
+    if (Object.keys(r).length) h.set('r', JSON.stringify(r));
+    history.replaceState(null, '', `#${h}`);
+  }
+
+  // --- Rendering ---------------------------------------------------------
+
+  const list = $('#processes');
+
+  function renderList() {
+    const v = version(state.version);
+    list.innerHTML = v.processes
+      .map((p) => {
+        const on = state.selected.has(p.id);
+        const acts = p.activities
+          .map(
+            (a) => `<li><label><input type="checkbox" data-act="${p.id}.${a.id}" ${state.excluded.has(`${p.id}.${a.id}`) ? '' : 'checked'} ${on ? '' : 'disabled'}>
+              <span class="aid">${a.id}</span> ${esc(a.title)}</label></li>`,
+          )
+          .join('');
+        return `<li class="proc ${on ? '' : 'off'}" data-id="${p.id}">
+          <div class="proc-head">
+            <label class="proc-label"><input type="checkbox" data-proc="${p.id}" ${on ? 'checked' : ''}>
+              <span class="dot origin-${p.origin}"></span><span class="num">${p.id}</span> <strong>${esc(p.name)}</strong></label>
+            <a class="small" href="${data.base}${v.id}/processes/${p.id}/" target="_blank" rel="noopener" aria-label="${esc(p.name)}">↗</a>
+          </div>
+          <details><summary class="small muted">${s('process.activities')} (<span data-count="${p.id}"></span>)</summary><ul class="acts">${acts}</ul></details>
+          <label class="rationale small" ${on ? 'hidden' : ''}><span>${s('tailor.rationale')}</span>
+            <input type="text" data-why="${p.id}" value="${esc(state.rationale[p.id] ?? '')}"></label>
+        </li>`;
+      })
+      .join('');
+    renderSummary();
+  }
+
+  function activeActivities(p: Proc) {
+    return state.selected.has(p.id) ? p.activities.filter((a) => !state.excluded.has(`${p.id}.${a.id}`)) : [];
+  }
+
+  function missingInputs() {
+    const v = version(state.version);
+    const missing = new Map<string, Set<string>>();
+    for (const p of v.processes) {
+      if (!state.selected.has(p.id)) continue;
+      for (const wid of p.inputs) {
+        const wp = v.workProducts[wid];
+        if (!wp || wp.external || wp.producers.length === 0) continue;
+        if (wp.producers.some((pid) => state.selected.has(pid))) continue;
+        if (!missing.has(wid)) missing.set(wid, new Set());
+        missing.get(wid)!.add(p.id);
+      }
+    }
+    return missing;
+  }
+
+  function renderSummary() {
+    const v = version(state.version);
+    const acts = v.processes.reduce((n, p) => n + activeActivities(p).length, 0);
+    $('#summary').textContent = s('tailor.selected', { n: state.selected.size, total: v.processes.length, a: acts });
+    for (const p of v.processes) {
+      const el = list.querySelector(`[data-count="${p.id}"]`);
+      if (el) el.textContent = `${activeActivities(p).length}/${p.activities.length}`;
+    }
+    const missing = missingInputs();
+    $('#missing').innerHTML = missing.size
+      ? [...missing]
+          .map(([wid, users]) => {
+            const wp = v.workProducts[wid];
+            return `<li><strong>${esc(wp.name)}</strong> <span class="muted">→ ${[...users].join(', ')}</span><br>
+              <span class="muted">${s('process.producedBy')}:</span> ${wp.producers
+                .map((pid) => `<button type="button" class="link" data-add="${pid}">+ ${pid}</button>`)
+                .join(' ')}</li>`;
+          })
+          .join('')
+      : `<li class="muted">${s('tailor.allCovered')}</li>`;
+    toHash();
+  }
+
+  function renderStartOptions() {
+    const lcs = data.lifecycles.filter((l) => l.version === state.version);
+    $<HTMLSelectElement>('#start').innerHTML =
+      `<option value="">—</option><option value="all">${s('tailor.start.all')}</option><option value="none">${s('tailor.start.none')}</option>` +
+      (lcs.length ? `<optgroup label="${esc(s('nav.lifecycles'))}">${lcs.map((l) => `<option value="lc:${l.id}">${esc(l.name)}</option>`).join('')}</optgroup>` : '');
+  }
+
+  // --- Events -----------------------------------------------------------
+
+  list.addEventListener('change', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (el.dataset.proc) {
+      el.checked ? state.selected.add(el.dataset.proc) : state.selected.delete(el.dataset.proc);
+      const li = el.closest('.proc')!;
+      li.classList.toggle('off', !el.checked);
+      li.querySelector<HTMLElement>('.rationale')!.hidden = el.checked;
+      li.querySelectorAll<HTMLInputElement>('[data-act]').forEach((a) => (a.disabled = !el.checked));
+      renderSummary();
+    } else if (el.dataset.act) {
+      el.checked ? state.excluded.delete(el.dataset.act) : state.excluded.add(el.dataset.act);
+      renderSummary();
+    }
+  });
+
+  list.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (el.dataset.why) {
+      state.rationale[el.dataset.why] = el.value;
+      toHash();
+    }
+  });
+
+  $('#missing').addEventListener('click', (e) => {
+    const id = (e.target as HTMLElement).dataset.add;
+    if (!id) return;
+    state.selected.add(id);
+    renderList();
+  });
+
+  $<HTMLInputElement>('#project').addEventListener('input', (e) => {
+    state.project = (e.target as HTMLInputElement).value;
+    toHash();
+  });
+
+  $<HTMLSelectElement>('#version').addEventListener('change', (e) => {
+    const v = version((e.target as HTMLSelectElement).value);
+    // Keep the processes that exist in both versions; activities may differ.
+    const ids = new Set(v.processes.map((p) => p.id));
+    state = { ...state, version: v.id, selected: new Set([...state.selected].filter((id) => ids.has(id))), excluded: new Set() };
+    renderStartOptions();
+    renderList();
+  });
+
+  $<HTMLSelectElement>('#start').addEventListener('change', (e) => {
+    const value = (e.target as HTMLSelectElement).value;
+    const v = version(state.version);
+    if (value === 'all') state.selected = new Set(v.processes.map((p) => p.id));
+    else if (value === 'none') state.selected = new Set();
+    else if (value.startsWith('lc:')) state.selected = new Set(data.lifecycles.find((l) => l.id === value.slice(3))!.processes);
+    state.excluded = new Set();
+    (e.target as HTMLSelectElement).value = '';
+    renderList();
+  });
+
+  $('#all').addEventListener('click', () => {
+    state.selected = new Set(version(state.version).processes.map((p) => p.id));
+    renderList();
+  });
+  $('#none').addEventListener('click', () => {
+    state.selected = new Set();
+    renderList();
+  });
+
+  // --- Export -----------------------------------------------------------
+
+  function rows() {
+    const v = version(state.version);
+    return v.processes.map((p) => ({
+      p,
+      included: state.selected.has(p.id),
+      activities: p.activities.map((a) => ({ ...a, included: state.selected.has(p.id) && !state.excluded.has(`${p.id}.${a.id}`) })),
+      rationale: state.rationale[p.id] ?? '',
+    }));
+  }
+
+  function markdown() {
+    const r = rows();
+    const title = state.project || document.querySelector('h1')!.textContent;
+    let out = `# ${title}\n\nPRM ${state.version} · ${location.href}\n\n`;
+    for (const x of r.filter((x) => x.included)) {
+      out += `## ${x.p.id} ${x.p.name}\n\n${x.p.purpose}\n\n`;
+      for (const a of x.activities) if (a.included) out += `- [ ] ${a.id}. ${a.title}\n`;
+      const skipped = x.activities.filter((a) => !a.included);
+      if (skipped.length) out += `\n${s('tailor.excluded')}: ${skipped.map((a) => a.id).join(', ')}\n`;
+      out += '\n';
+    }
+    const excluded = r.filter((x) => !x.included);
+    if (excluded.length) {
+      out += `## ${s('tailor.excluded')}\n\n`;
+      for (const x of excluded) out += `- ${x.p.id} ${x.p.name}${x.rationale ? `: ${x.rationale}` : ''}\n`;
+    }
+    return out;
+  }
+
+  function csv() {
+    const q = (x: string) => `"${x.replace(/"/g, '""')}"`;
+    const lines = [['process_id', 'process', 'activity_id', 'activity', 'included', 'rationale'].join(',')];
+    for (const x of rows()) {
+      for (const a of x.activities) {
+        lines.push([x.p.id, q(x.p.name), a.id, q(a.title), a.included ? 'yes' : 'no', q(x.included ? '' : x.rationale)].join(','));
+      }
+    }
+    return lines.join('\n');
+  }
+
+  function json() {
+    return JSON.stringify(
+      {
+        project: state.project,
+        prmVersion: state.version,
+        link: location.href,
+        processes: rows().map((x) => ({
+          id: x.p.id,
+          name: x.p.name,
+          included: x.included,
+          rationale: x.included ? undefined : x.rationale || undefined,
+          activities: x.activities.map((a) => ({ id: a.id, title: a.title, included: a.included })),
+        })),
+      },
+      null,
+      2,
+    );
+  }
+
+  function download(name: string, type: string, text: string) {
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = Object.assign(document.createElement('a'), { href: url, download: name });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  const fileBase = () => (state.project || 'prm-tailoring').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + `-${state.version}`;
+  document.querySelectorAll<HTMLButtonElement>('[data-export]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const kind = b.dataset.export!;
+      if (kind === 'md') download(`${fileBase()}.md`, 'text/markdown', markdown());
+      if (kind === 'csv') download(`${fileBase()}.csv`, 'text/csv', csv());
+      if (kind === 'json') download(`${fileBase()}.json`, 'application/json', json());
+    }),
+  );
+
+  $('#print').addEventListener('click', () => {
+    const r = rows().filter((x) => x.included);
+    $('#print-view').innerHTML =
+      `<h1>${esc(state.project || '')}</h1><p>PRM ${esc(state.version)}</p>` +
+      r
+        .map(
+          (x) =>
+            `<h2>${x.p.id} ${esc(x.p.name)}</h2><ul>${x.activities
+              .filter((a) => a.included)
+              .map((a) => `<li>☐ ${a.id}. ${esc(a.title)}</li>`)
+              .join('')}</ul>`,
+        )
+        .join('');
+    window.print();
+  });
+
+  $('#copy').addEventListener('click', async (e) => {
+    const b = e.currentTarget as HTMLButtonElement;
+    try {
+      await navigator.clipboard.writeText(location.href);
+      b.textContent = s('tailor.copied');
+      setTimeout(() => (b.textContent = s('tailor.copyLink')), 1500);
+    } catch {
+      prompt('', location.href);
+    }
+  });
+
+  // --- Start ------------------------------------------------------------
+
+  $<HTMLInputElement>('#project').value = state.project;
+  $<HTMLSelectElement>('#version').value = state.version;
+  renderStartOptions();
+  renderList();
+</script>
+
+<style>
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin: 16px 0;
+  }
+
+  .controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    flex: 1 1 200px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 340px;
+    }
+
+    .sticky {
+      position: sticky;
+      top: 16px;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+    }
+  }
+
+  .bulk {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .summary {
+    font-weight: 600;
+    margin-top: 0;
+  }
+
+  .side h2 {
+    font-size: 1rem;
+    margin: 16px 0 6px;
+  }
+
+  .exports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .exports button {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+  }
+
+  .print-only {
+    display: none;
+  }
+
+  @media print {
+    .print-only {
+      display: block;
+    }
+
+    main h1:first-of-type,
+    main > .container > p {
+      display: none;
+    }
+  }
+
+  /* Rendered by the script, so these need :global */
+  .processes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 6px;
+  }
+
+  .processes :global(.proc) {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 8px 12px;
+  }
+
+  .processes :global(.proc.off) {
+    background: transparent;
+    border-style: dashed;
+  }
+
+  .processes :global(.proc.off .proc-label strong) {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .processes :global(.proc-head) {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .processes :global(.proc-label) {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    cursor: pointer;
+  }
+
+  .processes :global(.dot) {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex: none;
+  }
+
+  .processes :global(.num),
+  .processes :global(.aid) {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .processes :global(details) {
+    margin-left: 26px;
+  }
+
+  .processes :global(summary) {
+    cursor: pointer;
+  }
+
+  .processes :global(.acts) {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0;
+    display: grid;
+    gap: 2px;
+    font-size: 0.9rem;
+  }
+
+  .processes :global(.acts label) {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .processes :global(.rationale) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 8px;
+    margin: 4px 0 2px 26px;
+    color: var(--muted);
+  }
+
+  .processes :global(.rationale input) {
+    flex: 1 1 200px;
+    padding: 3px 8px;
+    font-size: 0.85rem;
+  }
+
+  .processes :global(.rationale[hidden]) {
+    display: none;
+  }
+
+  .missing {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .missing :global(.link) {
+    border: 0;
+    padding: 0 4px;
+    background: none;
+    color: var(--link);
+    font-size: 0.85rem;
+    text-decoration: underline;
+  }
+</style>

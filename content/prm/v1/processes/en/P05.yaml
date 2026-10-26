@@ -1,0 +1,154 @@
+id: P05
+number: 5
+origin: standards-only
+name: Design Definition Process
+purpose: >-
+  The purpose of the *Design Definition Process* is to turn system requirements and analysis into detailed
+  descriptions of the system's architecture, components, and interfaces. It specifies the software, data,
+  and model structures to guide implementation and integration.
+outcomes:
+- id: a
+  text: Agreed-upon data flows, interfaces, and design constraints.
+- id: b
+  text: Specified design choices for model training, deployment, and monitoring.
+- id: c
+  text: Design features addressing quality and interpretability.
+- id: d
+  text: Traceability links between design elements, requirements, and verification.
+inputs:
+- workProduct: system-analysis-report
+  name: System Analysis Report
+  description: The results of the analyses and trade-offs that inform the design decisions.
+  serves:
+  - a
+  - b
+  - c
+- workProduct: system-requirements-specification
+  name: System Requirements Specification
+  description: The functional, performance, quality, and interface requirements of the system.
+  serves:
+  - a
+  - c
+  - d
+outputs:
+- workProduct: design-baseline
+  name: Design Baseline
+  description: >-
+    The agreed design of components, interfaces, and data and model management structures, with its rationale
+    and traceability.
+  serves:
+  - a
+  - b
+  - c
+  - d
+activities:
+- id: A1
+  title: Develop component and interface designs
+  description: >-
+    Define operational responsibilities, data schemas, and communication protocols to establish clear
+    boundaries between Machine Learning components and traditional software modules, refining the interfaces
+    the architecture defined only as far as its intent required and adding those it did not address. Select
+    and prioritize the design principles and characteristics each element is built against, such as encapsulation,
+    separation of interface from implementation, least privilege, testability, and portability. Fix the
+    inputs and outputs of every Machine Learning module explicitly, recognizing that the output specification
+    is the more stable of the two and is therefore what the surrounding modules can be designed against.
+    Treat each value crossing a boundary as a design commitment, confirming that it is available at serving
+    time, permitted for use, and acceptable in its effect on model size and prediction latency. Determine
+    the technologies each element requires and how it will be obtained, whether built anew, adapted from
+    an existing component, or acquired, which for Machine Learning elements is the decision to train from
+    scratch, to adapt a pre-trained model through transfer learning, or to consume a capability as a service,
+    assessed against fitness for the intended purpose, the distance between the setting the candidate
+    was built for and the one it will operate in, the licensing of both the model and the data behind
+    it, and sustainability over the life of the system. Account for the fact that reuse transfers faults
+    as well as capability, and assess the supporting platform on the same basis, weighing managed services
+    against systems deployable under the organization's own control where regulation or data protection
+    requires it.
+  primaryStudies:
+  - P4
+  - P8
+  - P9
+  - P11
+  - P16
+  - P17
+  - P18
+  literature:
+  - washizaki2022
+  - serban2022
+- id: A2
+  title: Define data and model management designs
+  description: >-
+    Specify storage structures, versioning mechanisms, and metadata schemas to manage datasets, models,
+    code, and logs. Choose the storage type appropriate to each artifact class, decide whether versioning
+    is delegated to a version control system covering the artifacts of a project or performed as independent
+    snapshots per artifact, and decide whether capture is intrusive through explicit instrumentation or
+    automatic, since that choice determines whether the record survives delivery pressure. Specify the
+    metadata each artifact carries so that a model resolves to the data and code version that produced
+    it and a dataset resolves to its origin and extraction code, and design the capture mechanism so that
+    its overhead does not make it the first thing abandoned. Design the database structure deliberately
+    rather than letting it accrete around the chosen algorithm, since a schema shaped by the method rather
+    than the application becomes an obstacle to later change.
+  primaryStudies:
+  - P2
+  - P4
+  - P5
+  - P9
+  - P12
+  literature:
+  - washizaki2022
+- id: A3
+  title: Address quality attributes
+  description: >-
+    Embed architectural mechanisms directly into system specifications for safety and observability. Examples
+    of such mechanisms are interpretability tools, bias detection routines, robustness checks, and fallback
+    procedures. Prefer mechanisms built into the design over those applied afterwards, whether by selecting
+    a model that is inherently interpretable because it satisfies domain constraints such as monotonicity,
+    additivity, or causality, or by embedding privacy-preserving mechanisms in the technology rather than
+    relying on policy and notice. Determine whether explanations are required for the model as a whole
+    or for individual decisions, since the two call for different methods. Include the security provisions
+    belonging to design time, such as approved libraries, secured interfaces, static analysis, and an
+    incident response plan established before release. Assign these attributes deliberately, since qualities
+    heightened by Machine Learning are reported to lose out in practice to conventional drivers such as
+    scalability and interoperability.
+  primaryStudies:
+  - P3
+  - P6
+  - P8
+  literature:
+  - serban2022
+- id: A4
+  title: Review and baseline design
+  description: >-
+    Evaluate the designs against system requirements and feasibility constraints before implementation,
+    considering more than one design approach and returning to the architecture or the requirements where
+    the design characteristics prove unrealizable. Assess suitability across the whole life of the system,
+    covering ease of implementation, integration, verification, maintenance, and eventual disposal, and
+    treat accumulated technical debt as evidence against it, including configuration that has grown past
+    the code it governs. Record the design artifacts together with the rationale for the alternatives
+    chosen and set aside, maintain traceability between the design elements, the system requirements,
+    the architectural entities, and the verification methods that will demonstrate them, and place the
+    agreed set under baseline.
+  primaryStudies:
+  - P7
+  - P18
+standards:
+- standard: ISO/IEC/IEEE 12207
+  activity: a) Prepare for design definition
+  prmActivity: A1
+- standard: ISO/IEC/IEEE 12207
+  activity: b) Create the system design
+  prmActivity: A1
+- standard: ISO/IEC/IEEE 12207
+  activity: c) Assess alternatives for obtaining software system elements
+  prmActivity: A1
+- standard: ISO/IEC/IEEE 12207
+  activity: b) Create the system design
+  prmActivity: A2
+- standard: ISO/IEC/IEEE 12207
+  activity: b) Create the system design
+  prmActivity: A3
+- standard: ISO/IEC/IEEE 12207
+  activity: d) Evaluate the system design
+  prmActivity: A4
+- standard: ISO/IEC/IEEE 12207
+  activity: e) Manage the results of design definition
+  prmActivity: A4

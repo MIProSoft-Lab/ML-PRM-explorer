@@ -1,0 +1,151 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getProcess, getWorkProducts, versions } from '../../../lib/content';
+import { versionPaths } from '../../../lib/paths';
+import { useTranslations, href, type Locale } from '../../../i18n/ui';
+
+export const getStaticPaths = versionPaths;
+const locale = Astro.props.locale as Locale;
+const { version } = Astro.params as { version: string };
+const t = useTranslations(locale);
+const wps = getWorkProducts(version, locale);
+const name = (pid: string) => getProcess(version, pid, locale).data.name;
+const versionLinks = Object.fromEntries(versions.map((x) => [x.id, href(locale, x.id, 'work-products')]));
+const types = ['information-item', 'artifact', 'record'] as const;
+---
+
+<Layout locale={locale} title={t('wp.title')} section="workProducts" version={version} versionLinks={versionLinks}>
+  <h1>{t('wp.title')} <span class="muted">· {version}</span></h1>
+  <p class="muted prose">{t('wp.intro')}</p>
+
+  <div class="toolbar no-print">
+    <label class="visually-hidden" for="q">{t('wp.filter')}</label>
+    <input id="q" type="search" placeholder={t('wp.filter')} autocomplete="off" />
+    <div class="pills" role="group" aria-label={t('wp.type')}>
+      <button type="button" data-type="" aria-pressed="true">{t('wp.all')}</button>
+      {types.map((ty) => <button type="button" data-type={ty} aria-pressed="false">{t(`wp.type.${ty}`)}</button>)}
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="wp-table">
+      <thead>
+        <tr>
+          <th>{t('wp.title')}</th>
+          <th>{t('wp.type')}</th>
+          <th>{t('wp.producers')}</th>
+          <th>{t('wp.consumers')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          wps.map((w) => (
+            <tr id={w.id} data-type={w.type} data-search={w.name.toLowerCase()}>
+              <td>
+                <strong>{w.name}</strong>
+              </td>
+              <td>
+                <span class="badge">{t(`wp.type.${w.type}`)}</span>
+              </td>
+              <td>
+                {w.producers.length ? (
+                  <span class="chips">
+                    {w.producers.map((l) => (
+                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#output-${w.id}`} title={name(l.process)}>
+                        <span class="num">{l.process}</span>
+                        {name(l.process)}
+                      </a>
+                    ))}
+                  </span>
+                ) : (
+                  <span class="muted small">{t('process.external')}</span>
+                )}
+              </td>
+              <td>
+                {w.consumers.length ? (
+                  <span class="chips">
+                    {w.consumers.map((l) => (
+                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#input-${w.id}`} title={name(l.process)}>
+                        <span class="num">{l.process}</span>
+                        {name(l.process)}
+                      </a>
+                    ))}
+                  </span>
+                ) : (
+                  <span class="muted small">{t('process.notUsed')}</span>
+                )}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</Layout>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('#q')!;
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-type]:is(button)')];
+  const rows = [...document.querySelectorAll<HTMLTableRowElement>('tbody tr')];
+  let type = '';
+  const apply = () => {
+    const q = input.value.toLowerCase().trim();
+    for (const r of rows) r.hidden = (type !== '' && r.dataset.type !== type) || !r.dataset.search!.includes(q);
+  };
+  input.addEventListener('input', apply);
+  for (const b of buttons) {
+    b.addEventListener('click', () => {
+      type = b.dataset.type!;
+      buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      apply();
+    });
+  }
+  const target = location.hash && document.getElementById(location.hash.slice(1));
+  target?.classList.add('highlight');
+</script>
+
+<style>
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin: 16px 0;
+  }
+
+  .toolbar input {
+    flex: 1 1 260px;
+    max-width: 420px;
+  }
+
+  .pills button {
+    border: 0;
+    border-radius: 0;
+    padding: 5px 12px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .pills button[aria-pressed='true'] {
+    background: var(--accent);
+    color: var(--accent-text);
+  }
+
+  .wp-table td:first-child {
+    min-width: 180px;
+  }
+
+  .wp-table tr {
+    scroll-margin-top: 16px;
+  }
+
+  .wp-table tr:target,
+  .wp-table tr.highlight {
+    background: var(--surface-2);
+  }
+
+  .wp-table .chip {
+    font-size: 0.8rem;
+  }
+</style>

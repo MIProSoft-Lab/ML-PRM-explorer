@@ -1,0 +1,140 @@
+id: P17
+number: 17
+origin: standards-and-literature
+name: Model Validation Process
+purpose: >-
+  The purpose of the *Model Validation Process* is to evaluate the trained model against defined performance
+  objectives to determine if it meets the required accuracy, robustness, and reliability. It confirms
+  whether the model satisfies technical requirements and is suitable for integration.
+outcomes:
+- id: a
+  text: Confirmed evaluation metrics and success criteria.
+- id: b
+  text: Performance results produced by evaluating the model on a held-out test set.
+- id: c
+  text: Detailed error analyses identifying strengths and weaknesses.
+- id: d
+  text: Robustness information obtained from testing input perturbations.
+- id: e
+  text: Documented results compared against predefined success thresholds.
+- id: f
+  text: A decision on whether the model is ready for integration.
+inputs:
+- workProduct: model-artifact
+  name: Model Artifact
+  description: The trained model to be assessed.
+  serves:
+  - b
+  - c
+  - d
+- workProduct: dataset-partitions
+  name: Dataset Partitions
+  description: The held-out test set.
+  serves:
+  - b
+  - c
+  - d
+- workProduct: evaluation-framework
+  name: Evaluation Framework
+  description: The model-level metrics, baselines, and benchmarks for assessment.
+  serves:
+  - a
+  - e
+- workProduct: reporting-templates
+  name: Reporting Templates
+  description: The standardized formats for reporting metrics.
+  serves:
+  - e
+outputs:
+- workProduct: validation-report
+  name: Validation Report
+  description: >-
+    The performance results, error analysis, robustness checks, comparison with the success criteria,
+    and decision.
+  serves:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+activities:
+- id: A1
+  title: Confirm metrics and criteria
+  description: >-
+    Confirm the specific measures and thresholds from the Evaluation Framework used to judge the model,
+    encoding the requirements as tests and verifiable properties with knowledge of both the domain and
+    the technology, and fixing the test strategy.
+  primaryStudies:
+  - P16
+  literature:
+  - zhangMachineLearningTesting2022
+- id: A2
+  title: Evaluate on test set
+  description: >-
+    Run the model on a held-out dataset to estimate how well it generalizes to new cases, using a test
+    set disjoint from the training and validation sets, curated by experts to cover the input distribution,
+    used only for the final evaluation, and not reused repeatedly. Compare and rank the results against
+    the criteria, and check the plausibility and reliability of the model with domain experts.
+  primaryStudies:
+  - P6
+  - P13
+  - P14
+  literature:
+  - zhangMachineLearningTesting2022
+- id: A3
+  title: Perform error analysis
+  description: >-
+    Examine performance on specific classes or subgroups to find weaknesses not shown by overall scores,
+    slicing the results by class or time, analyzing the failed test cases, and feeding the findings back
+    into training. Check that the features driving the predictions are plausible to domain experts, and
+    assess unwanted bias where protected characteristics are involved.
+  primaryStudies:
+  - P8
+  - P10
+  - P13
+  - P14
+  literature:
+  - zhangMachineLearningTesting2022
+- id: A4
+  title: Evaluate robustness
+  description: >-
+    Test the model with small input changes or noise to check for stability, measuring the loss of correctness
+    under perturbations and using transformations that should not change the output as pseudo-oracles.
+    Choose perturbations that are meaningful in the context of use and consider performing the validation
+    or repeated cross-validation where appropriate.
+  primaryStudies:
+  - P6
+  - P8
+  - P13
+  - P16
+  literature:
+  - zhangMachineLearningTesting2022
+- id: A5
+  title: Document and compare results
+  description: >-
+    Record findings in the Validation Report using the Reporting Templates, and determine if the model
+    satisfies the project's business and Machine Learning success criteria, with the decision taken by
+    domain and Machine Learning experts. Record any anomalies, obtain stakeholder agreement on the results,
+    maintain traceability, and give enough information for users to judge whether the model suits its
+    intended application.
+  primaryStudies:
+  - P8
+  - P13
+  - P14
+standards:
+- standard: ISO/IEC/IEEE 12207
+  activity: b) Perform verification
+  standardProcess: Verification Process
+- standard: ISO/IEC/IEEE 12207
+  activity: c) Manage results of verification
+  standardProcess: Verification Process
+- standard: ISO/IEC/IEEE 12207
+  activity: b) Perform validation
+  standardProcess: Validation Process
+- standard: ISO/IEC/IEEE 12207
+  activity: c) Manage results of validation
+  standardProcess: Validation Process
+- standard: ISO/IEC 5338
+  activity: Verification through behaviour
+  standardProcess: Verification Process particularities

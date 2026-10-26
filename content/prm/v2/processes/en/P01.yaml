@@ -1,0 +1,207 @@
+id: P01
+number: 1
+origin: standards-and-literature
+name: Business or Mission Analysis Process
+purpose: >-
+  The purpose of the *Business or Mission Analysis Process* is to define the problem or business opportunity
+  motivating a project, characterize the available solution space, and determine which solution classes
+  can address the problem. This process focuses on translating high-level organizational needs into quantifiable
+  technical goals, and serves as the initial decision gate to determine whether a Machine Learning approach
+  is justified.
+outcomes:
+- id: a
+  text: A defined technical problem statement with success constraints and risks.
+- id: b
+  text: A comparison of technical solution classes with a selected preference.
+- id: c
+  text: >-
+    Established computational and operational cost constraints for the selected solution class.
+- id: d
+  text: Documented traceability linking the problem, KPIs, and solution rationale.
+inputs:
+- workProduct: business-goals-and-constraints
+  name: Business Goals and Constraints
+  description: The organizational objectives and the limits within which they have to be met.
+  serves:
+  - a
+  - b
+  - c
+  - d
+outputs:
+- workProduct: technical-problem-statement
+  name: Technical Problem Statement
+  description: >-
+    The problem expressed in data terms, with its success criteria, early risks, and operational concept.
+  serves:
+  - a
+  - d
+- workProduct: solution-class-selection-record
+  name: Solution Class Selection Record
+  description: The solution classes compared, the one selected, and the rationale.
+  serves:
+  - b
+  - d
+- workProduct: data-landscape-assessment
+  name: Data Landscape Assessment
+  description: The viability of a data-driven solution given the available data and resources.
+  serves:
+  - a
+  - b
+- workProduct: cost-and-resource-constraint-record
+  name: Cost and Resource Constraint Record
+  description: >-
+    The estimated computational requirements, training costs, and inference resource limits of the selected
+    solution class.
+  serves:
+  - c
+activities:
+- id: A1
+  title: State the problem and success criteria
+  description: >-
+    Formulate the specific mission or business problem by translating high-level operational needs into
+    quantifiable technical goals to determine if a data-driven approach is appropriate, characterizing
+    the problem without presupposing a solution and reformulating it where a different framing would be
+    more actionable. Define measurable success criteria that go beyond technical performance metrics to
+    verify that the model provides actual business value, separating the criteria expressed in business
+    terms from those expressed in technical ones, adding an economic indicator through which the investment
+    can later be justified, and naming who judges each criterion where the judgment is subjective. The
+    measures of effectiveness negotiated with stakeholders and the metrics that operationalize them are
+    established by the *Stakeholder Needs and Requirements Definition Process* and the *System Requirements
+    Definition Process* respectively.
+  primaryStudies:
+  - P10
+  - P12
+  - P13
+  - P14
+  - P15
+  - P16
+- id: A2
+  title: Characterize the data landscape
+  description: >-
+    Assess the organizational data environment to determine if the defined problem is solvable through
+    Machine Learning, considering both current assets and data that may be collected throughout the project
+    lifecycle, and establishing whether the organization can reach and lawfully use its own data rather
+    than merely hold it. This activity incorporates the feasibility study by evaluating project viability
+    and data requirements to establish early success thresholds, setting limitations as a trigger to pause
+    or re-scope if resources or data assets are insufficient, and considering a proof of concept where
+    the technique has not been applied in the domain before. Assess in the same step the personnel, computing,
+    and software resources the approach would depend on. This activity establishes viability only; the
+    discovery, cataloging, and screening of specific candidate datasets belongs to the *Data Source Identification
+    Process*.
+  primaryStudies:
+  - P10
+  - P11
+  - P12
+  - P13
+  - P14
+  - P16
+  - P18
+- id: A3
+  title: Identify early risks
+  description: >-
+    Translate high-level risks into technical considerations specific to Machine Learning, identifying
+    potential engineering failure modes and vulnerabilities across data, models, software interfaces,
+    and regulatory boundaries. This screening establishes early safeguards against technical risks such
+    as data sparsity, component entanglement, security threats, and privacy exposure before development
+    begins, and operates at the level of the system rather than the individual model, so that interpretability
+    is assessed as a question of whether an intrinsically interpretable approach is required and adoption
+    is assessed as a question of organizational readiness. Include the regulatory risks that can prohibit
+    an objective outright, such as constraints on reusing personal data for a purpose other than the one
+    it was collected for, and the obligation to explain which data informed a decision.
+  primaryStudies:
+  - P2
+  - P3
+  - P6
+  - P11
+  - P13
+  - P14
+  - P16
+  - P18
+- id: A4
+  title: Define operational concepts
+  description: >-
+    Establish the high-level operational and architectural parameters of the system by planning for the
+    integration of Machine Learning components into the broader software ecosystem, and outline in preliminary
+    form how the resulting system would be acquired, deployed, supported, and eventually retired. Decide
+    whether the surrounding application is designed alongside the Machine Learning component or after
+    it, since deferring it defers the integration and data engineering effort rather than removing it.
+    Plan the compute and infrastructure strategy the approach would require as soon as the approach looks
+    promising. These concepts remain preliminary and are refined into a context of use, operational scenarios,
+    and interface boundaries by the *Stakeholder Needs and Requirements Definition Process*.
+  primaryStudies:
+  - P2
+  - P7
+  - P10
+  - P18
+- id: A5
+  title: Compare solution alternatives
+  description: >-
+    Explore potential technical solution classes to establish a preliminary baseline of viable models
+    for the defined mission. This analysis contrasts data-driven approaches against traditional solutions
+    to confirm that a Machine Learning implementation is justified, including non-intelligent computational
+    alternatives, and evaluates them against criteria and a shared vocabulary agreed in advance so that
+    novelty does not substitute for value. Favor lower-capacity approaches as the initial baseline and
+    increase capacity only where the added complexity is shown to pay for itself, and make the preliminary
+    assessment of tools and techniques here, since that choice constrains the whole project. Systematically
+    log the alternatives that were not selected, both as a record of the rationale and because a retained
+    non-Machine-Learning alternative is what makes a deterministic fallback available if the primary choice
+    cannot be relied upon in operation.
+  primaryStudies:
+  - P10
+  - P11
+  - P13
+  - P14
+  - P16
+- id: A6
+  title: Analyze computational and operational feasibility
+  description: >-
+    Estimate the processing demands of the candidate solution classes for both training and inference,
+    including the expected training costs, the latency and throughput required in operation, and the infrastructure
+    needed to sustain them. Establish the resource boundaries that the selected solution class has to
+    respect, so that computational and operational cost is treated as a technical constraint from the
+    start.
+- id: A7
+  title: Define documentation and evidence needs
+  description: >-
+    Specify the recording and reporting requirements for all system artifacts for auditability and maintainability
+    of the system, determining from the regulatory and governance context what the organization will later
+    be obliged to demonstrate about the system and to whom. Establish that data lineage, dataset licensing,
+    and the association between a model and the data it was built from are recorded from the outset rather
+    than reconstructed afterwards. Record the decisions taken during this analysis together with their
+    rationale, including the solution classes considered and rejected, and maintain traceability between
+    the problem or opportunity identified here and the solution class selected.
+  primaryStudies:
+  - P10
+  - P11
+  - P13
+  - P16
+changes:
+- annotation: A-01
+  text: Base practices require traceability levels
+  redVotes: 0
+  yellowVotes: 0
+  decision: rejected
+  changes:
+  - kind: updated
+    text: – (already covered by outcome (c) and A6, now (d) and A7)
+- annotation: A-02
+  text: Relevance of training and operational costs
+  redVotes: 0
+  yellowVotes: 2
+  decision: adopted
+  changes:
+  - kind: added
+    target: A6
+    text: Analyze computational and operational feasibility
+  - kind: added
+    target: Output
+    text: Cost and Resource Constraint Record
+  - kind: added
+    target: Outcome (c)
+    text: computational and operational cost constraints for the selected solution class
+- annotation: A-03
+  text: The process definition is generic
+  redVotes: 0
+  yellowVotes: 1
+  decision: rejected
+  changes: []

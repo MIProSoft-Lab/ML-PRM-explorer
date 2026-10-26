@@ -1,0 +1,14 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import CompareOverview from '../../../../components/CompareOverview.astro';
+import { comparePaths } from '../../../../lib/paths';
+import { useTranslations, type Locale } from '../../../../i18n/ui';
+
+export const getStaticPaths = comparePaths;
+const { locale, from, to } = Astro.props as { locale: Locale; from: string; to: string };
+const t = useTranslations(locale);
+---
+
+<Layout locale={locale} title={`${t('compare.title')} ${from} → ${to}`} section="compare">
+  <CompareOverview locale={locale} from={from} to={to} />
+</Layout>

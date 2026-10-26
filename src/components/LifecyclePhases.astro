@@ -1,0 +1,154 @@
+---
+import { getProcess, type Lifecycle } from '../lib/content';
+import { inline } from '../lib/text';
+import { useTranslations, href, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  lifecycle: Lifecycle;
+  compact?: boolean;
+}
+
+const { locale, lifecycle: l, compact = false } = Astro.props;
+const t = useTranslations(locale);
+const phaseName = (id: string) => l.phases.find((p) => p.id === id)?.name ?? id;
+---
+
+<ol class:list={['phases', { compact }]}>
+  {
+    l.phases.map((ph, i) => (
+      <li class="phase" id={compact ? undefined : `phase-${ph.id}`}>
+        <div class="phase-head">
+          <span class="step">{i + 1}</span>
+          <strong>{ph.name}</strong>
+          {ph.iterative && (
+            <span class="badge" title={t('lc.iterative')}>
+              ↻ {t('lc.iterative')}
+            </span>
+          )}
+        </div>
+        {!compact && ph.description && <p class="small muted" set:html={inline(ph.description)} />}
+        <ul class="procs">
+          {ph.processes.map((pid) => {
+            const p = getProcess(l.prmVersion, pid, locale).data;
+            return (
+              <li>
+                <a class={`proc origin-${p.origin}`} href={href(locale, l.prmVersion, 'processes', pid)}>
+                  <span class="num">{pid}</span>
+                  {!compact && <span>{p.name}</span>}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+        {!compact && ph.returnsTo && (
+          <p class="return small">
+            <strong>↩ {t('lc.returnsTo', { phase: phaseName(ph.returnsTo) })}</strong>
+            {ph.returnNote && <span class="muted"> {ph.returnNote}</span>}
+          </p>
+        )}
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .phases {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 12px;
+    counter-reset: phase;
+  }
+
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    position: relative;
+  }
+
+  .phase-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    align-items: center;
+  }
+
+  .step {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .procs {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+    display: grid;
+    gap: 6px;
+  }
+
+  .proc {
+    display: flex;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .proc:hover {
+    outline: 2px solid var(--accent);
+  }
+
+  .proc .num {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    opacity: 0.75;
+    padding-top: 1px;
+  }
+
+  .return {
+    margin: 10px 0 0;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .compact {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 6px;
+    margin: 8px 0 0;
+  }
+
+  .compact .phase {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .compact .procs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 6px;
+  }
+
+  .compact .proc {
+    padding: 1px 5px;
+  }
+
+  .compact .badge {
+    display: none;
+  }
+</style>

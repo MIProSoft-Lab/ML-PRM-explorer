@@ -1,0 +1,35 @@
+# Published versions of the PRM. The process files of each version live in
+# content/prm/<id>/. Create a new version with `npm run new-version`.
+default: v2
+versions:
+  - id: v1
+    status: superseded
+    title:
+      en: First version
+      es: Primera versión
+      ca: Primera versió
+    description:
+      en: Built from the systematic literature review and the international lifecycle standards.
+      es: Construida a partir de la revisión sistemática de la literatura y de las normas internacionales de ciclo de vida.
+      ca: Construïda a partir de la revisió sistemàtica de la literatura i de les normes internacionals de cicle de vida.
+    # Columns of the process map, as in the topology figure of the thesis.
+    topology: &topology
+      - group:
+          en: Technical Processes
+          es: Procesos técnicos
+          ca: Processos tècnics
+        columns:
+          - [P01, P02, P03, P04, P05, P06, P07, P08, P09]
+          - [P10, P11, P12, P13, P14, P15, P16, P17, P18]
+          - [P19, P20, P21, P22, P23, P24, P25]
+  - id: v2
+    status: current
+    title:
+      en: Second version
+      es: Segunda versión
+      ca: Segona versió
+    description:
+      en: Refined with the feedback of the expert workshop.
+      es: Refinada con las aportaciones del taller de expertos.
+      ca: Refinada amb les aportacions del taller d'experts.
+    topology: *topology

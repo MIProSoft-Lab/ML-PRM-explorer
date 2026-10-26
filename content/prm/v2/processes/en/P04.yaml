@@ -1,0 +1,269 @@
+id: P04
+number: 4
+origin: standards-only
+name: System Architecture Definition Process
+purpose: >-
+  The purpose of the *System Architecture Definition Process* is to create the structural framework for
+  the system by defining its components and how they interact. It specifies how data, models, and code
+  move through the lifecycle to support integration, verification, and operation, while addressing operational
+  resilience and resource efficiency.
+outcomes:
+- id: a
+  text: Defined architectural structure with components and interactions.
+- id: b
+  text: Data and model flow diagrams connecting all stages.
+- id: c
+  text: >-
+    Documented technical constraints and quality attributes, including the Service Level Objectives the
+    architecture supports.
+- id: d
+  text: Traceable documentation of design decisions.
+- id: e
+  text: Defined retraining, monitoring, and recovery mechanisms.
+- id: f
+  text: Documented infrastructure cost baseline and resource requirements.
+- id: g
+  text: >-
+    Defined management of the dependencies between data, models, and software across the lifecycle.
+inputs:
+- workProduct: system-requirements-specification
+  name: System Requirements Specification
+  description: >-
+    The functional, performance, and quality requirements of the system and its technical cost baseline.
+  serves:
+  - a
+  - c
+  - d
+  - e
+- workProduct: data-requirements-specification
+  name: Data Requirements Specification
+  description: The requirements on the data the system needs.
+  serves:
+  - b
+  - c
+- workProduct: architecture-requirements-specification
+  name: Architecture Requirements Specification
+  description: >-
+    The interface requirements and the Service Level Indicators and Objectives that the architecture has
+    to support.
+  serves:
+  - a
+  - c
+- workProduct: cost-and-resource-constraint-record
+  name: Cost and Resource Constraint Record
+  description: >-
+    The estimated computational requirements, training costs, and inference resource limits of the selected
+    solution class.
+  serves:
+  - f
+outputs:
+- workProduct: system-architecture-documentation
+  name: System Architecture Documentation
+  description: >-
+    The architecture description, with data and model flow diagrams, decision logs, dependency management,
+    and expected infrastructure costs.
+  serves:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+- workProduct: disaster-recovery-plan
+  name: Disaster Recovery Plan
+  description: >-
+    The backup strategies, recovery objectives, and recovery procedures for the critical components of
+    the system.
+  serves:
+  - e
+activities:
+- id: A1
+  title: Define architectural goals and constraints
+  description: >-
+    Establish what the system is composed of, separating the user application, the Machine Learning system,
+    and the supporting infrastructure, and distinguishing the data pipeline from the model pipeline. Account
+    for the limits of this decomposition, since Machine Learning components interact in non-obvious ways
+    and improving one can degrade overall quality. Fix the properties the structure has to guarantee,
+    deriving its boundaries from the architecture requirements and the Service Level Objectives it has
+    to support, linking architectural tactics to the quality requirements they satisfy, and treating stability
+    under shifting data distributions as an architectural goal. Consider monitoring and maintenance from
+    the outset, choose the inference hardware against the requirements already defined, and treat differences
+    between the training and deployment environments as a constraint, since they can change model behavior.
+  primaryStudies:
+  - P4
+  - P11
+  - P13
+  - P16
+  - P18
+  literature:
+  - serban2022
+  - gamaSurveyConceptDrift2014
+- id: A2
+  title: Design data and model pipeline
+  description: >-
+    Structure the pipeline as connected modules for preparing, training, evaluating, validating, and serving,
+    including the return path through which serving data is logged and fed back as training data. Share
+    the preparation logic between training and serving rather than reimplementing it on each side, and
+    make data validation part of the structure, since a defect in feature generation can alter production
+    without any code or data changing. Integrate the data and model stages to prevent training-serving
+    skew and avoid the accumulation of glue code and undocumented dependencies. Build the pipeline and
+    its infrastructure from an initial smaller dataset, so that the surrounding structure exists before
+    data collection is finished.
+  primaryStudies:
+  - P1
+  - P17
+  - P18
+  literature:
+  - baylorTFXTensorFlowBasedProductionScale2017
+  - sculleyHiddenTechnicalDebt2015
+- id: A3
+  title: Define training and experiment architecture
+  description: >-
+    Treat experiment management as a first-class element of the system, holding data, models, metadata,
+    and software, where metadata covers parameters, quality metrics, experiments, pipelines, and execution
+    logs, and software extends to configurations, environment dependencies, and containers. Version training
+    data, experiment settings, and model code together so that results are reproducible and each model
+    is traceable to the dataset records it was built from. Define how the dependencies between data versions,
+    model weights, libraries, and software environments are managed across the lifecycle, so that the
+    same strategy applies from experimentation to deployment. Decide whether the architecture provides
+    lineage alone or full provenance, since knowing which inputs produced an output is weaker than knowing
+    which transformations did.
+  primaryStudies:
+  - P9
+  - P10
+  - P18
+- id: A4
+  title: Define deployment and operational framework
+  description: >-
+    Select the arrangement through which the wider system tolerates an incorrect model output, whether
+    a monitor acting on that output, an aggregator combining several independent models, or a switch transferring
+    control to an alternative, and define the substituted value, whether a fixed safe output or the last
+    known good one. Specify how a model is replaced in service, either by placing the system in a safe
+    state or by running live and backup channels. Provide a module that tracks usage and performance and
+    supports strategies such as A/B testing, use containers and orchestration to keep the arrangement
+    portable across environments, and decide between managed services and open-source systems under the
+    organization's own control. Verify that the selected technical stack, hosting arrangement, and deployment
+    mode respect the cost and resource constraints, and record the expected infrastructure costs.
+  primaryStudies:
+  - P1
+  - P8
+  - P9
+  - P13
+  - P16
+- id: A5
+  title: Plan for resilience and recovery
+  description: >-
+    Specify the backup strategies and disaster recovery procedures for the critical components of the
+    system, covering not only the serving infrastructure but also the data pipelines, model registries,
+    and experiment records from which a model in service would have to be rebuilt. Define the recovery
+    objectives of each component and the order in which components are restored, and record them in the
+    Disaster Recovery Plan so that their support can be verified before the system is deployed.
+- id: A6
+  title: Define monitoring and observability layer
+  description: >-
+    Specify what is observed at the model inputs, in the operating environment, inside the model, and
+    at its outputs, and treat the detection of distributional change as an architectural concern. Compare
+    the statistics of serving data against those of training data so that skew is caught before it reaches
+    the model. Record enough to reconstruct model behavior after an incident, with inputs recorded continually,
+    protected against alteration, and retained for a defined period. Give the layer a decision function,
+    comparing observed or predicted performance against the success criteria in the Data Requirements
+    Specification.
+  primaryStudies:
+  - P8
+  - P13
+  - P17
+  literature:
+  - gamaSurveyConceptDrift2014
+  - baylorTFXTensorFlowBasedProductionScale2017
+- id: A7
+  title: Define retraining mechanisms
+  description: >-
+    Define how the model in service is updated in response to what the monitoring layer observes, preferring
+    fine-tuning over training from scratch, requiring every update to pass a fresh evaluation before deployment,
+    and comparing each updated model against its predecessors so that its evolution becomes visible. Specify
+    how updates are applied safely, monitoring fleet diversity when they are rolled out incrementally,
+    and treat retraining as a standing responsibility of the model pipeline alongside auditing, versioning,
+    and monitoring.
+  primaryStudies:
+  - P1
+  - P8
+  - P13
+  - P16
+  literature:
+  - serban2022
+- id: A8
+  title: Document architecture
+  description: >-
+    Allocate the system requirements to the architectural entities that satisfy them, and maintain traceability
+    between those entities, the requirements, the interface definitions, and the verification methods.
+    Treat configuration as part of the architecture record, since it tends to grow large and poorly documented
+    and can exceed the code that trains the model. Capture architectural decisions in a form that assessors
+    can inspect and that can be traced back to the codebase, rather than in prose alone.
+  primaryStudies:
+  - P9
+  - P11
+  - P18
+  literature:
+  - sculleyHiddenTechnicalDebt2015
+changes:
+- annotation: A-18
+  text: Missing Service Level Agreements
+  redVotes: 0
+  yellowVotes: 0
+  decision: partial
+  changes:
+  - kind: added
+    target: Input
+    text: Architecture Requirements Specification
+  - kind: updated
+    target: A1
+    text: boundaries derived from the architecture requirements
+  - kind: updated
+    target: Outcome (c)
+    text: includes the Service Level Objectives
+- annotation: A-19
+  text: Missing cost analysis
+  redVotes: 3
+  yellowVotes: 0
+  decision: adopted
+  changes:
+  - kind: added
+    target: Input
+    text: Cost and Resource Constraint Record
+  - kind: updated
+    target: A4
+    text: verify the technical stack against the cost constraints
+  - kind: updated
+    target: Output
+    text: System Architecture Documentation includes infrastructure costs
+  - kind: added
+    target: Outcome (f)
+    text: infrastructure cost baseline
+- annotation: A-20
+  text: A Disaster Recovery Plan isn't defined
+  redVotes: 0
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: added
+    target: A5
+    text: Plan for resilience and recovery
+  - kind: added
+    target: Output
+    text: Disaster Recovery Plan
+  - kind: updated
+    target: Purpose and outcome (e)
+    text: recovery mechanisms
+- annotation: A-21
+  text: No formal dependency management model for data, models, and software
+  redVotes: 0
+  yellowVotes: 0
+  decision: adopted
+  changes:
+  - kind: updated
+    target: A3
+    text: dependency management across the lifecycle
+  - kind: added
+    target: Outcome (g)
+    text: defined dependency management

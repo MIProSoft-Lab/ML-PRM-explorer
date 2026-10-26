@@ -1,0 +1,181 @@
+id: P08
+number: 8
+origin: decomposed
+name: Data Source Identification Process
+purpose: >-
+  The purpose of the *Data Source Identification Process* is to discover and document candidate datasets
+  from both internal and external repositories to establish the foundation for the Machine Learning model.
+  It extracts the data specifications from the data requirements, and checks discovered data sources for
+  any licensing, legal, or ethical implications before any data collection or ingestion takes place.
+outcomes:
+- id: a
+  text: >-
+    Relevant data sources identified, assessed, mapped to the data requirements, and documented.
+- id: b
+  text: >-
+    Clear understanding of internal and external dataset availability, quality, and metadata, including
+    for undocumented sources.
+- id: c
+  text: Known legal, ethical, and privacy conditions.
+- id: d
+  text: Identified data gaps and complementary sources.
+- id: e
+  text: Established relationships between data requirements and sources.
+inputs:
+- workProduct: data-requirements-specification
+  name: Data Requirements Specification
+  description: >-
+    The expected values, formats, quality, and metadata of the data the system needs.
+  serves:
+  - a
+  - d
+  - e
+- workProduct: data-landscape-assessment
+  name: Data Landscape Assessment
+  description: The viability of a data-driven solution given the available data and resources.
+  serves:
+  - b
+  - d
+outputs:
+- workProduct: data-catalog
+  name: Data Catalog
+  description: >-
+    The inventory of internal and external sources, with their mapping to the data requirements, documentation
+    status, quality assessments, and legal and ethical reviews.
+  serves:
+  - a
+  - b
+  - c
+  - d
+  - e
+activities:
+- id: A1
+  title: Analyze data requirements
+  description: >-
+    Translate system requirements into data specifications that guide the dataset search strategy. Specify
+    fundamental data properties, such as target variables, feature domains, expected schemas, volume boundaries,
+    and temporal or geographic parameters, to focus collection efforts on relevant datasets. State the
+    distribution the data must exhibit so that every case the system is expected to distinguish is represented
+    in sufficient quantity, and agree on the admissible ranges with a domain expert rather than inferring
+    them from whatever sample is available.
+  primaryStudies:
+  - P10
+  - P13
+  - P16
+- id: A2
+  title: Survey and map internal data sources
+  description: >-
+    Discover and evaluate existing data assets distributed across internal organizational systems, and
+    map each candidate against the data specifications defined in A1 to determine its relevance, so that
+    internal discovery is filtered by the requirements rather than producing a general inventory. Use
+    data catalogs or metadata repositories where they exist to assess available candidate sources, promote
+    asset reuse, and identify internal data gaps, recording for each candidate its owner, the rules governing
+    its use, and the level of control its criticality demands. Establish what access the team will actually
+    be granted, since privileges can differ within a project, and identify where sources recording the
+    same events in incompatible formats will have to be reconciled.
+- id: A3
+  title: Collect and evaluate existing documentation
+  description: >-
+    For each candidate internal source, gather the documentation that already exists, such as data dictionaries,
+    schema definitions, catalog entries, and the knowledge held by the source owners, and verify that
+    it is available, current, and consistent with the source it describes. Prioritize documented sources
+    where alternatives exist, and record which sources lack sufficient documentation so that they can
+    be examined before any data is collected.
+- id: A4
+  title: Perform technical source discovery
+  description: >-
+    Where documentation is missing or insufficient, examine the source directly to recover its structure,
+    including its schema, keys, field types, value ranges, and update frequency, and confirm the meaning
+    of each field with the source owners or domain experts. This discovery is limited to establishing
+    what a source contains and whether it can satisfy the data requirements; the profiling of the collected
+    data belongs to the *Exploratory Data Analysis Process*.
+- id: A5
+  title: Identify external data sources
+  description: >-
+    Discover complementary datasets from external environments, such as public records, open data portals,
+    and commercial providers. Search public repositories and open data portals, consider commercial providers,
+    and consider generating the data through controlled trials or synthesis where no suitable source exists.
+    Conduct a formal risk assessment of any provider before acquisition, covering its supply chain, the
+    preprocessing already applied to the data, its governance practices, and the policies binding it.
+    Obtain any pre-existing dataset from a trustworthy source through means that guarantee its integrity
+    in transit, and where data is synthesized, establish that it represents the intended operational domain
+    rather than the behavior of the generator.
+  primaryStudies:
+  - P4
+  - P8
+  - P9
+  - P16
+  - P17
+- id: A6
+  title: Review data licensing
+  description: >-
+    Evaluate usage terms, copyright protections, and distribution agreements associated with candidate
+    datasets. Check licensing conditions before pipeline integration so that only datasets compliant with
+    contractual boundaries and intellectual property rights are included, and check the terms attaching
+    to the data underlying a candidate artifact as well as those of the artifact itself.
+  primaryStudies:
+  - P3
+  - P10
+  - P16
+- id: A7
+  title: Review legal aspects
+  description: >-
+    Assess candidate datasets against applicable data protection regulations and privacy policies. Verify
+    consent mechanisms and the purpose for which collection was authorized, and evaluate re-identification
+    risks, giving particular attention to linkage with auxiliary information available elsewhere. Record
+    the access rights, ownership, and retention terms attaching to each source.
+  primaryStudies:
+  - P3
+- id: A8
+  title: Conduct ethical review
+  description: >-
+    Screen candidate datasets to detect representation biases, sample imbalances, and potential social
+    harms. Assess demographic coverage and contextual diversity before training, and name the demographic
+    categories the data has to cover, to prevent downstream models from producing unfair or discriminatory
+    outcomes.
+  primaryStudies:
+  - P3
+  - P10
+- id: A9
+  title: Document sources
+  description: >-
+    Record metadata regarding dataset origin, schema structure, access rights, and known limitations.
+    Log these details to support reproducibility and future extraction and manipulation of the dataset,
+    including the license under which each asset is held and the association between a dataset and the
+    experiments and pipelines that consumed it.
+  primaryStudies:
+  - P3
+  - P9
+  - P10
+changes:
+- annotation: A-25
+  text: No activity establishes relationships between A1 and A2
+  redVotes: 0
+  yellowVotes: 0
+  decision: adopted
+  changes:
+  - kind: updated
+    target: A2
+    text: Survey and map internal data sources
+  - kind: updated
+    target: Outcome (a)
+    text: sources mapped to the data requirements
+- annotation: A-26
+  text: >-
+    Many data sources are not documented; documented sources should be requested first
+  redVotes: 0
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: added
+    target: A3
+    text: Collect and evaluate existing documentation
+  - kind: added
+    target: A4
+    text: Perform technical source discovery
+  - kind: updated
+    target: Outcome (b)
+    text: includes metadata and undocumented sources
+  - kind: updated
+    target: Output
+    text: Data Catalog includes documentation status

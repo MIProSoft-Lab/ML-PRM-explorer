@@ -1,0 +1,303 @@
+// Sveltia CMS configuration, generated so that every PRM version in
+// content/versions.yaml gets its own collections in the admin panel.
+import type { APIRoute } from 'astro';
+import { stringify } from 'yaml';
+import { versions } from '../../lib/content';
+import { locales, defaultLocale } from '../../i18n/ui';
+
+const dup = { i18n: 'duplicate' as const };
+const tr = { i18n: true };
+
+const localizedText = (name: string, label: string, widget = 'string') => ({
+  name,
+  label,
+  widget: 'object',
+  fields: locales.map((l) => ({ name: l, label: l.toUpperCase(), widget, required: l === defaultLocale })),
+});
+
+const ioFields = [
+  { name: 'workProduct', label: 'Work product ID', widget: 'string', hint: 'Same ID in every process that uses this work product, e.g. raw-dataset.', ...dup },
+  { name: 'name', label: 'Name', widget: 'string', ...tr },
+  { name: 'description', label: 'Description', widget: 'text', required: false, ...tr },
+  { name: 'serves', label: 'Supports outcomes', widget: 'list', hint: 'Outcome letters, e.g. a, b', required: false, ...dup },
+  { name: 'optional', label: 'Optional', widget: 'boolean', required: false, default: false, ...dup },
+];
+
+const processFields = [
+  { name: 'id', label: 'ID', widget: 'string', pattern: ['^P\\d{2}$', 'P followed by two digits, e.g. P26'], ...dup },
+  { name: 'number', label: 'Number', widget: 'number', value_type: 'int', ...dup },
+  {
+    name: 'origin',
+    label: 'Origin',
+    widget: 'select',
+    options: [
+      { label: 'Standards and literature', value: 'standards-and-literature' },
+      { label: 'Standards only', value: 'standards-only' },
+      { label: 'Decomposed', value: 'decomposed' },
+    ],
+    ...dup,
+  },
+  { name: 'name', label: 'Name', widget: 'string', ...tr },
+  { name: 'purpose', label: 'Purpose', widget: 'text', hint: 'Use *text* for emphasis.', ...tr },
+  {
+    name: 'outcomes',
+    label: 'Outcomes',
+    widget: 'list',
+    summary: '({{fields.id}}) {{fields.text}}',
+    ...tr,
+    fields: [
+      { name: 'id', label: 'Letter', widget: 'string', ...dup },
+      { name: 'text', label: 'Text', widget: 'text', ...tr },
+    ],
+  },
+  { name: 'inputs', label: 'Inputs', widget: 'list', summary: '{{fields.name}}', required: false, ...tr, fields: ioFields },
+  { name: 'outputs', label: 'Outputs', widget: 'list', summary: '{{fields.name}}', required: false, ...tr, fields: ioFields },
+  {
+    name: 'activities',
+    label: 'Activities',
+    widget: 'list',
+    summary: '{{fields.id}}. {{fields.title}}',
+    ...tr,
+    fields: [
+      { name: 'id', label: 'ID', widget: 'string', hint: 'A1, A2, …', ...dup },
+      { name: 'title', label: 'Title', widget: 'string', ...tr },
+      { name: 'description', label: 'Description', widget: 'text', ...tr },
+      { name: 'primaryStudies', label: 'Primary studies', widget: 'list', hint: 'P1 … P18', required: false, ...dup },
+      { name: 'literature', label: 'Specialized literature', widget: 'list', hint: 'Bibliography keys from References', required: false, ...dup },
+    ],
+  },
+  {
+    name: 'standards',
+    label: 'Traceability to the standards',
+    widget: 'list',
+    required: false,
+    summary: '{{fields.standard}} {{fields.activity}} → {{fields.prmActivity}}',
+    ...dup,
+    fields: [
+      { name: 'standard', label: 'Standard', widget: 'string' },
+      { name: 'standardProcess', label: 'Standard process', widget: 'string', required: false },
+      { name: 'activity', label: 'Standard activity', widget: 'string', required: false },
+      { name: 'prmActivity', label: 'PRM activity', widget: 'string', required: false },
+      { name: 'note', label: 'Note', widget: 'string', required: false },
+    ],
+  },
+  {
+    name: 'changes',
+    label: 'Changes from the previous version',
+    widget: 'list',
+    required: false,
+    summary: '{{fields.annotation}} ({{fields.decision}}) {{fields.text}}',
+    ...tr,
+    fields: [
+      { name: 'annotation', label: 'Annotation ID', widget: 'string', ...dup },
+      { name: 'raisedElsewhere', label: 'Raised in another process', widget: 'boolean', required: false, ...dup },
+      { name: 'text', label: 'Annotation', widget: 'text', ...tr },
+      { name: 'redVotes', label: 'Red votes', widget: 'number', value_type: 'int', required: false, ...dup },
+      { name: 'yellowVotes', label: 'Yellow votes', widget: 'number', value_type: 'int', required: false, ...dup },
+      { name: 'decision', label: 'Decision', widget: 'select', options: ['adopted', 'partially adopted', 'rejected', 'deferred'], ...dup },
+      {
+        name: 'changes',
+        label: 'Changes made',
+        widget: 'list',
+        required: false,
+        ...tr,
+        fields: [
+          { name: 'kind', label: 'Kind', widget: 'select', options: ['added', 'updated', 'removed'], ...dup },
+          { name: 'target', label: 'Target', widget: 'string', required: false, hint: 'A5, Output, Outcome (c)…', ...dup },
+          { name: 'text', label: 'Text', widget: 'text', ...tr },
+        ],
+      },
+    ],
+  },
+];
+
+const lifecycleFields = [
+  { name: 'id', label: 'ID', widget: 'string', hint: 'Lowercase with hyphens; also the file name.', ...dup },
+  { name: 'name', label: 'Name', widget: 'string', ...tr },
+  { name: 'status', label: 'Status', widget: 'select', options: ['draft', 'published'], default: 'draft', ...dup },
+  { name: 'prmVersion', label: 'PRM version', widget: 'select', options: versions.map((v) => v.id), ...dup },
+  { name: 'source', label: 'Source', widget: 'string', required: false, hint: 'e.g. CRISP-DM (P14)', ...tr },
+  { name: 'description', label: 'Description', widget: 'text', required: false, ...tr },
+  {
+    name: 'phases',
+    label: 'Phases',
+    widget: 'list',
+    summary: '{{fields.name}}',
+    ...tr,
+    fields: [
+      { name: 'id', label: 'ID', widget: 'string', ...dup },
+      { name: 'name', label: 'Name', widget: 'string', ...tr },
+      { name: 'description', label: 'Description', widget: 'text', required: false, ...tr },
+      { name: 'processes', label: 'Processes', widget: 'list', hint: 'Process IDs in order, e.g. P08, P09', ...dup },
+      { name: 'iterative', label: 'Repeated', widget: 'boolean', required: false, default: false, ...dup },
+      { name: 'returnsTo', label: 'Returns to phase (ID)', widget: 'string', required: false, ...dup },
+      { name: 'returnNote', label: 'When it returns', widget: 'string', required: false, ...tr },
+    ],
+  },
+];
+
+export const GET: APIRoute = () => {
+  const repo = import.meta.env.PUBLIC_REPO ?? 'OWNER/REPO';
+  const config = {
+    backend: {
+      name: 'github',
+      repo,
+      branch: import.meta.env.PUBLIC_REPO_BRANCH ?? 'main',
+      ...(import.meta.env.PUBLIC_CMS_AUTH_URL ? { base_url: import.meta.env.PUBLIC_CMS_AUTH_URL } : {}),
+      commit_messages: {
+        create: 'Create {{collection}} “{{slug}}”',
+        update: 'Update {{collection}} “{{slug}}”',
+        delete: 'Delete {{collection}} “{{slug}}”',
+      },
+    },
+    site_url: import.meta.env.SITE,
+    media_folder: 'public/uploads',
+    public_folder: '/uploads',
+    i18n: { structure: 'multiple_folders', locales: [...locales], default_locale: defaultLocale },
+    collections: [
+      ...[...versions].reverse().map((v) => ({
+        name: `processes-${v.id}`,
+        label: `Processes ${v.id}`,
+        label_singular: `Process ${v.id}`,
+        folder: `content/prm/${v.id}/processes`,
+        extension: 'yaml',
+        format: 'yaml',
+        identifier_field: 'id',
+        slug: '{{id}}',
+        summary: '{{id}} {{name}}',
+        sortable_fields: { fields: ['number', 'name'], default: { field: 'number' } },
+        create: true,
+        delete: false,
+        i18n: true,
+        fields: processFields,
+      })),
+      {
+        name: 'lifecycles',
+        label: 'Lifecycle templates',
+        label_singular: 'Lifecycle template',
+        folder: 'content/lifecycles',
+        extension: 'yaml',
+        format: 'yaml',
+        identifier_field: 'id',
+        slug: '{{id}}',
+        summary: '{{name}} ({{prmVersion}})',
+        create: true,
+        i18n: true,
+        fields: lifecycleFields,
+      },
+      {
+        name: 'settings',
+        label: 'Settings and references',
+        format: 'yaml',
+        i18n: false,
+        files: [
+          {
+            name: 'site',
+            label: 'Site',
+            file: 'content/site.yaml',
+            fields: [
+              localizedText('title', 'Title'),
+              { name: 'author', label: 'Author', widget: 'string' },
+              { name: 'institution', label: 'Institution', widget: 'string', required: false },
+              localizedText('intro', 'Introduction', 'text'),
+            ],
+          },
+          {
+            name: 'versions',
+            label: 'PRM versions',
+            file: 'content/versions.yaml',
+            fields: [
+              { name: 'default', label: 'Default version', widget: 'select', options: versions.map((v) => v.id) },
+              {
+                name: 'versions',
+                label: 'Versions',
+                widget: 'list',
+                summary: '{{fields.id}} ({{fields.status}})',
+                allow_add: false,
+                hint: 'Create a new version with `npm run new-version`, which copies the process files.',
+                fields: [
+                  { name: 'id', label: 'ID', widget: 'string' },
+                  { name: 'status', label: 'Status', widget: 'select', options: ['draft', 'current', 'superseded'] },
+                  localizedText('title', 'Title'),
+                  localizedText('description', 'Description', 'text'),
+                  {
+                    name: 'topology',
+                    label: 'Process map',
+                    widget: 'list',
+                    fields: [
+                      localizedText('group', 'Group'),
+                      { name: 'columns', label: 'Columns', widget: 'list', field: { name: 'column', label: 'Column', widget: 'list', hint: 'Process IDs' } },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: 'studies',
+            label: 'Primary studies',
+            file: 'content/studies.yaml',
+            fields: [
+              {
+                name: 'studies',
+                label: 'Studies',
+                widget: 'list',
+                summary: '{{fields.id}} {{fields.title}}',
+                fields: [
+                  { name: 'id', label: 'ID', widget: 'string' },
+                  { name: 'title', label: 'Title', widget: 'string' },
+                  { name: 'year', label: 'Year', widget: 'number', value_type: 'int' },
+                  { name: 'source', label: 'Found in', widget: 'string' },
+                  { name: 'type', label: 'Type', widget: 'select', options: ['journal', 'conference', 'online', 'other'] },
+                  { name: 'reference', label: 'Bibliography key', widget: 'string', required: false },
+                ],
+              },
+            ],
+          },
+          {
+            name: 'references',
+            label: 'Bibliography',
+            file: 'content/references.yaml',
+            fields: [
+              {
+                name: 'references',
+                label: 'References',
+                widget: 'list',
+                summary: '{{fields.key}}: {{fields.title}}',
+                fields: [
+                  { name: 'key', label: 'Key', widget: 'string' },
+                  { name: 'authors', label: 'Authors', widget: 'string', hint: 'Surname, Name and Surname, Name' },
+                  { name: 'title', label: 'Title', widget: 'string' },
+                  { name: 'year', label: 'Year', widget: 'string' },
+                  { name: 'venue', label: 'Venue', widget: 'string', required: false },
+                  { name: 'publisher', label: 'Publisher', widget: 'string', required: false },
+                  { name: 'doi', label: 'DOI', widget: 'string', required: false },
+                  { name: 'url', label: 'URL', widget: 'string', required: false },
+                ],
+              },
+            ],
+          },
+          ...versions.map((v) => ({
+            name: `work-products-${v.id}`,
+            label: `Work product types ${v.id}`,
+            file: `content/prm/${v.id}/work-products.yaml`,
+            fields: [
+              {
+                name: 'workProducts',
+                label: 'Work products',
+                widget: 'list',
+                summary: '{{fields.id}} ({{fields.type}})',
+                fields: [
+                  { name: 'id', label: 'ID', widget: 'string' },
+                  { name: 'type', label: 'Type', widget: 'select', options: ['information-item', 'artifact', 'record'] },
+                  { name: 'external', label: 'Comes from outside the PRM', widget: 'boolean', required: false, default: false },
+                ],
+              },
+            ],
+          })),
+        ],
+      },
+    ],
+  };
+  return new Response(stringify(config, { aliasDuplicateObjects: false }), { headers: { 'Content-Type': 'text/yaml; charset=utf-8' } });
+};

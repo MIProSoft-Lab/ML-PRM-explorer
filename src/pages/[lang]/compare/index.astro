@@ -1,0 +1,20 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import CompareOverview from '../../../components/CompareOverview.astro';
+import { versions, defaultVersion } from '../../../lib/content';
+import { localePaths } from '../../../lib/paths';
+import { useTranslations, type Locale } from '../../../i18n/ui';
+
+export const getStaticPaths = localePaths;
+const locale = Astro.props.locale as Locale;
+const t = useTranslations(locale);
+
+// Compare the default version with the one before it.
+const i = Math.max(1, versions.findIndex((v) => v.id === defaultVersion));
+const from = versions[i - 1]?.id;
+const to = versions[i]?.id;
+---
+
+<Layout locale={locale} title={t('compare.title')} section="compare">
+  {from && to ? <CompareOverview locale={locale} from={from} to={to} /> : <h1>{t('compare.title')}</h1>}
+</Layout>

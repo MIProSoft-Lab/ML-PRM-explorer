@@ -1,0 +1,168 @@
+id: P03
+number: 3
+origin: standards-and-literature
+name: System Requirements Definition Process
+purpose: >-
+  The purpose of the *System Requirements Definition Process* is to turn stakeholder needs into a set
+  of verifiable system requirements that describe what the ML system must do. It defines functional behavior,
+  data needs, interfaces, and quality targets to create a baseline for design and testing.
+outcomes:
+- id: a
+  text: Defined, consistent, and feasible system requirements.
+- id: b
+  text: Documented functions, data, performance, and interface requirements.
+- id: c
+  text: Resolved conflicts and established performance targets.
+- id: d
+  text: >-
+    Traceability links connecting stakeholder needs to system requirements and future steps.
+inputs:
+- workProduct: stakeholder-requirements-specification
+  name: Stakeholder Requirements Specification
+  description: The agreed stakeholder requirements and their context of use.
+  serves:
+  - a
+  - b
+  - c
+  - d
+outputs:
+- workProduct: system-requirements-specification
+  name: System Requirements Specification
+  description: >-
+    The functional, performance, quality, and interface requirements of the system, with their traceability.
+  serves:
+  - a
+  - b
+  - c
+  - d
+- workProduct: data-requirements-specification
+  name: Data Requirements Specification
+  description: >-
+    The expected values, formats, quality, and metadata of the data the system needs.
+  serves:
+  - a
+  - b
+activities:
+- id: A1
+  title: Review stakeholder requirements
+  description: >-
+    Analyze the stakeholder requirements to find their implications for data, resources, and the operational
+    environment, and identify which expectations cannot be met by a deterministic specification alone.
+    Define the strategy that will be used to identify, express, and manage the system requirements under
+    the selected lifecycle model, accepting that part of the requirement set will only become visible
+    once an initial model exists. Identify the enabling systems and tooling needed to record and maintain
+    the requirements, since artifact management platforms rarely cover this activity.
+  primaryStudies:
+  - P3
+  - P7
+  - P9
+  - P11
+  - P12
+  - P14
+- id: A2
+  title: Define functional behavior
+  description: >-
+    Describe how the system collects and processes data, trains models, and delivers outputs, expressing
+    the functional boundary in terms of the inputs it accepts and the responses it produces. Fix the output
+    specification of each Machine Learning component early so that the surrounding pipeline can be designed
+    independently of model development. Specify the level of autonomy of the system, stating which decisions
+    remain with a human operator and which thresholds that operator can adjust, and define the deterministic
+    fallback rules that apply when the model produces unexpected or out-of-range results.
+  primaryStudies:
+  - P4
+  - P8
+  - P9
+  - P11
+  - P18
+- id: A3
+  title: Identify data and information requirements
+  description: >-
+    Specify the data sources, storage, labeling, and quality criteria the system depends on, stating the
+    expected condition of the data through admissible feature values, accepted formats, and tolerated
+    proportions of missing values, with bounds set to admit plausible real-world observations while rejecting
+    the rest. Express these conditions as a schema so that later processes can verify incoming data against
+    them. Extend the specification to metadata, covering ownership, access rights, usage purpose, and
+    retention, and define the data structures and integration requirements needed for sources to be combined
+    coherently.
+  primaryStudies:
+  - P3
+  - P8
+  - P10
+  - P12
+  - P13
+- id: A4
+  title: Define performance and quality requirements
+  description: >-
+    Set measurable targets for accuracy, latency, robustness, and fairness, together with the input conditions
+    under which those targets are expected to hold, and state the metrics used to evaluate each one rather
+    than leaving their selection to later processes. Define the acceptable error budget and the classes
+    of error that carry the greatest operational impact. Complement predictive targets with quality attributes
+    such as explainability, scalability, and model complexity, and with resource constraints covering
+    inference hardware, computational budget, and the infrastructure the deployed system requires.
+  primaryStudies:
+  - P1
+  - P3
+  - P6
+  - P8
+  - P10
+  - P11
+  - P13
+- id: A5
+  title: Define interface requirements
+  description: >-
+    Identify how the system interacts with Application Programming Interfaces (APIs), users, and other
+    components, specifying the data flows that connect Machine Learning components to conventional software
+    modules and the format in which predictions are exposed. State the non-functional properties expected
+    of the serving interface, including availability, access control, logging, and auditability, so that
+    training and serving code are developed against a shared specification. Account for interactions between
+    Machine Learning components, whose entanglement can propagate errors across the system when they are
+    treated as independently replaceable parts.
+  primaryStudies:
+  - P1
+  - P2
+  - P4
+  - P9
+  - P10
+  - P18
+- id: A6
+  title: Analyze and refine requirements
+  description: >-
+    Check requirements for consistency, feasibility, and verifiability, resolving conflicts and trade-offs
+    between predictive quality and the remaining quality attributes before development proceeds. Consider
+    risks such as data drift, distribution shift, and the divergence between training and operational
+    conditions, and confirm that the specification remains achievable under them. Plan for controlled
+    refinement of the requirement set as data and model requirements become clearer during development,
+    so that changes discovered through data handling are recorded rather than absorbed informally.
+  primaryStudies:
+  - P2
+  - P7
+  - P8
+  - P11
+  - P12
+  - P13
+- id: A7
+  title: Establish traceability
+  description: >-
+    Create bidirectional links between stakeholder needs and system requirements, extending them to the
+    datasets, model versions, and verification methods through which each requirement will be demonstrated.
+    Record the rationale behind the requirement decisions and obtain explicit agreement on the resulting
+    baseline. Because the Machine Learning workflow provides no formal hierarchical decomposition of requirements,
+    and available tooling offers little support for this activity, establish traceability as an explicit
+    project agreement supported by provenance records rather than assuming it from the development infrastructure.
+  primaryStudies:
+  - P5
+  - P8
+  - P9
+  - P11
+standards:
+- standard: ISO/IEC/IEEE 12207
+  activity: a) Prepare for verification
+  standardProcess: Verification Process
+  note: Verification Metrics and Benchmark Definition Process
+- standard: ISO/IEC/IEEE 12207
+  activity: b) Define system requirements
+  standardProcess: System Requirements Definition Process
+- standard: ISO/IEC/IEEE 12207
+  activity: b) Define system requirements
+  standardProcess: System Requirements Definition Process
+  note: Verification Metrics and Benchmark Definition Process

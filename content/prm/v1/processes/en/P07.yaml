@@ -1,0 +1,126 @@
+id: P07
+number: 7
+origin: decomposed
+name: Verification Metrics and Benchmark Definition Process
+purpose: >-
+  The purpose of the *Verification Metrics and Benchmark Definition Process* is to establish a framework
+  for defining evaluation goals, quantitative metrics, baselines, and reporting templates across the lifecycle.
+  This process creates measurable indicators for data quality, model behavior, and non-functional system
+  attributes based on project requirements.
+outcomes:
+- id: a
+  text: Testing and verification activities guided by a consistent evaluation framework.
+- id: b
+  text: Performance and reliability assessed using relevant metrics.
+- id: c
+  text: >-
+    Metrics and benchmarks that remain traceable and comparable across the lifecycle.
+inputs:
+- workProduct: system-requirements-specification
+  name: System Requirements Specification
+  description: The defined system behaviors and constraints.
+  serves:
+  - a
+  - b
+outputs:
+- workProduct: evaluation-framework
+  name: Evaluation Framework
+  description: >-
+    The data-level and model-level metrics, baselines, and benchmarks used for assessment.
+  serves:
+  - a
+  - b
+  - c
+- workProduct: reporting-templates
+  name: Reporting Templates
+  description: Standardized formats for reporting and tracking metrics.
+  serves:
+  - c
+activities:
+- id: A1
+  title: Define evaluation objectives
+  description: >-
+    Derive evaluation objectives from technical requirements and context to establish measurable targets.
+    Formulate high-level evaluation goals and acceptable performance boundaries across quality dimensions
+    to steer the verification strategy, stating the scope of what is to be verified, the expected results,
+    and the priority of each, since exhaustive verification is not achievable and the strategy trades
+    coverage against constraints. State each objective so that it is specific, measurable, achievable,
+    relevant, and time-bound. Record the reasoning behind each chosen metric, and name whoever makes the
+    judgment where a criterion is subjective. Align evaluation goals with organizational expectations
+    and stakeholders.
+  primaryStudies:
+  - P3
+  - P10
+  - P11
+  - P13
+  - P15
+- id: A2
+  title: Define data-level metrics
+  description: >-
+    Define indicators and expectations to validate dataset quality, coverage, and integrity. Formalize
+    type invariants, feature value ranges, and acceptable thresholds to enable automated data validation,
+    extending them to the expected domain of categorical features, the proportion of examples in which
+    a feature must be present, the number of values it may carry, and the verification of externally supplied
+    labels. Establish data quality indicators measuring completeness, class imbalance, and feature coverage
+    across the dataset to prevent representation bias.
+  primaryStudies:
+  - P3
+  - P10
+  - P13
+  - P15
+  - P17
+- id: A3
+  title: Define model-level metrics
+  description: >-
+    Select metrics that capture predictive performance, calibration, and non-functional model behavior,
+    and state what each measure means for the model domain. Partition performance evaluations across demographic
+    and feature-defined slices to prevent bias, and determine which slices warrant that attention. Formulate
+    verification criteria capturing prediction calibration and probability distributions during inference.
+    Detail the reported set for audiences without a Machine Learning background, and fix the definition
+    of any contested property, such as fairness, before it is measured.
+  primaryStudies:
+  - P3
+  - P10
+  - P11
+  - P13
+- id: A4
+  title: Define benchmarks and baselines
+  description: >-
+    Define reference points to contextualize model performance. Define baselines (such as simpler models,
+    heuristics, or rule-based implementations) to confirm model functionality and its value, including
+    any non-Machine-Learning solution already in service. Establish how the data is going to be separated
+    for selecting among candidate models from the data reserved for judging whether the selected model
+    generalizes. Incorporate reference points (such as human-level performance or competitor benchmarks)
+    to evaluate model competence.
+  primaryStudies:
+  - P4
+  - P10
+  - P11
+  - P13
+  - P15
+- id: A5
+  title: Define reporting standards
+  description: >-
+    Define the reporting templates to capture metrics across the lifecycle. Standardize guidelines for
+    recording evaluation results, decisions, and model parameters. Define documentation workflows for
+    assumptions, trade-offs, limitations, and considerations across teams and stakeholders, and set the
+    minimum content each record must reach.
+  primaryStudies:
+  - P3
+  - P10
+  - P11
+  - P12
+  - P15
+- id: A6
+  title: Connect to continuous verification
+  description: >-
+    Plan how to extend development metrics into validation and verification. Plan the monitoring of live
+    data streams for distribution shifts to detect model degradation. Establish alerting thresholds to
+    flag quality regressions, schema violations, or anomalous input spikes, and determine what has to
+    be recorded, for how long, and with what protection against alteration for behavior to be reconstructed
+    after an incident. Retain the business measures alongside the technical ones, since a system can satisfy
+    its technical criteria while ceasing to deliver the outcome it was built for.
+  primaryStudies:
+  - P12
+  - P13
+  - P15

@@ -1,0 +1,131 @@
+id: P22
+number: 22
+origin: standards-and-literature
+name: Continuous Validation Process
+purpose: >-
+  The purpose of the *Continuous Validation Process* is to track input data and model outputs after deployment
+  to detect issues early. By monitoring relevant metrics in production, it helps identify problems such
+  as data drift or performance degradation before they cause failures.
+outcomes:
+- id: a
+  text: Production data monitored for drift, schema changes, and anomalies.
+- id: b
+  text: Model behavior assessed through performance tracking and statistical deviations.
+- id: c
+  text: Model confidence and uncertainty analyzed to detect degradation.
+- id: d
+  text: Operational metrics, such as latency and resource usage, tracked.
+- id: e
+  text: Alerting mechanisms configured to notify stakeholders of deviations.
+- id: f
+  text: A Monitoring Record documenting indicators, alerts, and response procedures.
+inputs:
+- workProduct: live-model-outputs
+  name: Live Model Outputs
+  description: Predictions on live data, logged with their inputs.
+  serves:
+  - a
+  - b
+  - c
+  - d
+outputs:
+- workProduct: monitoring-record
+  name: Monitoring Record
+  description: Tracked indicators, observations, incidents, and responsibilities.
+  serves:
+  - a
+  - b
+  - c
+  - d
+  - f
+- workProduct: alerting-configuration
+  name: Alerting Configuration
+  description: Thresholds, rules, and responses for each alert.
+  serves:
+  - e
+activities:
+- id: A1
+  title: Monitor input data
+  description: >-
+    Compare the data received in production with the data the model was trained on and with earlier production
+    data, to detect drift in their distributions, deterioration in their quality, and changes in their
+    structure or meaning. Monitor the sources and systems that supply the data, so that changes, failures,
+    or aging in them are detected even when they produce no evident anomaly in the values. Select comparison
+    methods suited to the volume and dimensionality of the data, and consider that changes may also arise
+    from the use of the model outside its intended purpose or from the reaction of users to its outputs.
+  primaryStudies:
+  - P8
+  - P10
+  - P13
+  - P18
+- id: A2
+  title: Monitor model behavior
+  description: >-
+    Track the performance of the model in production against the established metrics, measuring it directly
+    when ground truth becomes available and inferring it from the distribution of its outputs when it
+    does not. Monitor the other requirements expected to change over time, such as fairness, transparency,
+    privacy, and execution time, together with operational indicators that confirm the model is running
+    and consuming resources as expected. Distinguish gradual degradation caused by changing data from
+    loss of validity caused by changes in the problem itself, and consider the age of the model and the
+    effects of previous updates as indicators in their own right.
+  primaryStudies:
+  - P3
+  - P8
+  - P10
+  - P11
+  - P13
+  - P16
+  literature:
+  - sculleyHiddenTechnicalDebt2015
+- id: A3
+  title: Configure alerting
+  description: >-
+    Define for each monitored indicator the thresholds, evaluation frequency, and expected response, balancing
+    the detection of real problems against the number of alerts that do not lead to action. Formulate
+    alerts so that they convey the scope and likely effect of the deviation, prioritize those affecting
+    the elements on which the service depends, and associate each with the actions to be taken. Configure
+    the automated responses authorized by the maintenance strategy, such as guard rails on the outputs
+    or the switch to an alternative model, and route the alerts that require a decision on the model to
+    the maintenance process. Revise the configuration whenever the model is updated.
+  primaryStudies:
+  - P6
+  - P14
+  - P17
+  literature:
+  - breckMLTestScore2017
+  - sculleyHiddenTechnicalDebt2015
+- id: A4
+  title: Document monitoring
+  description: >-
+    Record in the Monitoring Record the indicators being tracked, the alert rules and the rationale behind
+    each threshold, the observations and validation results over time, and the people responsible for
+    responding to each alert. Link each observation to the model version in service when it was made,
+    so that it can be related to the model's lineage maintained by the maintenance process. Keep the record
+    consistent across the systems of the organization, so that the monitoring of different models remains
+    comparable.
+  primaryStudies:
+  - P10
+  - P14
+  - P17
+standards:
+- standard: ''
+  activity: a) Monitor for data drift
+  prmActivity: A1
+- standard: ''
+  activity: b) Monitor for concept drift
+  prmActivity: A2
+- standard: ''
+  activity: c) Monitor other requirements expected to change over time
+  prmActivity: A2
+- standard: ''
+  activity: d) Decide whether to perform maintenance
+  prmActivity: A3
+- standard: ''
+  activity: e) Apply guard rails
+  prmActivity: A3
+- standard: ''
+  activity: f) Determine the frequency of validation
+  prmActivity: A3
+- standard: ''
+  activity: ''
+  prmActivity: A4

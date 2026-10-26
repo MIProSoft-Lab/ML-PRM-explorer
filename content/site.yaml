@@ -1,0 +1,24 @@
+title:
+  en: ML Process Reference Model
+  es: Modelo de Referencia de Procesos de ML
+  ca: Model de Referència de Processos de ML
+author: Toni Crespí
+institution: Universitat de les Illes Balears
+intro:
+  en: >-
+    A Process Reference Model (PRM) for the Machine Learning lifecycle. Following ISO/IEC 33004 and
+    ISO/IEC/IEEE 24774, it focuses on the technical processes group and specifies each process with its
+    purpose, outcomes, activities, inputs, and outputs. It keeps the names and structure of ISO/IEC/IEEE
+    12207, ISO/IEC/IEEE 15288, and ISO/IEC 5338, so it can be used alongside them.
+  es: >-
+    Un Modelo de Referencia de Procesos (PRM) para el ciclo de vida del Machine Learning. Siguiendo
+    ISO/IEC 33004 e ISO/IEC/IEEE 24774, se centra en el grupo de procesos técnicos y especifica cada
+    proceso con su propósito, resultados, actividades, entradas y salidas. Mantiene los nombres y la
+    estructura de ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 e ISO/IEC 5338, de modo que puede utilizarse
+    junto con ellas.
+  ca: >-
+    Un Model de Referència de Processos (PRM) per al cicle de vida del Machine Learning. Seguint
+    ISO/IEC 33004 i ISO/IEC/IEEE 24774, se centra en el grup de processos tècnics i especifica cada
+    procés amb el seu propòsit, resultats, activitats, entrades i sortides. Manté els noms i l'estructura
+    d'ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 i ISO/IEC 5338, de manera que es pot utilitzar juntament
+    amb elles.

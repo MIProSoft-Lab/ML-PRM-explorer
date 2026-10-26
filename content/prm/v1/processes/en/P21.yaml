@@ -1,0 +1,179 @@
+id: P21
+number: 21
+origin: standards-and-literature
+name: System Validation Process
+purpose: >-
+  The purpose of the *System Validation Process* is to test Machine Learning models as software artifacts,
+  to confirm that they integrate correctly and behave reliably. It focuses on functional behavior, environment
+  compatibility, and robustness rather than only on predictive accuracy.
+outcomes:
+- id: a
+  text: Testing scope and plan defined.
+- id: b
+  text: Functional and API-level tests executed, confirming correct interfaces.
+- id: c
+  text: Metamorphic and oracle-approximation tests executed.
+- id: d
+  text: Runtime behavior assessed regarding latency and resources.
+- id: e
+  text: Dependency and environment tests completed.
+- id: f
+  text: Stress tests and failure-scenario evaluations carried out.
+- id: g
+  text: A System Validation Report documenting tests, results, and identified issues.
+inputs:
+- workProduct: integrated-system
+  name: Integrated System
+  description: The application with the model, to be tested.
+  serves:
+  - b
+  - d
+  - e
+  - f
+- workProduct: evaluation-framework
+  name: Evaluation Framework
+  description: Metrics, baselines, and thresholds to judge results.
+  serves:
+  - a
+  - c
+  - d
+- workProduct: reporting-templates
+  name: Reporting Templates
+  description: Standard formats for recording results.
+  serves:
+  - g
+outputs:
+- workProduct: system-validation-report
+  name: System Validation Report
+  description: Tests performed, results, and identified issues.
+  serves:
+  - a
+  - g
+activities:
+- id: A1
+  title: Plan testing
+  description: >-
+    Define the validation strategy and scope, including the characteristics of the integrated system to
+    be validated, the techniques to be applied, and the constraints that limit what can be validated.
+    Select an environment as close as possible to the operational one, and derive test scenarios from
+    the way the system is expected to be used, involving stakeholders where needed to make them representative.
+    Identify the real or synthetic inputs to be used, ensuring that synthetic inputs intended to represent
+    normal operation are themselves credible, and plan for the test data to be revised as the model and
+    its operating conditions evolve.
+  primaryStudies:
+  - P8
+  - P10
+  - P15
+- id: A2
+  title: Perform functional testing
+  description: >-
+    Test the interfaces and functions through which the model is used, confirming that it accepts valid
+    inputs, rejects or handles invalid ones without failure, and returns outputs in the expected form.
+    Include in the tests the code and configuration that define the model and the pipeline that produces
+    it. Where the expected output for a given input cannot be determined in advance, use relations that
+    must hold between the outputs of related inputs, and repeat the tests whenever the model changes to
+    detect incompatibilities with the rest of the system.
+  primaryStudies:
+  - P4
+  - P6
+  - P8
+  - P11
+  literature:
+  - breckMLTestScore2017
+  - zhangMachineLearningTesting2022
+- id: A3
+  title: Monitor runtime environment
+  description: >-
+    Observe the integrated system over a defined validation period while it runs under real or representative
+    conditions, before full operational use. Assess the validity of the predictions on current inputs,
+    recognizing that quality measured on earlier data is only an estimate of quality on live data. Measure
+    latency, throughput, and resource consumption, comparing them across versions of code, data, and model
+    to detect both sudden and gradual regressions.
+  primaryStudies:
+  - P11
+  - P16
+  literature:
+  - breckMLTestScore2017
+- id: A4
+  title: Test dependencies and environment
+  description: >-
+    Verify that the model behaves consistently when deployed in clean, reproducible environments that
+    differ from the one in which it was developed. Confirm that its libraries, platforms, and configurations
+    are identified, controlled, and approved according to organizational policy, and that changes in them
+    can be distinguished from changes in the model itself. Extend these checks to the data dependencies
+    of the system, identifying the external signals the model relies on and confirming that their versions
+    are controlled.
+  primaryStudies:
+  - P1
+  - P8
+  - P9
+  - P11
+  literature:
+  - breckMLTestScore2017
+  - sculleyHiddenTechnicalDebt2015
+- id: A5
+  title: Test failures and robustness
+  description: >-
+    Test the system beyond its typical behavior, using stress conditions and invalid, extreme, or perturbed
+    inputs across the whole input domain, including inputs that may result from failures elsewhere in
+    the system. Simulate the failure scenarios relevant to the system, such as unavailable or corrupted
+    data sources, unavailable inference, or excessive response times, to confirm that it degrades gracefully
+    and that the contingency measures defined in the architecture behave as intended. Confirm that any
+    mechanism limiting the outputs of the model holds when the model misbehaves.
+  primaryStudies:
+  - P6
+  - P8
+  - P13
+  - P18
+  literature:
+  - polletiHierarchicalFallbackArchitecture2025
+- id: A6
+  title: Test rollback procedures
+  description: >-
+    Design and execute tests that confirm the rollback procedures are triggered under the conditions defined
+    for them and can be carried out within the expected time. Verify that the restored model works with
+    the data, features, and other system elements it depends on, and that it remains compatible with the
+    components that consume its outputs. Ensure that the procedures are documented and exercised regularly,
+    so that they do not depend on the knowledge of specific individuals.
+  primaryStudies:
+  - P4
+  - P13
+  literature:
+  - sculleyHiddenTechnicalDebt2015
+  - breckMLTestScore2017
+- id: A7
+  title: Document results
+  description: >-
+    Record in the System Validation Report the tests performed, their results, the anomalies encountered,
+    and the limitations and assumptions of the validation, using the Reporting Templates so that successive
+    validations remain comparable. Describe each identified issue with enough information for the process
+    where it originated to address it, and track its resolution. Obtain agreement that the validation
+    criteria have been met, and maintain traceability between the validation results and the requirements
+    they refer to.
+  primaryStudies:
+  - P8
+  - P15
+  literature:
+  - breckMLTestScore2017
+standards:
+- standard: ''
+  activity: a) Prepare for validation
+  prmActivity: A1
+- standard: ''
+  activity: b) Perform validation
+  prmActivity: A2
+- standard: ''
+  activity: b) Perform validation
+  prmActivity: A3
+- standard: ''
+  activity: b) Perform validation
+  prmActivity: A4
+- standard: ''
+  activity: b) Perform validation
+  prmActivity: A5
+- standard: ''
+  activity: b) Perform validation
+  prmActivity: A6
+- standard: ''
+  activity: c) Manage results of validation
+  prmActivity: A7

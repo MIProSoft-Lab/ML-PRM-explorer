@@ -1,0 +1,34 @@
+id: reference-sequence
+name: Reference sequence (example)
+status: draft
+prmVersion: v2
+description: >-
+  An example arrangement of the processes of the PRM in the order of the topology, with the data
+  preparation and modeling phases repeated until the model meets its success criteria. It shows how a
+  lifecycle template is defined; it is not one of the lifecycle models of the literature review.
+phases:
+  - id: problem
+    name: Problem and requirements
+    processes: [P01, P02, P03, P07]
+  - id: architecture
+    name: Architecture and design
+    processes: [P04, P05, P06]
+  - id: data
+    name: Data preparation
+    processes: [P08, P09, P10, P11, P12, P13]
+    iterative: true
+  - id: modeling
+    name: Modeling
+    processes: [P14, P15, P16, P17]
+    iterative: true
+    returnsTo: data
+    returnNote: When the model does not meet its success criteria, return to data preparation.
+  - id: deployment
+    name: Integration and deployment
+    processes: [P18, P19, P20, P21]
+  - id: operation
+    name: Operation
+    processes: [P22, P23, P24, P25]
+    iterative: true
+    returnsTo: data
+    returnNote: Continuous validation detects drift and triggers retraining with new data.

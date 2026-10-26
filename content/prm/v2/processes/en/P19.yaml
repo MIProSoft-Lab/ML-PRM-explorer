@@ -1,0 +1,237 @@
+id: P19
+number: 19
+origin: standards-only
+name: System Verification Process
+purpose: >-
+  The purpose of the *System Verification Process* is to provide objective evidence that the integrated
+  Machine Learning system fulfills its specified requirements and design before its transition to operation.
+  It checks the correctness of the implementation, the interactions between the Machine Learning components
+  and the wider software system, and the behavior of the system under load and failure.
+outcomes:
+- id: a
+  text: >-
+    A verification strategy defined, with its scope, methods, success criteria, and environment.
+- id: b
+  text: Correct operation of functional workflows and interfaces verified.
+- id: c
+  text: Runtime performance verified against the Service Level Objectives.
+- id: d
+  text: Fault tolerance, fallback, rollback, and recovery mechanisms verified.
+- id: e
+  text: >-
+    Security of the system verified against its security requirements, including the vulnerabilities specific
+    to Machine Learning.
+- id: f
+  text: >-
+    Environment and dependencies verified as identified, controlled, and reproducible.
+- id: g
+  text: Operational readiness of monitoring and versioning established.
+- id: h
+  text: A System Verification Report documenting verification activities and results.
+- id: i
+  text: Non-conformances recorded for corrective action and traced to the requirements.
+inputs:
+- workProduct: integrated-system
+  name: Integrated System
+  description: The complete application with the model embedded.
+  serves:
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+- workProduct: system-requirements-specification
+  name: System Requirements Specification
+  description: >-
+    The functional, performance, and quality requirements of the system and its technical cost baseline.
+  serves:
+  - a
+  - b
+  - c
+  - e
+  - i
+- workProduct: architecture-requirements-specification
+  name: Architecture Requirements Specification
+  description: >-
+    The interface requirements and the Service Level Indicators and Objectives that the architecture has
+    to support.
+  serves:
+  - a
+  - b
+  - c
+- workProduct: design-baseline
+  name: Design Baseline
+  description: >-
+    The agreed design of components, interfaces, and data and model management structures.
+  serves:
+  - a
+  - b
+  - i
+- workProduct: system-architecture-documentation
+  name: System Architecture Documentation
+  description: >-
+    The architecture description, with data and model flow diagrams, decision logs, dependency management,
+    and expected infrastructure costs.
+  serves:
+  - d
+  - f
+  - g
+- workProduct: disaster-recovery-plan
+  name: Disaster Recovery Plan
+  description: >-
+    The backup strategies, recovery objectives, and recovery procedures for the critical components of
+    the system.
+  serves:
+  - d
+- workProduct: evaluation-framework
+  name: Evaluation Framework
+  description: >-
+    The data-level, model-level, training, and cost metrics, baselines, and benchmarks used for assessment.
+  serves:
+  - a
+  - c
+- workProduct: reporting-templates
+  name: Reporting Templates
+  description: The standardized formats for reporting metrics.
+  serves:
+  - h
+outputs:
+- workProduct: system-verification-report
+  name: System Verification Report
+  description: >-
+    The verification strategy, the results of functional, performance, fault tolerance, environment, and
+    operational readiness verification, and the non-conformances found.
+  serves:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  - h
+  - i
+activities:
+- id: A1
+  title: Prepare verification
+  description: >-
+    Define the verification strategy and scope from the System Requirements Specification, the Architecture
+    Requirements Specification, and the Design Baseline, identifying for each requirement the verification
+    method and the expected result, and the constraints that limit what can be verified. Select a controlled
+    environment as close as possible to the operational one, without interfering with it, and identify
+    the real or synthetic inputs to be used, ensuring that synthetic inputs intended to represent normal
+    operation are credible. Automate the verification procedures where possible, so that they can be repeated
+    whenever the model, the data, or the code changes, and plan for the test data to be revised as the
+    model and its operating conditions evolve.
+- id: A2
+  title: Verify functional behavior and interfaces
+  description: >-
+    Test end-to-end workflows to confirm predictions are processed and interpreted correctly, checking
+    each system requirement for compliance and testing the interfaces between the model and the APIs,
+    databases, and modules it exchanges data with against the Design Baseline. Confirm that the model
+    accepts valid inputs, rejects or handles invalid ones without failure, and returns outputs in the
+    expected form. Run an automated test that exercises the entire pipeline, confirm that training and
+    serving compute the same feature values and that pre- and postprocessing deliver data in the expected
+    form, unit test model specification and data preparation code, and review the code written for the
+    Machine Learning system. Where the expected output for a given input cannot be determined in advance,
+    use relations that must hold between the outputs of related inputs.
+- id: A3
+  title: Verify performance
+  description: >-
+    Assess whether the system meets the Service Level Objectives defined in the Architecture Requirements
+    Specification, such as latency and throughput, under expected load and under stress conditions, on
+    the hardware it will run on. Measure resource consumption and confirm that it remains within the technical
+    cost baseline, and compare latency, throughput, and memory usage across versions of code, data, and
+    model to detect both sudden and gradual regressions.
+  primaryStudies:
+  - P8
+  - P13
+  literature:
+  - breckMLTestScore2017
+- id: A4
+  title: Verify fault tolerance and recovery
+  description: >-
+    Simulate the failure scenarios relevant to the system, such as unavailable or corrupted data sources,
+    unavailable inference, latency spikes, and invalid or extreme inputs resulting from failures elsewhere
+    in the system, to confirm that fallback procedures trigger correctly, that the system degrades gracefully,
+    and that any mechanism limiting the outputs of the model holds when the model misbehaves. Verify that
+    rollback to a previous model version is triggered under the conditions defined for it and completed
+    within the expected time, and that the restored model remains compatible with the data, features,
+    and components it depends on. Confirm that the recovery procedures in the Disaster Recovery Plan can
+    be carried out, and that they are documented so that they do not depend on the knowledge of specific
+    individuals.
+- id: A5
+  title: Verify security
+  description: >-
+    Scan the integrated system for vulnerabilities and perform penetration tests on it, and test it against
+    the attacks specific to Machine Learning identified in the security requirements, such as manipulated
+    inputs intended to change its predictions, attempts to extract the model or to reconstruct its training
+    data, and the poisoning of data collected for retraining. Confirm that access to the model, its predictions,
+    and its training data is restricted as specified.
+- id: A6
+  title: Verify environment and dependencies
+  description: >-
+    Verify that the system behaves consistently when deployed in clean, reproducible environments that
+    differ from the one in which it was developed. Confirm that its libraries, platforms, and configurations
+    are identified, controlled, and approved according to organizational policy, and that changes in them
+    can be distinguished from changes in the model itself. Extend these checks to the data dependencies
+    of the system, identifying the external signals the model relies on and confirming that their versions
+    are controlled.
+- id: A7
+  title: Verify operational readiness
+  description: >-
+    Check that monitoring, alerts, and version control are configured correctly. Confirm that telemetry,
+    dashboards, access control, logging, and auditability are in place, and that each deployed model can
+    be identified together with the data used to build and test it.
+  literature:
+  - ISO5338
+- id: A8
+  title: Document verification results
+  description: >-
+    Record in the System Verification Report the verification strategy, the tests performed, their results,
+    the anomalies encountered, and the limitations and assumptions of the verification, using the Reporting
+    Templates so that successive verifications remain comparable. Describe each non-conformance with enough
+    information for the process where it originated to address it, track its resolution, confirm that
+    the verification criteria have been met, and maintain traceability between the verification results
+    and the requirements and design elements they refer to.
+  literature:
+  - ISO12207
+changes:
+- annotation: A-48
+  text: A4 (operational readiness) is a very interesting point
+  redVotes: 0
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: updated
+    text: – (kept as A7)
+- annotation: A-45
+  raisedElsewhere: true
+  text: Integrate vulnerability validation into system validation
+  redVotes: 1
+  yellowVotes: 2
+  decision: adopted
+  changes:
+  - kind: added
+    target: A5
+    text: Verify security
+- annotation: –
+  text: >-
+    Refocus of System Verification and System Validation, following the workshop discussion
+  redVotes: null
+  yellowVotes: null
+  decision: –
+  changes:
+  - kind: updated
+    text: Purpose and outcomes.
+  - kind: added
+    target: A1
+    text: Prepare verification.
+  - kind: updated
+    text: A2–A4 merged with *System Validation Process*.
+  - kind: added
+    target: A6
+    text: Verify environment and dependencies.
+  - kind: added
+    text: Six inputs

@@ -1,0 +1,105 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { site, pick, versions, defaultVersion, processIds } from '../../lib/content';
+import { localePaths } from '../../lib/paths';
+import { useTranslations, href, type Locale } from '../../i18n/ui';
+
+export const getStaticPaths = localePaths;
+const locale = Astro.props.locale as Locale;
+const t = useTranslations(locale);
+
+const cards = [
+  ['nav.processes', 'home.card.map', href(locale, defaultVersion)],
+  ['nav.workProducts', 'home.card.flow', href(locale, defaultVersion, 'work-products')],
+  ['nav.lifecycles', 'home.card.lifecycles', href(locale, 'lifecycles')],
+  ['nav.tailor', 'home.card.tailor', href(locale, 'tailor')],
+  ['nav.compare', 'home.card.compare', href(locale, 'compare')],
+] as const;
+---
+
+<Layout locale={locale}>
+  <section class="hero">
+    <h1>{pick(site.title, locale)}</h1>
+    <p class="lead prose">{pick(site.intro, locale)}</p>
+    <p><a class="button primary" href={href(locale, defaultVersion)}>{t('home.explore')} →</a></p>
+  </section>
+
+  <h2>{t('home.whatYouCanDo')}</h2>
+  <div class="cards">
+    {
+      cards.map(([title, text, url]) => (
+        <a class="card feature" href={url}>
+          <strong>{t(title)}</strong>
+          <span class="muted">{t(text)}</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <h2>{t('home.versions')}</h2>
+  <ul class="versions">
+    {
+      [...versions].reverse().map((v) => (
+        <li class="card">
+          <a href={href(locale, v.id)}>
+            <strong>{v.id}</strong> · {pick(v.title, locale)}
+          </a>
+          <span class="badge">{t(`home.${v.status}`)}</span>
+          <p class="muted small">
+            {pick(v.description, locale)} {processIds(v.id).length} {t('home.processes')}.
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>
+
+<style>
+  .hero {
+    padding: 16px 0 8px;
+  }
+
+  .lead {
+    font-size: 1.1rem;
+    color: var(--muted);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 12px;
+  }
+
+  .feature {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+
+  .feature:hover {
+    border-color: var(--accent);
+  }
+
+  .versions {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    max-width: var(--measure);
+  }
+
+  .versions li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+  }
+
+  .versions p {
+    flex-basis: 100%;
+    margin: 0;
+  }
+</style>

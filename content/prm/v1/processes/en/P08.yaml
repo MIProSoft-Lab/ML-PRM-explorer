@@ -1,0 +1,152 @@
+id: P08
+number: 8
+origin: decomposed
+name: Data Source Identification Process
+purpose: >-
+  The purpose of the *Data Source Identification Process* is to discover and document candidate datasets
+  from both internal and external repositories to establish the foundation for Machine Learning model.
+  It extracts the data specifications from the data requirements, and checks discovered data sources for
+  any licensing, legal, or ethical implications before any data collection or ingestion takes place.
+outcomes:
+- id: a
+  text: Relevant data sources identified, assessed, and documented.
+- id: b
+  text: Clear understanding of internal and external dataset availability and quality.
+- id: c
+  text: Known legal, ethical, and privacy conditions.
+- id: d
+  text: Identified data gaps and complementary sources.
+- id: e
+  text: Established relationships between data requirements and sources.
+inputs:
+- workProduct: data-requirements-specification
+  name: Data Requirements Specification
+  description: The data needs derived from the system requirements.
+  serves:
+  - a
+  - d
+  - e
+- workProduct: data-landscape-assessment
+  name: Data Landscape Assessment
+  description: The preliminary evaluation of the data available to the project.
+  serves:
+  - b
+  - d
+outputs:
+- workProduct: data-catalog
+  name: Data Catalog
+  description: >-
+    The inventory of internal and external sources, with their quality assessments and legal and ethical
+    reviews.
+  serves:
+  - a
+  - b
+  - c
+  - d
+  - e
+activities:
+- id: A1
+  title: Analyze data requirements
+  description: >-
+    Translate system requirements into data specifications that guide the dataset search strategy. Specify
+    fundamental data properties, such as target variables, feature domains, expected schemas, volume boundaries,
+    and temporal or geographic parameters, to focus collection efforts on relevant datasets. State the
+    distribution the data must exhibit so that every case the system is expected to distinguish is represented
+    in sufficient quantity, and agree the admissible ranges with a domain expert rather than inferring
+    them from whatever sample is available.
+  primaryStudies:
+  - P10
+  - P13
+  - P16
+- id: A2
+  title: Survey internal data sources
+  description: >-
+    Discover and evaluate existing data assets distributed across internal organizational systems. Use
+    data catalogs or metadata repositories to assess available candidate sources, promote asset reuse,
+    and identify internal data gaps, recording for each candidate its owner, the rules governing its use,
+    and the level of control its criticality demands. Establish what access the team will actually be
+    granted, since privileges can differ within a project, and identify where sources recording the same
+    events in incompatible formats will have to be reconciled.
+  primaryStudies:
+  - P4
+  - P10
+  - P11
+  - P17
+- id: A3
+  title: Identify external data sources
+  description: >-
+    Discover complementary datasets from external environments, such as public records, open data portals,
+    and commercial providers. Search public repositories and open data portals, consider commercial providers,
+    and consider generating the data through controlled trials or synthesis where no suitable source exists.
+    Conduct a formal risk assessment of any provider before acquisition, covering its supply chain, the
+    preprocessing already applied to the data, its governance practices, and the policies binding it.
+    Obtain any pre-existing dataset from a trustworthy source through means that guarantee its integrity
+    in transit, and where data is synthesized, establish that it represents the intended operational domain
+    rather than the behavior of the generator.
+  primaryStudies:
+  - P4
+  - P8
+  - P9
+  - P16
+  - P17
+- id: A4
+  title: Review data licensing
+  description: >-
+    Evaluate usage terms, copyright protections, and distribution agreements associated with candidate
+    datasets. Check licensing conditions before pipeline integration so that only datasets compliant with
+    contractual boundaries and intellectual property rights are included, and check the terms attaching
+    to the data underlying a candidate artifact as well as those of the artifact itself.
+  primaryStudies:
+  - P3
+  - P10
+  - P16
+- id: A5
+  title: Review legal aspects
+  description: >-
+    Assess candidate datasets against applicable data protection regulations and privacy policies. Verify
+    consent mechanisms and the purpose for which collection was authorized, and evaluate re-identification
+    risks, giving particular attention to linkage with auxiliary information available elsewhere. Record
+    the access rights, ownership, and retention terms attaching to each source.
+  primaryStudies:
+  - P3
+- id: A6
+  title: Conduct ethical review
+  description: >-
+    Screen candidate datasets to detect representation biases, sample imbalances, and potential social
+    harms. Assess demographic coverage and contextual diversity before training, and name the demographic
+    categories the data has to cover, to prevent downstream models from producing unfair or discriminatory
+    outcomes.
+  primaryStudies:
+  - P3
+  - P10
+- id: A7
+  title: Document sources
+  description: >-
+    Record metadata regarding dataset origin, schema structure, access rights, and known limitations.
+    Log these details to support reproducibility and future extraction and manipulation of the dataset,
+    including the license under which each asset is held and the association between a dataset and the
+    experiments and pipelines that consumed it.
+  primaryStudies:
+  - P3
+  - P9
+  - P10
+standards:
+- standard: ISO/IEC 5338
+  activity: a) Define scope and criteria for knowledge acquisition
+  standardProcess: Knowledge Acquisition Process
+- standard: ISO/IEC 5338
+  activity: b) Seek and gather sources of knowledge
+  standardProcess: Knowledge Acquisition Process
+- standard: ISO/IEC 5338
+  activity: e) Manage the result of knowledge acquisition
+  standardProcess: Knowledge Acquisition Process
+- standard: ISO/IEC 5338
+  activity: a) Acquire or select data
+  standardProcess: AI Data Engineering Process
+- standard: ISO/IEC 5338
+  activity: e) Document data lineage and data provenance
+  standardProcess: AI Data Engineering Process
+  note: Spread through all data processes
+- standard: ISO/IEC 5338
+  activity: g) Protect sensitive data
+  standardProcess: AI Data Engineering Process

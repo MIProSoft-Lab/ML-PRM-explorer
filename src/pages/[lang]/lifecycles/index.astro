@@ -1,0 +1,58 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import LifecyclePhases from '../../../components/LifecyclePhases.astro';
+import { getLifecycle, lifecycleIds } from '../../../lib/content';
+import { localePaths } from '../../../lib/paths';
+import { inline } from '../../../lib/text';
+import { useTranslations, href, type Locale } from '../../../i18n/ui';
+
+export const getStaticPaths = localePaths;
+const locale = Astro.props.locale as Locale;
+const t = useTranslations(locale);
+const lifecycles = lifecycleIds().map((id) => getLifecycle(id, locale));
+---
+
+<Layout locale={locale} title={t('lc.title')} section="lifecycles" translated={lifecycles.every((l) => l.translated)}>
+  <h1>{t('lc.title')}</h1>
+  <p class="muted prose">{t('lc.intro')}</p>
+
+  {lifecycles.length === 0 && <p>{t('lc.empty')}</p>}
+  <ul class="list">
+    {
+      lifecycles.map(({ data: l }) => (
+        <li class="card">
+          <div class="head">
+            <h2>
+              <a href={href(locale, 'lifecycles', l.id)}>{l.name}</a>
+            </h2>
+            {l.status === 'draft' && <span class="badge">{t('lc.draft')}</span>}
+            <span class="badge">{t('lc.basedOn', { version: l.prmVersion })}</span>
+          </div>
+          {l.description && <p class="prose muted" set:html={inline(l.description)} />}
+          <LifecyclePhases locale={locale} lifecycle={l} compact />
+        </li>
+      ))
+    }
+  </ul>
+</Layout>
+
+<style>
+  .list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+  }
+
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .head h2 {
+    margin: 0;
+    margin-right: auto;
+  }
+</style>

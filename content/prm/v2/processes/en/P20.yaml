@@ -1,0 +1,161 @@
+id: P20
+number: 20
+origin: standards-and-literature
+name: Transition Process
+purpose: >-
+  The purpose of the *Transition Process* is to move a trained, validated, and tested model into a production
+  environment where it can make predictions. It bridges the gap between experimentation and operation,
+  so that models work reliably in real-world conditions.
+outcomes:
+- id: a
+  text: >-
+    A trained model transitioned into a prepared and configured production environment.
+- id: b
+  text: The model packaged into a standardized, portable deployment artifact.
+- id: c
+  text: A versioned model registered in a registry with metadata.
+- id: d
+  text: The deployed model correctly loaded and exposed via defined interfaces.
+- id: e
+  text: Deployment executed using procedures that support monitoring and rollback.
+- id: f
+  text: >-
+    A Deployment Record documenting deployment decisions, configurations, and actions.
+inputs:
+- workProduct: model-artifact
+  name: Model Artifact
+  description: The validated and tested model to deploy.
+  serves:
+  - a
+  - b
+  - c
+- workProduct: system-architecture-documentation
+  name: System Architecture Documentation
+  description: Deployment strategy and target environment.
+  serves:
+  - a
+  - e
+- workProduct: disaster-recovery-plan
+  name: Disaster Recovery Plan
+  description: >-
+    The backup strategies, recovery objectives, and recovery procedures for the critical components of
+    the system.
+  serves:
+  - a
+  - e
+outputs:
+- workProduct: deployment-artifacts
+  name: Deployment Artifacts
+  description: Packaged model, registry entry, and live instance.
+  serves:
+  - b
+  - c
+  - d
+- workProduct: deployment-record
+  name: Deployment Record
+  description: Configurations, versions, and divergences from the plan.
+  serves:
+  - f
+activities:
+- id: A1
+  title: Set up environment
+  description: >-
+    Provision and configure the infrastructure, software, and resources of the operational environment
+    according to the installation requirements and the hardware decisions taken in the architecture. Confirm
+    that the environment provides the computing and memory capacity the model needs, and that the assumptions
+    made during development about hardware, platform, and configuration still hold in it, since differences
+    between environments can change the behavior of the model. Establish the access controls, logging,
+    and other enabling services the deployed model depends on, together with the resources required by
+    the recovery procedures in the Disaster Recovery Plan, and demonstrate that they are ready before
+    the model is installed.
+  primaryStudies:
+  - P1
+  - P3
+  - P8
+  - P10
+  - P11
+  - P13
+- id: A2
+  title: Package and containerize model
+  description: >-
+    Combine the trained model with the code needed to serve it, including its pre- and postprocessing,
+    and with the libraries, runtimes, and settings it depends on, into a deployable unit that can be installed
+    consistently in the operational environment. Where operational requirements demand it, convert or
+    reimplement the model in a different format from the one used in development, and confirm that the
+    conversion preserves its behavior. Ensure that the processing applied to inputs and outputs is the
+    same in development and in production, and that it is clear which parts of the model are contained
+    in the unit and which are obtained at runtime.
+  primaryStudies:
+  - P1
+  - P7
+  - P9
+  - P10
+  - P11
+- id: A3
+  title: Version and register model
+  description: >-
+    Register each deployable model in a central repository with a unique version, its lifecycle stage,
+    and the metadata needed to trace it to the code, data, and configuration that produced it. Control
+    the approval of each release and record the transitions between stages, together with the distribution
+    of each version to the environments where it is installed. Keep earlier versions registered and available,
+    so that the version in service is always known and a previous one can be restored when required.
+  primaryStudies:
+  - P1
+  - P4
+  - P6
+  - P7
+  - P9
+  literature:
+  - breckMLTestScore2017
+- id: A4
+  title: Execute deployment
+  description: >-
+    Install the packaged model in the operational environment according to the deployment strategy defined
+    in the architecture, and connect it to the systems it interoperates with through the defined interfaces.
+    Confirm that the model loads, initializes, and serves predictions on production inputs, that its interfaces
+    expose only the information intended, and that its performance under real conditions is consistent
+    with what was observed during validation. Review the readiness of the system for operation, including
+    its security and its support for the recovery procedures in the Disaster Recovery Plan, and confirm
+    that the previous version remains available to be restored before the new one is fully placed in service.
+  primaryStudies:
+  - P3
+  - P6
+  - P8
+  - P13
+  - P15
+  - P16
+  - P18
+  literature:
+  - breckMLTestScore2017
+- id: A5
+  title: Document deployment
+  description: >-
+    Record in the Deployment Record the configurations, versions, parameters, and environment used, the
+    results of the deployment, and any anomalies or incidents encountered together with the conditions
+    under which they occurred. Note any differences from the deployment strategy defined in the architecture,
+    so that the record can complement that documentation rather than repeat it. Maintain traceability
+    between the deployed elements and their approved versions, and make the information needed to operate
+    the system available to those responsible for its operation.
+  primaryStudies:
+  - P3
+  - P11
+  - P14
+  - P15
+  - P16
+changes:
+- annotation: A-49
+  text: 'Define the deployment type: canary, A/B, blue-green'
+  redVotes: 2
+  yellowVotes: 0
+  decision: rejected
+  changes: []
+- annotation: A-20
+  raisedElsewhere: true
+  text: A Disaster Recovery Plan isn't defined
+  redVotes: 0
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: added
+    target: Input
+    text: Disaster Recovery Plan

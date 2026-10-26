@@ -1,0 +1,169 @@
+id: P21
+number: 21
+origin: standards-and-literature
+name: System Validation Process
+purpose: >-
+  The purpose of the *System Validation Process* is to provide objective evidence that the deployed Machine
+  Learning system, when in use, fulfills its business objectives and stakeholder needs, achieving its
+  intended use in its intended operational environment. It is performed before full operational use, with
+  the participation of stakeholders, who confirm its result.
+outcomes:
+- id: a
+  text: >-
+    A validation strategy defined, with its scope, acceptance criteria, environment, and participating
+    stakeholders.
+- id: b
+  text: >-
+    The deployed system validated under operating conditions, with the validity of its predictions on
+    live data assessed.
+- id: c
+  text: The availability of the services required by stakeholders confirmed.
+- id: d
+  text: The achievement of the business objectives and success criteria assessed.
+- id: e
+  text: Fitness for the intended use confirmed with users and other stakeholders.
+- id: f
+  text: A System Validation Report documenting validation results and anomalies.
+- id: g
+  text: Stakeholder agreement that the system meets their needs obtained.
+- id: h
+  text: >-
+    Traceability between the validation results and the stakeholder requirements established.
+inputs:
+- workProduct: deployment-artifacts
+  name: Deployment Artifacts
+  description: Packaged model, registry entry, and live instance.
+  serves:
+  - b
+  - c
+  - e
+- workProduct: stakeholder-requirements-specification
+  name: Stakeholder Requirements Specification
+  description: >-
+    The agreed and prioritized stakeholder requirements, with their context of use and traceability.
+  serves:
+  - a
+  - c
+  - e
+  - h
+- workProduct: technical-problem-statement
+  name: Technical Problem Statement
+  description: >-
+    The problem expressed in data terms, with its success criteria, early risks, and operational concept.
+  serves:
+  - a
+  - d
+- workProduct: system-verification-report
+  name: System Verification Report
+  description: The results of verification and the non-conformances found.
+  serves:
+  - a
+- workProduct: reporting-templates
+  name: Reporting Templates
+  description: The standardized formats for reporting metrics.
+  serves:
+  - f
+outputs:
+- workProduct: system-validation-report
+  name: System Validation Report
+  description: >-
+    The validation strategy, the results obtained under operating conditions and against the business
+    objectives, the assessment of fitness for use, the anomalies found, and the acceptance decision.
+  serves:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  - h
+activities:
+- id: A1
+  title: Plan validation
+  description: >-
+    Define the validation strategy and scope from the Stakeholder Requirements Specification and the success
+    criteria in the Technical Problem Statement, agreeing with stakeholders on the acceptance criteria,
+    the duration of the validation period, and the constraints that limit what can be validated. Perform
+    validation in the operational environment, or in one representative of it, with the intended users
+    or acceptable surrogates, and derive the validation scenarios from the intended use and the context
+    of use, involving stakeholders where needed to make them representative. Take into account the non-conformances
+    reported by verification, and plan for the validation to be repeated when the model or its operating
+    conditions change substantially.
+- id: A2
+  title: Validate under operating conditions
+  description: >-
+    Observe the deployed system over the defined validation period while it runs under real conditions,
+    before full operational use, for instance in a pilot, alongside the solution currently in use, or
+    with a limited group of users. Assess the validity of the predictions on current inputs, recognizing
+    that quality measured on earlier data is only an estimate of quality on live data, and confirm that
+    the services required by stakeholders are available. Compare the results with the solution currently
+    in use, where one exists.
+- id: A3
+  title: Validate business objectives
+  description: >-
+    Assess whether the system achieves the business objectives and success criteria in the Technical Problem
+    Statement, using the measures of effectiveness agreed with stakeholders rather than model-level metrics
+    alone. Evaluate the effect of the system on the business process it supports, including the economic
+    indicator defined to justify the investment, and, where the project is a proof of concept, the value
+    and risks of the Machine Learning approach for the organization.
+- id: A4
+  title: Confirm fitness for use
+  description: >-
+    Have users and other stakeholders exercise the system against their own cases, confirming that they
+    can understand and act on its outputs and explanations, that the intended level of human oversight
+    is workable, and that the documentation supports its use. Confirm that the stakeholder concerns recorded
+    in the Stakeholder Requirements Specification, such as safety, security, fairness toward affected
+    groups, and alignment with ethical values, are addressed when the system is in use.
+- id: A5
+  title: Document results and obtain acceptance
+  description: >-
+    Record in the System Validation Report the validation performed, its results, the anomalies encountered,
+    and the gap between stakeholder expectations and system performance, using the Reporting Templates
+    so that successive validations remain comparable. Describe each anomaly with enough information for
+    the process where it originated to address it, and track its resolution or its acceptance as a known
+    limitation. Obtain stakeholder agreement that the system meets their needs, maintain traceability
+    between the validation results and the stakeholder requirements, and make the performance observed
+    during validation available as the reference for continuous validation.
+changes:
+- annotation: A-45
+  text: Integrate vulnerability validation into system validation
+  redVotes: 1
+  yellowVotes: 2
+  decision: adopted
+  changes:
+  - kind: added
+    target: A5
+    text: Verify security in the *System Verification Process*.
+  - kind: updated
+    text: A4 includes security concerns of stakeholders
+- annotation: A-46
+  text: Technical validation of code quality
+  redVotes: 0
+  yellowVotes: 0
+  decision: rejected
+  changes: []
+- annotation: A-47
+  text: Validate the percentage of test coverage
+  redVotes: 0
+  yellowVotes: 0
+  decision: rejected
+  changes: []
+- annotation: –
+  text: >-
+    Refocus of System Verification and System Validation, following an informal discussion during the
+    workshop
+  redVotes: null
+  yellowVotes: null
+  decision: –
+  changes:
+  - kind: updated
+    text: Purpose, outcomes, inputs, A1, A2, A5.
+  - kind: added
+    target: A3
+    text: Validate business objectives.
+  - kind: added
+    target: A4
+    text: Confirm fitness for use.
+  - kind: removed
+    text: Functional, dependency, failure, and rollback tests moved to System Verification

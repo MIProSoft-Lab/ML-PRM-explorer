@@ -1,0 +1,208 @@
+id: P11
+number: 11
+origin: decomposed
+name: Data Cleaning Process
+purpose: >-
+  To find and fix problems in the data, such as missing values, errors, duplicates, and inconsistencies.
+  Its main goal is to improve the quality of the data so it can be used reliably for training and evaluation.
+outcomes:
+- id: a
+  text: A cleaned and verified dataset with actions taken according to the plan.
+- id: b
+  text: A Data Cleaning Record describing transformations, tools, and reasoning.
+- id: c
+  text: Records linking original and cleaned data to maintain traceability.
+- id: d
+  text: Reported data quality issues that could not be resolved during cleaning.
+inputs:
+- workProduct: raw-dataset
+  name: Raw Dataset
+  description: The data collected in the staging area.
+  serves:
+  - a
+  - c
+- workProduct: exploratory-data-analysis-report
+  name: Exploratory Data Analysis Report
+  description: >-
+    A summary of statistical characteristics, visualizations, patterns, and trends in the data.
+  serves:
+  - a
+  - b
+- workProduct: data-quality-report
+  name: Data Quality Report
+  description: >-
+    Documents defects, missing values, and outliers to take into account when planning the cleaning activities.
+  serves:
+  - a
+  - b
+  - d
+outputs:
+- workProduct: cleaned-dataset
+  name: Cleaned Dataset
+  description: The verified data with issues resolved.
+  serves:
+  - a
+- workProduct: data-cleaning-record
+  name: Data Cleaning Record
+  description: >-
+    A log of transformations applied, tools used, traceability links between raw and cleaned data, and
+    unresolved quality issues.
+  serves:
+  - b
+  - c
+  - d
+activities:
+- id: A1
+  title: Plan cleaning activities
+  description: >-
+    Define a plan identifying issues to address based on the Exploratory Data Analysis Report and the
+    Data Quality Report. For each issue, decide whether it is corrected, removed, or deliberately ignored,
+    whether cleaning it is expected to improve the model, which part of the data is affected, and how
+    the fix will be applied to all the data received so far. Choose each technique according to the type
+    of error, account for the thresholds it depends on, and consider how cleaning one type of error affects
+    the others. Prefer resolving the cause of a defect at its source over adding cleaning code, and identify
+    any data to be filtered out for reasons of bias, privacy, or sensitivity. Select techniques and tools
+    that can be automated and reused rather than applied through *ad-hoc* scripts.
+  primaryStudies:
+  - P10
+  - P14
+  - P17
+  literature:
+  - whangDataCollectionQuality2023
+  - coteDataCleaningMachine2024
+  - foidlDataSmellsCategories2022
+  - wongsuphasawatGoalsProcessChallenges2019
+  - kandelWranglerInteractiveVisual2011
+- id: A2
+  title: Handle missing values
+  description: >-
+    Remove or fill empty entries using imputation or estimators, such as statistical imputation by mean,
+    median, or mode, interpolation, regression or hot-deck imputation, nearest neighbors, model predictions,
+    or multiple imputation where the uncertainty of the imputed values has to be represented. Identify
+    disguised missing values encoded as valid values of the feature, and replace missing values with a
+    distinct symbol where their pattern is informative. Compare the performance of the model across imputation
+    techniques before adopting one, and keep the original values recoverable so that imputed values can
+    be distinguished from observed ones.
+  primaryStudies:
+  - P3
+  - P13
+  - P14
+  - P16
+  literature:
+  - nazabalDataEngineeringData2020
+  - coteDataCleaningMachine2024
+  - recupitoUnmaskingDataSecrets2024
+- id: A3
+  title: Remove duplicate records
+  description: >-
+    Eliminate repeated entries that could bias models, paying particular attention to data combined from
+    several sources, and eliminate redundant or irrelevant observations. Exclude identifiers that carry
+    no information for the model from the features while keeping them to link cleaned records to their
+    sources.
+  primaryStudies:
+  - P7
+  - P11
+  literature:
+  - coteDataCleaningMachine2024
+  - recupitoUnmaskingDataSecrets2024
+  - wongsuphasawatGoalsProcessChallenges2019
+- id: A4
+  title: Standardize formats
+  description: >-
+    Make formatting consistent across the dataset (such as dates and units), converting values with several
+    representations of the same entity into a single canonical one, reconciling casing, spelling, abbreviations,
+    and values with similar meanings, and aligning all records to the same level of granularity. Automate
+    corrections where the rule is clear, using semantic data types to support validation and conversion,
+    and provide a documented procedure for the cases that require human action. Verify that conversions
+    do not introduce new defects, and ensure that every standardization rule can be applied identically
+    in development and in production.
+  primaryStudies:
+  - P7
+  - P11
+  - P14
+  - P16
+  - P17
+  literature:
+  - nazabalDataEngineeringData2020
+  - kandelWranglerInteractiveVisual2011
+  - foidlDataSmellsCategories2022
+  - wongsuphasawatGoalsProcessChallenges2019
+- id: A5
+  title: Correct outliers
+  description: >-
+    Identify and remove or correct values that deviate significantly from expected ranges, acting on the
+    probable source recorded for each anomaly in the Exploratory Data Analysis Report. Correct or remove
+    values judged to be errors, and label and retain genuine but rare cases where the problem requires
+    them for development or evaluation, or where detecting them is the goal of the model. Evaluate any
+    noise filter before applying it, since a wrong filter can remove part of the signal, check for records
+    that may have been injected deliberately, and document noise ignored because it lies in fields irrelevant
+    to the goal.
+  primaryStudies:
+  - P3
+  - P13
+  - P14
+  - P16
+  literature:
+  - coteDataCleaningMachine2024
+  - nazabalDataEngineeringData2020
+  - whangDataCollectionQuality2023
+  - recupitoUnmaskingDataSecrets2024
+- id: A6
+  title: Match entities
+  description: >-
+    Identify structured records referring to the same real-world object even when their names, identifiers,
+    or formats differ, including records reconciled across sources that use different time systems or
+    levels of granularity. Group records into blocks to limit the comparisons needed, compare them through
+    shared tokens, latent representations, or a learned model, and merge or link the matches according
+    to the plan.
+  primaryStudies:
+  - P7
+  - P11
+  literature:
+  - coteDataCleaningMachine2024
+  - wongsuphasawatGoalsProcessChallenges2019
+- id: A7
+  title: Clean labels
+  description: >-
+    Correct incorrect or noisy class labels using rules or expert review, addressing the labels that arrive
+    with the collected data, such as historical outcomes or labels from external services. Verify external
+    labels against known ones, and scale the depth of the review to the risk of the application, considering
+    that incorrect labels affect both training and the evaluation used to select a model. Detect likely
+    mislabels through model confidence, loss, the effect of removing or relabeling a record, or its distance
+    from the rest of its class, taking into account that systematic noise can escape these methods. Reserve
+    manual relabeling by domain experts for cases requiring high confidence, prioritizing the samples
+    with the lowest estimated label correctness when resources are limited.
+  primaryStudies:
+  - P8
+  - P17
+  literature:
+  - bernhardtActiveLabelCleaning2022
+  - coteDataCleaningMachine2024
+  - whangDataCollectionQuality2023
+- id: A8
+  title: Document cleaning actions
+  description: >-
+    Record operations, tools, and justifications in the Data Cleaning Record for transparency, stating
+    for each issue of the Data Quality Report the decision taken, the discarded samples and the criteria
+    used to discard them, and the issues still outstanding together with their possible effect on the
+    results. Keep the transformations as a reviewable and reusable script, maintain links between raw
+    and cleaned records, verify the cleaned dataset against the raw one and against the data schema, and
+    test the cleaning code itself. Keep the record current throughout the process, and pass the unresolved
+    issues to the processes that follow.
+  primaryStudies:
+  - P5
+  - P10
+  - P13
+  - P14
+  literature:
+  - kandelWranglerInteractiveVisual2011
+  - Schelter2017
+  - sneedProcessAssessingData2011
+  - breckMLTestScore2017
+  - nazabalDataEngineeringData2020
+standards:
+- standard: ISO/IEC 5338
+  activity: e) Document data lineage and data provenance
+  note: Spread through all data processes
+- standard: ISO/IEC 5338
+  activity: f) Clean, merge and prepare data

@@ -1,0 +1,104 @@
+id: P16
+number: 16
+origin: decomposed
+name: Model Optimization Process
+purpose: >-
+  The purpose of the *Model Optimization Process* is to refine trained models to improve their performance
+  or generalization. It focuses on tuning the model configuration and applying techniques to reduce the
+  risk of overfitting, rather than just fitting parameters to data.
+outcomes:
+- id: a
+  text: >-
+    Model configuration parameters explored and adjusted for better validation performance.
+- id: b
+  text: Optimal hyperparameter values identified and recorded.
+- id: c
+  text: Pre-trained models selected and fine-tuned (if applicable).
+- id: d
+  text: Regularization and ensemble strategies applied.
+- id: e
+  text: A Model Optimization Record documenting search strategies and decisions.
+inputs:
+- workProduct: model-artifact
+  name: Model Artifact
+  description: The trained model to be improved.
+  serves:
+  - a
+  - c
+  - d
+outputs:
+- workProduct: optimized-model-configuration
+  name: Optimized Model Configuration
+  description: The hyperparameters and settings selected for the next version of the model.
+  serves:
+  - a
+  - b
+  - c
+  - d
+- workProduct: model-optimization-record
+  name: Model Optimization Record
+  description: The search strategy, configurations tested, validation results, and decisions.
+  serves:
+  - b
+  - e
+activities:
+- id: A1
+  title: Tune hyperparameters
+  description: >-
+    Adjust training configuration parameters to find values that yield the best results. Start from framework
+    defaults, recommendations from the literature, or experience, and search manually, by trial and error,
+    or with automated methods. Optimize the hyperparameters of every version of the model so that versions
+    are compared at their best.
+  primaryStudies:
+  - P6
+  - P8
+  - P13
+- id: A2
+  title: Apply transfer learning
+  description: >-
+    Reuse knowledge from a model pre-trained on a related task to accelerate learning, using it as a starting
+    point that reduces training time even when it cannot be transferred directly. Adapt general-purpose
+    base models to the industry, use case, and customer, retraining or replacing the model where the domain
+    or input format differs from the original.
+  primaryStudies:
+  - P4
+  - P8
+  - P10
+  - P13
+- id: A3
+  title: Apply regularization
+  description: >-
+    Apply penalties or constraints to stop the model from fitting noise in the data, adjusting the type
+    and strength of regularization. Prefer simpler models where possible, and do not rely on regularization
+    alone where higher levels of robustness are required.
+  primaryStudies:
+  - P6
+  - P8
+- id: A4
+  title: Combine models into ensembles
+  description: >-
+    Combine multiple trained models, aggregating models of different types or several instances of one
+    type. Use ensembles to make the system more fault-tolerant and to estimate uncertainty and highlight
+    areas of low confidence.
+  primaryStudies:
+  - P6
+  - P8
+  - P13
+- id: A5
+  title: Document optimization
+  description: >-
+    Record the search space, chosen values, and strategies used in the Model Optimization Record to maintain
+    transparency, together with the configurations tested, their validation results, the criteria used
+    to compare them, and the insight into why particular settings led to good or bad results. Restrict
+    access to the record where the hyperparameters are confidential.
+  primaryStudies:
+  - P8
+  - P13
+  - P14
+standards:
+- standard: ISO/IEC/IEEE 12207
+  activity: c) Manage results of implementation
+  standardProcess: Implementation Process
+- standard: ISO/IEC 5338
+  activity: c) Model tuning
+  standardProcess: Implementation Process

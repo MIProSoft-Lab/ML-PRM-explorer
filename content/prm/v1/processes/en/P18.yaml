@@ -1,0 +1,106 @@
+id: P18
+number: 18
+origin: standards-and-literature
+name: Integration Process
+purpose: >-
+  The purpose of the *Integration Process* is to embed the trained model into the software system so it
+  can provide predictions at inference time. It connects the model with the codebase and business applications,
+  adapting interfaces and implementing necessary safeguards.
+outcomes:
+- id: a
+  text: Trained model integrated with compatible interfaces for input and output data.
+- id: b
+  text: Codebase updated to incorporate the model into system workflows.
+- id: c
+  text: Safeguards and fallback mechanisms implemented to handle failures.
+- id: d
+  text: >-
+    An Integration Record documenting integration steps, code changes, and interfaces.
+- id: e
+  text: Traceability links established between the model and system components.
+inputs:
+- workProduct: model-artifact
+  name: Model Artifact
+  description: The model approved for use.
+  serves:
+  - a
+- workProduct: system-codebase
+  name: System Codebase
+  description: The existing source code of the software system.
+  serves:
+  - a
+  - b
+- workProduct: system-architecture-documentation
+  name: System Architecture Documentation
+  description: >-
+    The structure of the system, including the arrangement for tolerating incorrect outputs.
+  serves:
+  - a
+  - c
+  - e
+- workProduct: design-baseline
+  name: Design Baseline
+  description: >-
+    The design of the components and interfaces through which the model is connected.
+  serves:
+  - a
+  - b
+  - e
+outputs:
+- workProduct: integrated-system
+  name: Integrated System
+  description: >-
+    The software with the model embedded, including adapted interfaces and safeguards.
+  serves:
+  - a
+  - b
+  - c
+- workProduct: integration-record
+  name: Integration Record
+  description: >-
+    The code changes, interfaces, safeguards, and traceability links between the model and system components.
+  serves:
+  - d
+  - e
+activities:
+- id: A1
+  title: Integrate model into application
+  description: >-
+    Connect the model artifact to the codebase, creating interfaces for data and updating modules, linking
+    the system inputs to the model and its outputs to the components that use them, and implementing the
+    pre- and postprocessing they require in one place rather than scattering it across the codebase. Wrap
+    the model and its packages behind common interfaces, use shared frameworks and preprocessing so that
+    serving matches training, and restrict access to the predictions so that every consumer is known and
+    protected from incompatible model updates.
+  primaryStudies:
+  - P4
+  - P8
+  - P10
+  literature:
+  - sculleyHiddenTechnicalDebt2015
+  - sensLargeScaleStudyModel2025
+- id: A2
+  title: Implement safeguards
+  description: >-
+    Add protective layers, such as rule-based checks or fallback routines, to handle unreliable predictions,
+    implementing the arrangement chosen in the architecture. Detect incorrect outputs by monitoring the
+    inputs and the components that provide them, comparing outputs with reasonable values, or using a
+    measure of confidence, and replace them using the mechanism described in the System Architecture Documentation.
+  primaryStudies:
+  - P8
+  - P13
+  literature:
+  - sensLargeScaleStudyModel2025
+  - polletiHierarchicalFallbackArchitecture2025
+- id: A3
+  title: Document integration
+  description: >-
+    Record code changes, data flows, interactions, and traceability links in the Integration Record to
+    support maintenance and reproducibility, including the anomalies encountered and their causes. Maintain
+    bidirectional traceability between the integrated elements and the architecture, design, requirements,
+    and interface definitions, identifying the model by version and by the data used to build and test
+    it, list the components that consume its predictions, describe how interacting models are connected,
+    and provide the artifacts selected for baselines to configuration management.
+  literature:
+  - ISO12207
+  - ISO5338

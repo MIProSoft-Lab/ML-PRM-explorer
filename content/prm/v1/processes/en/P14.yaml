@@ -1,0 +1,94 @@
+id: P14
+number: 14
+origin: decomposed
+name: Model Selection Process
+purpose: >-
+  The purpose of the *Model Selection Process* is to identify the model family or algorithm that will
+  best satisfy the project's objectives and constraints. It involves choosing the most appropriate modeling
+  technique for the problem after data preparation is complete.
+outcomes:
+- id: a
+  text: A list of candidate modeling techniques suitable for the problem and goals.
+- id: b
+  text: Analysis and comparison of candidate models against established criteria.
+- id: c
+  text: Selected modeling technique(s) to proceed to training and evaluation.
+- id: d
+  text: A Model Selection Record describing the choice, justification, and constraints.
+inputs:
+- workProduct: technical-problem-statement
+  name: Technical Problem Statement
+  description: The problem and its measurable success criteria.
+  serves:
+  - a
+  - b
+- workProduct: solution-class-selection-record
+  name: Solution Class Selection Record
+  description: The solution class selected and the rationale for it.
+  serves:
+  - a
+outputs:
+- workProduct: model-selection-record
+  name: Model Selection Record
+  description: >-
+    The candidate techniques, their comparison, the technique selected, and the rationale.
+  serves:
+  - a
+  - b
+  - c
+  - d
+activities:
+- id: A1
+  title: Establish criteria and constraints
+  description: >-
+    Analyze the *Technical Problem Statement* to define the selection criteria and the performance constraints
+    of the model, starting from the type of model task. Complement the performance metric with robustness,
+    explainability, scalability, resource demand, and model complexity, weighted according to the application.
+    Identify the constraints that limit the choice beyond the data, such as organizational requirements
+    for interpretability, the available tools and implementation technology, and the hardware the model
+    will run on.
+  primaryStudies:
+  - P3
+  - P11
+  - P13
+  - P14
+- id: A2
+  title: Identify candidate techniques
+  description: >-
+    Shortlist models ranging from simple baselines to complex approaches, drawing on published work and
+    internal results on similar problems, and including the baseline defined for verification. Record
+    the assumptions each candidate makes about the data, and consider existing models where their faults
+    and limited reproducibility are acceptable.
+  primaryStudies:
+  - P9
+  - P13
+  - P14
+- id: A3
+  title: Compare and select models
+  description: >-
+    Evaluate candidates against criteria and select one or more to proceed, ranking them by the weighted
+    criteria or by identifying the Pareto optimal ones. Use experimentation where the best technique cannot
+    be determined beforehand, adopt additional capacity only where it brings a validated benefit, and
+    weigh interpretability where the domain requires the results to be justified.
+  primaryStudies:
+  - P8
+  - P13
+- id: A4
+  title: Document decision
+  description: >-
+    Record the selected modeling technique and the rationale for the choice in the Model Selection Record,
+    together with the assumptions the technique makes about the data and the candidates set aside, and
+    maintain traceability to the criteria from which the decision was made.
+  primaryStudies:
+  - P11
+  - P14
+standards:
+- standard: ISO/IEC/IEEE 12207
+  activity: a) Prepare for implementation
+  standardProcess: Implementation Process
+- standard: ISO/IEC/IEEE 12207
+  activity: c) Manage results of implementation
+  standardProcess: Implementation Process
+- standard: ISO/IEC 5338
+  activity: a) Algorithm selection
+  standardProcess: Implementation Process

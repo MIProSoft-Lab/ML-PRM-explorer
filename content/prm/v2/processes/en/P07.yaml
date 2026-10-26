@@ -1,0 +1,197 @@
+id: P07
+number: 7
+origin: decomposed
+name: Verification Metrics and Benchmark Definition Process
+purpose: >-
+  The purpose of the *Verification Metrics and Benchmark Definition Process* is to establish a framework
+  for defining evaluation goals, quantitative metrics, baselines, and reporting templates across the lifecycle.
+  This process creates measurable indicators for data quality, model behavior, training efficiency, cost,
+  and non-functional system attributes based on project requirements.
+outcomes:
+- id: a
+  text: Testing and verification activities guided by a consistent evaluation framework.
+- id: b
+  text: >-
+    Performance, reliability, training efficiency, and cost assessed using relevant metrics.
+- id: c
+  text: >-
+    Metrics and benchmarks that remain traceable and comparable across the lifecycle.
+inputs:
+- workProduct: system-requirements-specification
+  name: System Requirements Specification
+  description: >-
+    The functional, performance, and quality requirements of the system and its technical cost baseline.
+  serves:
+  - a
+  - b
+- workProduct: data-requirements-specification
+  name: Data Requirements Specification
+  description: >-
+    The expected values, formats, quality, and metadata of the data the system needs.
+  serves:
+  - a
+  - b
+- workProduct: architecture-requirements-specification
+  name: Architecture Requirements Specification
+  description: >-
+    The interface requirements and the Service Level Indicators and Objectives that the architecture has
+    to support.
+  serves:
+  - a
+  - b
+  - c
+- workProduct: cost-and-resource-constraint-record
+  name: Cost and Resource Constraint Record
+  description: >-
+    The estimated computational requirements, training costs, and inference resource limits of the selected
+    solution class.
+  serves:
+  - b
+outputs:
+- workProduct: evaluation-framework
+  name: Evaluation Framework
+  description: >-
+    The data-level, model-level, training, and cost metrics, baselines, and benchmarks used for assessment.
+  serves:
+  - a
+  - b
+  - c
+- workProduct: reporting-templates
+  name: Reporting Templates
+  description: Standardized formats for reporting and tracking metrics.
+  serves:
+  - c
+activities:
+- id: A1
+  title: Define evaluation objectives
+  description: >-
+    Derive evaluation objectives from technical requirements, the Service Level Objectives, and context
+    to establish measurable targets. Formulate high-level evaluation goals and acceptable performance
+    boundaries across quality dimensions to steer the verification strategy, stating the scope of what
+    is to be verified, the expected results, and the priority of each, since exhaustive verification is
+    not achievable and the strategy trades coverage against constraints. State each objective so that
+    it is specific, measurable, achievable, relevant, and time-bound. Record the reasoning behind each
+    chosen metric, and name whoever makes the judgment where a criterion is subjective. Align evaluation
+    goals with organizational expectations and stakeholders.
+  primaryStudies:
+  - P3
+  - P10
+  - P11
+  - P13
+  - P15
+- id: A2
+  title: Define data-level metrics
+  description: >-
+    Define indicators and expectations to validate dataset quality, coverage, and integrity, starting
+    from the expected data conditions stated in the data requirements. Formalize type invariants, feature
+    value ranges, and acceptable thresholds to enable automated data validation, extending them to the
+    expected domain of categorical features, the proportion of examples in which a feature must be present,
+    the number of values it may carry, and the verification of externally supplied labels. Establish data
+    quality indicators measuring completeness, class imbalance, and feature coverage across the dataset
+    to prevent representation bias.
+  primaryStudies:
+  - P3
+  - P10
+  - P13
+  - P15
+  - P17
+- id: A3
+  title: Define model and training metrics
+  description: >-
+    Select metrics that capture predictive performance, calibration, and non-functional model behavior,
+    and state what each measure means for the model domain. Partition performance evaluations across demographic
+    and feature-defined slices to prevent bias, and determine which slices warrant that attention. Formulate
+    verification criteria capturing prediction calibration and probability distributions during inference.
+    Include metrics for the training process itself, such as training time, resource utilization, and
+    convergence, so that training efficiency can be compared across experiments. Detail the reported set
+    for audiences without a Machine Learning background, and fix the definition of any contested property,
+    such as fairness, before it is measured.
+- id: A4
+  title: Define benchmarks and baselines
+  description: >-
+    Define reference points to contextualize model performance. Define baselines (such as simpler models,
+    heuristics, or rule-based implementations) to confirm model functionality and its value, including
+    any non-Machine-Learning solution already in service. Establish how the data is going to be separated
+    for selecting among candidate models from the data reserved for judging whether the selected model
+    generalizes. Incorporate reference points (such as human-level performance, competitor benchmarks,
+    or published state-of-the-art results) to evaluate model competence.
+  primaryStudies:
+  - P4
+  - P10
+  - P11
+  - P13
+  - P15
+- id: A5
+  title: Define cost and resource verification
+  description: >-
+    Establish the metrics through which the system is verified against its cost and resource constraints,
+    covering the cost of training, the cost of inference per request, and the resource consumption of
+    the system in operation. Derive the thresholds for these metrics from the cost and resource constraints
+    and the Service Level Objectives, and define at which deviation a result has to be reported.
+- id: A6
+  title: Define reporting standards
+  description: >-
+    Define the reporting templates to capture metrics across the lifecycle. Standardize guidelines for
+    recording evaluation results, decisions, and model parameters. Define documentation workflows for
+    assumptions, trade-offs, limitations, and considerations across teams and stakeholders, and set the
+    minimum content each record must reach.
+  primaryStudies:
+  - P3
+  - P10
+  - P11
+  - P12
+  - P15
+- id: A7
+  title: Connect to continuous verification
+  description: >-
+    Plan how to extend development metrics into validation and verification. Plan the monitoring of live
+    data streams for distribution shifts to detect model degradation. Establish alerting thresholds to
+    flag quality regressions, schema violations, or anomalous input spikes, and determine what has to
+    be recorded, for how long, and with what protection against alteration for behavior to be reconstructed
+    after an incident. Retain the business measures alongside the technical ones, since a system can satisfy
+    its technical criteria while ceasing to deliver the outcome it was built for.
+  primaryStudies:
+  - P12
+  - P13
+  - P15
+changes:
+- annotation: A-23
+  text: >-
+    Missing outputs from the *System Requirements Definition Process* as process inputs
+  redVotes: 0
+  yellowVotes: 4
+  decision: adopted
+  changes:
+  - kind: added
+    target: Input
+    text: Data Requirements Specification
+  - kind: added
+    target: Input
+    text: Architecture Requirements Specification
+  - kind: updated
+    target: A1
+    text: objectives derived from the Service Level Objectives
+  - kind: updated
+    target: A2
+    text: metrics based on the data requirements
+- annotation: A-24
+  text: Missing metrics for training, costs, and competitive benchmarks
+  redVotes: 2
+  yellowVotes: 3
+  decision: adopted
+  changes:
+  - kind: added
+    target: Input
+    text: Cost and Resource Constraint Record
+  - kind: updated
+    target: A3
+    text: Define model and training metrics
+  - kind: updated
+    target: A4
+    text: state-of-the-art benchmarks
+  - kind: added
+    target: A5
+    text: Define cost and resource verification
+  - kind: updated
+    target: Purpose, outcome (b), and output
+    text: Evaluation Framework includes training and cost metrics

@@ -1,0 +1,182 @@
+id: P02
+number: 2
+origin: standards-and-literature
+name: Stakeholder Needs and Requirements Definition Process
+purpose: >-
+  The purpose of the *Stakeholder Needs and Requirements Definition Process* is to capture and analyze
+  the needs of stakeholders, transforming them into a cohesive set of requirements that define intended
+  interactions within a system environment and the functional vision of how the system is expected to
+  behave within its operational workflow, and that serve as the baseline against which system capabilities
+  are validated.
+outcomes:
+- id: a
+  text: Identified stakeholders and their roles.
+- id: b
+  text: Defined stakeholder needs, functional vision, and context of use.
+- id: c
+  text: >-
+    Analyzed, prioritized, and agreed-upon stakeholder requirements, including their quality characteristics.
+- id: d
+  text: >-
+    Established traceability between stakeholder needs, stakeholder requirements, and future system requirements.
+inputs:
+- workProduct: technical-problem-statement
+  name: Technical Problem Statement
+  description: The problem, success criteria, and operational concept.
+  serves:
+  - b
+  - c
+- workProduct: stakeholder-list
+  name: Stakeholder List
+  description: An initial list of the parties with an interest in the system.
+  serves:
+  - a
+  - d
+outputs:
+- workProduct: stakeholder-requirements-specification
+  name: Stakeholder Requirements Specification
+  description: >-
+    The stakeholder needs and functional vision, and the agreed and prioritized stakeholder requirements
+    derived from them, with their context of use and traceability.
+  serves:
+  - a
+  - b
+  - c
+  - d
+activities:
+- id: A1
+  title: Identify stakeholders
+  description: >-
+    Identify internal and external parties across the lifecycle and define their responsibilities and
+    roles, covering the technical roles that build and operate the system, the business roles that sponsor
+    and consume it, and the external parties whose interests constrain it, such as data subjects, auditors,
+    and regulatory authorities. Include the enabling roles that oversee ethics, legal exposure, and domain
+    validity, and identify the parties whose interests oppose the system, whose expectations are not satisfied
+    but whose behavior has to be anticipated. Account for the fact that different roles engage at different
+    points of the lifecycle and hold different priorities over the same system, and avoid drawing the
+    stakeholder set too narrowly, since a narrow set of viewpoints is itself a source of bias.
+  primaryStudies:
+  - P3
+  - P5
+  - P6
+  - P10
+  - P11
+  - P14
+  - P16
+  - P17
+- id: A2
+  title: Define stakeholder needs and functional vision
+  description: >-
+    Gather stakeholder expectations for system capabilities while establishing technical, operational,
+    and regulatory constraints. Describe the functional vision of the system, that is, how the Machine
+    Learning component is expected to behave within the operational workflow of its users, so that its
+    intended role is agreed before technical system requirements are derived. Describe the context of
+    use and the operational environment in which those capabilities are expected to hold, express the
+    required capabilities as use cases and scenarios, and complement them with the abuse and failure scenarios
+    the system is expected to withstand. Record the solution currently in use and the extent to which
+    users accept it, so that a baseline for later validation exists. Capture the non-functional qualities
+    that matter to stakeholders, such as robustness, explainability, resource limits, comprehensibility,
+    and maintainability, together with the classes of error that carry the greatest operational consequence,
+    leaving the metrics and numeric targets that express them to the *System Requirements Definition Process*.
+    Capture governance expectations as well, including privacy-by-design principles, consent and data
+    minimization constraints, the right of affected individuals to contest an automated decision, usability
+    expectations, and organizational policies that restrict the use of uninterpretable models. Record
+    the assumptions the project rests on, including those that cannot be verified, whenever the validity
+    of the result depends on them.
+- id: A3
+  title: Analyze and prioritize requirements
+  description: >-
+    Transform the stakeholder needs into stakeholder requirements, expressing each need as a statement
+    that can later be verified, so that the raw expectations captured in A2 remain distinguishable from
+    the formalized requirements that result from their analysis. Evaluate the resulting requirements for
+    technical feasibility, consistency, and alignment with operational constraints. This involves analyzing
+    trade-offs (such as weighing predictive accuracy against latency, explainability, or data curation
+    costs) and resolving discrepancies between business metrics and technical data science indicators.
+    Agree on the measures of effectiveness through which stakeholders will judge whether the delivered
+    capability is adequate, and on the achievement targets that later quality assurance activities will
+    monitor. Requirements are prioritized to deliver a functional minimum viable product so that development
+    addresses the most critical requirements first, and the resulting set is submitted to an explicit
+    continuation decision that assesses the project on viability, on compliance with ethical and governance
+    expectations, and on feasibility.
+  primaryStudies:
+  - P2
+  - P4
+  - P9
+  - P10
+  - P11
+  - P12
+  - P13
+  - P14
+  - P18
+- id: A4
+  title: Establish agreement and traceability
+  description: >-
+    Reconcile differing stakeholder viewpoints, secure consensus on the specified requirements, and establish
+    traceability between each requirement and the stakeholder and need that originated it, retaining the
+    rationale and the origin of subsequent changes. Communicate system capabilities openly, declare known
+    limitations or biases, and document agreements in plain language so that non-technical stakeholders
+    can act on them, including a description of the intended use of the system and of the decisions it
+    will make. Establish a shared vocabulary with domain experts so that agreement is not undermined by
+    inconsistent terminology, and confirm understanding through demonstrations in which stakeholders exercise
+    the intended capability against their own cases rather than reviewing reported results alone.
+  primaryStudies:
+  - P2
+  - P3
+  - P6
+  - P10
+  - P11
+  - P14
+  - P16
+  - P18
+changes:
+- annotation: A-04
+  text: Excessive number of process outcomes
+  redVotes: 0
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: updated
+    target: Outcomes
+    text: consolidated from eight to four
+- annotation: A-05
+  text: The Technical Problem Statement shouldn't be an input
+  redVotes: 0
+  yellowVotes: 2
+  decision: rejected
+  changes: []
+- annotation: A-06
+  text: Output quality shouldn't be included
+  redVotes: 0
+  yellowVotes: 0
+  decision: adopted
+  changes:
+  - kind: updated
+    target: Outcome (c)
+    text: quality characteristics integrated into the agreed requirements
+- annotation: A-07
+  text: Distinction between stakeholder needs and requirements
+  redVotes: 1
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: updated
+    target: Outcomes (b) and (c)
+    text: needs and requirements as separate results
+  - kind: updated
+    target: A3
+    text: transform needs into verifiable requirements
+- annotation: A-08
+  text: Missing functional vision
+  redVotes: 0
+  yellowVotes: 1
+  decision: adopted
+  changes:
+  - kind: updated
+    target: Purpose
+    text: includes the functional vision
+  - kind: updated
+    target: A2
+    text: Define stakeholder needs and functional vision
+  - kind: updated
+    target: Output
+    text: Stakeholder Requirements Specification includes the functional vision
