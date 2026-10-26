@@ -248,6 +248,29 @@ p {
   color: var(--accent-text);
 }
 
+.theme-toggle {
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+}
+
+/* Show the icon of the theme the button switches to. */
+.theme-toggle .icon-sun,
+.theme-toggle[data-current='dark'] .icon-moon {
+  display: none;
+}
+
+.theme-toggle[data-current='dark'] .icon-sun {
+  display: block;
+}
+
 .main-nav {
   border-top: 1px solid var(--border);
 }

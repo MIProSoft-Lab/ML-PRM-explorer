@@ -20,6 +20,8 @@ const en = {
   'nav.language': 'Language',
   'nav.version': 'PRM version',
   'nav.skip': 'Skip to content',
+  'nav.theme.dark': 'Switch to dark theme',
+  'nav.theme.light': 'Switch to light theme',
 
   'home.explore': 'Explore the processes',
   'home.versions': 'Versions',
@@ -175,6 +177,8 @@ const es: Partial<Record<UiKey, string>> = {
   'nav.language': 'Idioma',
   'nav.version': 'Versión del PRM',
   'nav.skip': 'Ir al contenido',
+  'nav.theme.dark': 'Cambiar al tema oscuro',
+  'nav.theme.light': 'Cambiar al tema claro',
 
   'home.explore': 'Explorar los procesos',
   'home.versions': 'Versiones',
@@ -328,6 +332,8 @@ const ca: Partial<Record<UiKey, string>> = {
   'nav.language': 'Idioma',
   'nav.version': 'Versió del PRM',
   'nav.skip': 'Vés al contingut',
+  'nav.theme.dark': 'Canvia al tema fosc',
+  'nav.theme.light': 'Canvia al tema clar',
 
   'home.explore': 'Explora els processos',
   'home.versions': 'Versions',
