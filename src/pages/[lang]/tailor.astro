@@ -48,6 +48,21 @@ const keys: UiKey[] = [
   'process.activities',
   'process.producedBy',
   'nav.lifecycles',
+  'tailor.details',
+  'tailor.openPage',
+  'tailor.include',
+  'tailor.loading',
+  'tailor.loadError',
+  'process.purpose',
+  'process.outcomes',
+  'process.inputs',
+  'process.outputs',
+  'process.usedBy',
+  'process.external',
+  'process.notUsed',
+  'origin.standards-and-literature',
+  'origin.standards-only',
+  'origin.decomposed',
 ];
 const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 ---
@@ -102,6 +117,19 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
   </div>
 
   <div id="print-view" class="print-only"></div>
+
+  <dialog id="details" class="details" aria-labelledby="details-title">
+    <header class="details-head">
+      <span id="details-id" class="mono details-id"></span>
+      <h2 id="details-title" class="details-title"></h2>
+      <button type="button" class="details-close" id="details-close" aria-label={t('tailor.close')} title={t('tailor.close')}>✕</button>
+    </header>
+    <div id="details-body" class="details-body"></div>
+    <footer class="details-foot">
+      <label class="include"><input type="checkbox" id="details-include" /> {t('tailor.include')}</label>
+      <a id="details-page" href="#" target="_blank" rel="noopener">{t('tailor.openPage')} ↗</a>
+    </footer>
+  </dialog>
 
   <script type="application/json" id="tailor-data" set:html={JSON.stringify({ data, strings })} />
 </Layout>
@@ -201,7 +229,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
           <div class="proc-head">
             <label class="proc-label"><input type="checkbox" data-proc="${p.id}" ${on ? 'checked' : ''}>
               <span class="dot origin-${p.origin}"></span><span class="num">${p.id}</span> <strong>${esc(p.name)}</strong></label>
-            <a class="small" href="${data.base}${v.id}/processes/${p.id}/" target="_blank" rel="noopener" aria-label="${esc(p.name)}">↗</a>
+            <button type="button" class="info" data-info="${p.id}" aria-label="${esc(s('tailor.details', { name: p.name }))}" title="${esc(s('tailor.details', { name: p.name }))}">i</button>
           </div>
           <details><summary class="small muted">${s('process.activities')} (<span data-count="${p.id}"></span>)</summary><ul class="acts">${acts}</ul></details>
           <label class="rationale small" ${on ? 'hidden' : ''}><span>${s('tailor.rationale')}</span>
@@ -433,6 +461,129 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     }
   });
 
+  // --- Process details, in a modal --------------------------------------
+
+  type Details = {
+    id: string;
+    name: string;
+    origin: string;
+    purpose: string;
+    outcomes: { id: string; text: string }[];
+    inputs: { id: string; name: string; serves: string[]; producers: string[] }[];
+    outputs: { id: string; name: string; serves: string[]; consumers: string[] }[];
+    activities: { id: string; title: string; description: string }[];
+  };
+
+  const dialog = $<HTMLDialogElement>('#details');
+  const body = $('#details-body');
+  const include = $<HTMLInputElement>('#details-include');
+  const details = new Map<string, Promise<Details[]>>();
+  let openId = '';
+
+  // Loaded once per version, the first time a process of that version is opened.
+  function loadDetails(version: string) {
+    if (!details.has(version)) {
+      const request = fetch(`${data.base}${version}/processes.json`).then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      });
+      request.catch(() => details.delete(version));
+      details.set(version, request);
+    }
+    return details.get(version)!;
+  }
+
+  const procLinks = (ids: string[], empty: string) =>
+    ids.length ? ids.map((id) => `<span class="chip"><span class="num">${id}</span></span>`).join(' ') : `<span class="muted">${empty}</span>`;
+  const letters = (xs: string[]) => xs.map((x) => `<span class="letter">${x}</span>`).join('');
+
+  function renderDetails(d: Details) {
+    const on = state.selected.has(d.id);
+    include.checked = on;
+    body.innerHTML = `
+      <p class="details-origin"><span class="badge origin-${d.origin}">${s(`origin.${d.origin}`)}</span></p>
+      <h3 class="label">${s('process.purpose')}</h3>
+      <p>${d.purpose}</p>
+      <h3 class="label">${s('process.outcomes')}</h3>
+      <ol class="d-outcomes">${d.outcomes.map((o) => `<li><span class="letter">${o.id}</span><span>${o.text}</span></li>`).join('')}</ol>
+      <div class="d-io">
+        <div>
+          <h3 class="label">${s('process.inputs')}</h3>
+          <ul>${d.inputs
+            .map((i) => `<li><strong>${esc(i.name)}</strong> ${letters(i.serves)}<div class="small">${s('process.producedBy')}: ${procLinks(i.producers, s('process.external'))}</div></li>`)
+            .join('')}</ul>
+        </div>
+        <div>
+          <h3 class="label">${s('process.outputs')}</h3>
+          <ul>${d.outputs
+            .map((o) => `<li><strong>${esc(o.name)}</strong> ${letters(o.serves)}<div class="small">${s('process.usedBy')}: ${procLinks(o.consumers, s('process.notUsed'))}</div></li>`)
+            .join('')}</ul>
+        </div>
+      </div>
+      <h3 class="label">${s('process.activities')}</h3>
+      <ol class="d-acts">${d.activities
+        .map((a) => {
+          const key = `${d.id}.${a.id}`;
+          return `<li><label><input type="checkbox" data-m-act="${key}" ${on && !state.excluded.has(key) ? 'checked' : ''} ${on ? '' : 'disabled'}>
+            <span class="aid">${a.id}</span> <strong>${a.title}</strong></label><p>${a.description}</p></li>`;
+        })
+        .join('')}</ol>`;
+  }
+
+  async function openDetails(id: string) {
+    const v = version(state.version);
+    const p = v.processes.find((x) => x.id === id)!;
+    openId = id;
+    $('#details-id').textContent = p.id;
+    $('#details-title').textContent = p.name;
+    $<HTMLAnchorElement>('#details-page').href = `${data.base}${v.id}/processes/${p.id}/`;
+    include.checked = state.selected.has(id);
+    body.innerHTML = `<p class="muted">${s('tailor.loading')}</p>`;
+    if (!dialog.open) dialog.showModal();
+    body.scrollTop = 0;
+    try {
+      const d = (await loadDetails(v.id)).find((x) => x.id === id);
+      if (d && openId === id) renderDetails(d);
+    } catch {
+      if (openId === id) body.innerHTML = `<p class="notice">${s('tailor.loadError')}</p>`;
+    }
+  }
+
+  list.addEventListener('click', (e) => {
+    const id = (e.target as HTMLElement).closest<HTMLElement>('[data-info]')?.dataset.info;
+    if (id) openDetails(id);
+  });
+
+  include.addEventListener('change', () => {
+    include.checked ? state.selected.add(openId) : state.selected.delete(openId);
+    renderList();
+    body.querySelectorAll<HTMLInputElement>('[data-m-act]').forEach((a) => {
+      a.disabled = !include.checked;
+      a.checked = include.checked && !state.excluded.has(a.dataset.mAct!);
+    });
+  });
+
+  body.addEventListener('change', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (!el.dataset.mAct) return;
+    el.checked ? state.excluded.delete(el.dataset.mAct) : state.excluded.add(el.dataset.mAct);
+    renderList();
+  });
+
+  $('#details-close').addEventListener('click', () => dialog.close());
+  // A click on the backdrop, outside the dialog box, closes it.
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  dialog.addEventListener('close', () => {
+    // Return focus to the button that opened the dialog. The list may have
+    // been re-rendered meanwhile, so find the button again, after the
+    // browser's own focus restoration.
+    const id = openId;
+    openId = '';
+    setTimeout(() => list.querySelector<HTMLElement>(`[data-info="${id}"]`)?.focus());
+  });
+
   // --- Start ------------------------------------------------------------
 
   $<HTMLInputElement>('#project').value = state.project;
@@ -630,5 +781,231 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     color: var(--link);
     font-size: 0.85rem;
     text-decoration: underline;
+  }
+
+  .processes :global(.info) {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    flex: none;
+  }
+
+  /* Process details */
+  .details {
+    padding: 0;
+    border: 1px solid var(--ink);
+    background: var(--surface);
+    color: var(--text);
+    width: min(760px, calc(100vw - 32px));
+    max-height: min(85vh, 900px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+
+  .details[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .details::backdrop {
+    background: rgb(17 20 15 / 55%);
+  }
+
+  /* On opening, the sheet rises into place and its shadow grows under it,
+     while the backdrop fades in. */
+  @media (prefers-reduced-motion: no-preference) {
+    .details[open] {
+      animation: sheet-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .details[open]::backdrop {
+      animation: backdrop-in 0.2s ease-out;
+    }
+  }
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translate(6px, 14px);
+      box-shadow: 0 0 0 var(--ink);
+    }
+  }
+
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  .details-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 10px 16px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .details-id {
+    font-size: 0.78rem;
+    padding: 1px 6px;
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  .details-title {
+    margin: 0;
+    font-size: 1.1rem;
+    flex: 1;
+  }
+
+  .details-title::after {
+    display: none;
+  }
+
+  .details-close {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    justify-content: center;
+    flex: none;
+  }
+
+  .details-body {
+    overflow-y: auto;
+    padding: 4px 16px 16px;
+    overscroll-behavior: contain;
+  }
+
+  .details-body :global(h3) {
+    margin: 18px 0 6px;
+  }
+
+  .details-body :global(.details-origin) {
+    margin: 12px 0 0;
+  }
+
+  .details-body :global(.letter) {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    margin-right: 3px;
+    border: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .details-body :global(.d-outcomes) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 6px;
+  }
+
+  .details-body :global(.d-outcomes li) {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .details-body :global(.d-io) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 0 20px;
+  }
+
+  .details-body :global(.d-io ul) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .details-body :global(.d-io .chip) {
+    padding: 0 5px;
+  }
+
+  .details-body :global(.d-acts) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--ink);
+  }
+
+  .details-body :global(.d-acts li) {
+    padding: 10px 12px;
+  }
+
+  .details-body :global(.d-acts li + li) {
+    border-top: 1px solid var(--border);
+  }
+
+  .details-body :global(.d-acts label) {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    cursor: pointer;
+  }
+
+  .details-body :global(.d-acts p) {
+    margin: 4px 0 0 26px;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .details-body :global(.aid) {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .details-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--ink);
+    background: var(--surface-2);
+  }
+
+  .include {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media (max-width: 600px) {
+    .details {
+      width: 100vw;
+      max-width: 100vw;
+      height: 100dvh;
+      max-height: 100dvh;
+      margin: 0;
+      box-shadow: none;
+      border: 0;
+    }
+  }
+
+  /* On phones the modal fills the screen, so it slides up from the bottom. */
+  @media (max-width: 600px) and (prefers-reduced-motion: no-preference) {
+    .details[open] {
+      animation: sheet-up 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
   }
 </style>
