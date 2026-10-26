@@ -114,6 +114,14 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 16px;
+}
+
+/* Glide to in-page anchors, unless the reader asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {

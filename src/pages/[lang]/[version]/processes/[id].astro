@@ -447,9 +447,18 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
     sync();
   });
   all.forEach((d) => d.addEventListener('toggle', sync));
-  // Open the activity a link points to.
-  const target = location.hash && document.querySelector(location.hash);
-  if (target instanceof HTMLElement) target.querySelector('details')?.setAttribute('open', '');
+  // Open the activity a link points to, on load and on in-page links.
+  const openTarget = () => {
+    if (!location.hash) return;
+    const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    const details = target?.querySelector('details');
+    if (details && !details.open) {
+      details.open = true;
+      sync();
+    }
+  };
+  openTarget();
+  window.addEventListener('hashchange', openTarget);
 </script>
 
 <style>
