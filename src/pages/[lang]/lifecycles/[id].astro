@@ -1,6 +1,8 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import LifecyclePhases from '../../../components/LifecyclePhases.astro';
+import LifecycleDiagram from '../../../components/LifecycleDiagram.astro';
+import ProcessModal from '../../../components/ProcessModal.astro';
 import { getLifecycle, getProcess, processIds } from '../../../lib/content';
 import { lifecyclePaths } from '../../../lib/paths';
 import { inline } from '../../../lib/text';
@@ -27,6 +29,9 @@ const missing = processIds(l.prmVersion).filter((pid) => !included.has(pid));
   </div>
   {l.description && <p class="prose" set:html={inline(l.description)} />}
 
+  <LifecycleDiagram locale={locale} lifecycle={l} />
+
+  <h2>{t('lc.phases')}</h2>
   <LifecyclePhases locale={locale} lifecycle={l} />
 
   {
@@ -35,7 +40,7 @@ const missing = processIds(l.prmVersion).filter((pid) => !included.has(pid));
         <h2>{t('lc.notCovered')}</h2>
         <div class="chips">
           {missing.map((pid) => (
-            <a class="chip" href={href(locale, l.prmVersion, 'processes', pid)}>
+            <a class="chip" href={href(locale, l.prmVersion, 'processes', pid)} data-process={pid} data-version={l.prmVersion} data-name={getProcess(l.prmVersion, pid, locale).data.name}>
               <span class="num">{pid}</span>
               {getProcess(l.prmVersion, pid, locale).data.name}
             </a>
@@ -46,7 +51,14 @@ const missing = processIds(l.prmVersion).filter((pid) => !included.has(pid));
   }
 
   <p class="no-print"><a class="button primary" href={`${href(locale, 'tailor')}#v=${l.prmVersion}&lc=${l.id}`}>{t('lc.useInTailor')} →</a></p>
+  <ProcessModal locale={locale} />
 </Layout>
+
+<script>
+  import { createProcessModal, openLinksInModal } from '../../../lib/process-modal';
+
+  openLinksInModal(document.getElementById('main')!, createProcessModal());
+</script>
 
 <style>
   .meta {

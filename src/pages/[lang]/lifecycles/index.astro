@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import LifecyclePhases from '../../../components/LifecyclePhases.astro';
+import ProcessModal from '../../../components/ProcessModal.astro';
 import { getLifecycle, lifecycleIds } from '../../../lib/content';
 import { localePaths } from '../../../lib/paths';
 import { inline } from '../../../lib/text';
@@ -34,7 +35,14 @@ const lifecycles = lifecycleIds().map((id) => getLifecycle(id, locale));
       ))
     }
   </ul>
+  <ProcessModal locale={locale} />
 </Layout>
+
+<script>
+  import { createProcessModal, openLinksInModal } from '../../../lib/process-modal';
+
+  openLinksInModal(document.getElementById('main')!, createProcessModal());
+</script>
 
 <style>
   .list {

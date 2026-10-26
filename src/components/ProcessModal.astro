@@ -1,0 +1,276 @@
+---
+// Modal with the details of a process, filled by src/lib/process-modal.ts.
+// Include it once on a page and create it from the page's script.
+import { useTranslations, href, type Locale, type UiKey } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const keys: UiKey[] = [
+  'modal.loading',
+  'modal.loadError',
+  'process.purpose',
+  'process.outcomes',
+  'process.inputs',
+  'process.outputs',
+  'process.activities',
+  'process.producedBy',
+  'process.usedBy',
+  'process.external',
+  'process.notUsed',
+  'origin.standards-and-literature',
+  'origin.standards-only',
+  'origin.decomposed',
+];
+const strings = JSON.stringify(Object.fromEntries(keys.map((k) => [k, t(k)])));
+---
+
+<dialog id="process-modal" class="process-modal" aria-labelledby="pm-title" data-base={href(locale)} data-strings={strings}>
+  <header class="pm-head">
+    <span class="pm-id mono"></span>
+    <h2 id="pm-title" class="pm-title"></h2>
+    <button type="button" class="pm-close" aria-label={t('modal.close')} title={t('modal.close')}>✕</button>
+  </header>
+  <div class="pm-body"></div>
+  <footer class="pm-foot">
+    <label class="pm-include" hidden><input type="checkbox" /> {t('tailor.include')}</label>
+    <a class="pm-goto button primary" href="#">{t('modal.goTo')} →</a>
+  </footer>
+</dialog>
+
+<style is:global>
+  .process-modal {
+    padding: 0;
+    border: 1px solid var(--ink);
+    background: var(--surface);
+    color: var(--text);
+    width: min(760px, calc(100vw - 32px));
+    max-height: min(85vh, 900px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+
+  .process-modal[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .process-modal::backdrop {
+    background: rgb(17 20 15 / 55%);
+  }
+
+  /* On opening, the sheet rises into place and its shadow grows under it,
+     while the backdrop fades in. */
+  @media (prefers-reduced-motion: no-preference) {
+    .process-modal[open] {
+      animation: pm-sheet-in 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .process-modal[open]::backdrop {
+      animation: pm-backdrop-in 0.2s ease-out;
+    }
+  }
+
+  @keyframes pm-sheet-in {
+    from {
+      opacity: 0;
+      transform: translate(6px, 14px);
+      box-shadow: 0 0 0 var(--ink);
+    }
+  }
+
+  @keyframes pm-backdrop-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pm-sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  .pm-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 10px 16px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .pm-id {
+    font-size: 0.78rem;
+    padding: 1px 6px;
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  .pm-title {
+    margin: 0;
+    font-size: 1.1rem;
+    flex: 1;
+  }
+
+  .pm-title::after {
+    display: none;
+  }
+
+  .pm-close {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    justify-content: center;
+    flex: none;
+  }
+
+  .pm-body {
+    overflow-y: auto;
+    padding: 4px 16px 16px;
+    overscroll-behavior: contain;
+  }
+
+  .pm-body h3 {
+    margin: 18px 0 6px;
+  }
+
+  .pm-origin {
+    margin: 12px 0 0;
+  }
+
+  .pm-letter {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    margin-right: 3px;
+    border: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .pm-outcomes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 6px;
+  }
+
+  .pm-outcomes li {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .pm-io {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 0 20px;
+  }
+
+  .pm-io ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+
+  .pm-io .chip {
+    padding: 0 5px;
+  }
+
+  .pm-acts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--ink);
+  }
+
+  .pm-acts li {
+    padding: 10px 12px;
+  }
+
+  .pm-acts li + li {
+    border-top: 1px solid var(--border);
+  }
+
+  .pm-acts label,
+  .pm-act-head {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .pm-acts label {
+    cursor: pointer;
+  }
+
+  .pm-acts p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .pm-acts label + p {
+    margin-left: 26px;
+  }
+
+  .pm-aid {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .pm-foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px 16px;
+    border-top: 1px solid var(--ink);
+    background: var(--surface-2);
+  }
+
+  .pm-include {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: auto;
+  }
+
+  .pm-include[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .process-modal {
+      width: 100vw;
+      max-width: 100vw;
+      height: 100dvh;
+      max-height: 100dvh;
+      margin: 0;
+      box-shadow: none;
+      border: 0;
+    }
+
+    .pm-goto {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+
+  /* On phones the modal fills the screen, so it slides up from the bottom. */
+  @media (max-width: 600px) and (prefers-reduced-motion: no-preference) {
+    .process-modal[open] {
+      animation: pm-sheet-up 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+  }
+</style>
