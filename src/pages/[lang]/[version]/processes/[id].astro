@@ -47,61 +47,92 @@ const servedBy = (oid: string) => [
   ...p.outputs.filter((io) => io.serves.includes(oid)).map((io) => ({ ...io, dir: 'out' })),
 ];
 const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid}`;
+
+// Numbered sections, as on a drawing sheet.
+const sections = [
+  ['purpose', t('process.purpose')],
+  ['outcomes', t('process.outcomes')],
+  ['interface', `${t('process.inputs')} · ${t('process.outputs')}`],
+  ['activities', t('process.activities')],
+  ...(traced ? [['standards', t('process.standards')]] : []),
+  ...(p.changes?.length ? [['changes', t('process.changes')]] : []),
+] as [string, string][];
+const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).padStart(2, '0');
 ---
 
 <Layout locale={locale} title={p.name} description={plain(p.purpose)} section="processes" version={version} versionLinks={versionLinks} translated={translated}>
   <nav class="breadcrumbs" aria-label="Breadcrumb">
-    <a href={href(locale, version)}>{t('map.title')} {version}</a> / {p.id}
+    <a href={href(locale, version)}>ML-PRM / {version}</a> / {p.id}
   </nav>
 
-  <header class="process-header">
-    <h1><span class="pid">{p.id}</span> {p.name}</h1>
-    <div class="header-meta">
-      <span class={`badge origin-${p.origin}`} title={t(`origin.${p.origin}.long`)}>{t(`origin.${p.origin}`)}</span>
-      <span class="badge">{pick(v.title, locale)}</span>
-      {
-        otherVersions.map((o) => (
-          <a class="small" href={href(locale, 'compare', comparePair(o.id), id)}>
-            {t('process.compare', { version: o.id })}
-          </a>
-        ))
-      }
+  <h1>{p.name}</h1>
+
+  <dl class="sheet title-block">
+    <div>
+      <dt class="label">{t('process.sheet.process')}</dt>
+      <dd class="mono">{p.id}</dd>
     </div>
-  </header>
+    <div>
+      <dt class="label">{t('nav.version')}</dt>
+      <dd><span class="mono">{version}</span> · {pick(v.title, locale)}</dd>
+    </div>
+    <div>
+      <dt class="label">{t('map.legend')}</dt>
+      <dd><span class={`badge origin-${p.origin}`} title={t(`origin.${p.origin}.long`)}>{t(`origin.${p.origin}`)}</span></dd>
+    </div>
+    <div>
+      <dt class="label">{t('process.sheet.sheet')}</dt>
+      <dd class="mono">{String(i + 1).padStart(2, '0')} / {String(ids.length).padStart(2, '0')}</dd>
+    </div>
+    {
+      otherVersions.length > 0 && (
+        <div class="no-print">
+          <dt class="label">{t('process.otherVersions')}</dt>
+          <dd>
+            {otherVersions.map((o) => (
+              <a href={href(locale, 'compare', comparePair(o.id), id)}>{t('process.compare', { version: o.id })}</a>
+            ))}
+          </dd>
+        </div>
+      )
+    }
+  </dl>
 
   <div class="layout">
     <aside class="toc no-print" aria-label="Contents">
       <ol>
-        <li><a href="#purpose">{t('process.purpose')}</a></li>
-        <li><a href="#outcomes">{t('process.outcomes')}</a></li>
-        <li><a href="#inputs">{t('process.inputs')}</a></li>
-        <li><a href="#outputs">{t('process.outputs')}</a></li>
-        <li><a href="#activities">{t('process.activities')}</a></li>
-        {traced && <li><a href="#standards">{t('process.standards')}</a></li>}
-        {p.changes?.length ? <li><a href="#changes">{t('process.changes')}</a></li> : null}
+        {
+          sections.map(([key, label]) => (
+            <li>
+              <a href={`#${key}`}>
+                <span class="mono">{num(key)}</span> {label}
+              </a>
+            </li>
+          ))
+        }
       </ol>
     </aside>
 
     <article class="content">
       <section id="purpose">
-        <h2>{t('process.purpose')}</h2>
+        <h2><span class="sec">{num('purpose')}</span>{t('process.purpose')}</h2>
         <p class="prose purpose" set:html={inline(p.purpose)} />
       </section>
 
       <section id="outcomes">
-        <h2>{t('process.outcomes')}</h2>
+        <h2><span class="sec">{num('outcomes')}</span>{t('process.outcomes')}</h2>
         <ol class="outcomes">
           {
             p.outcomes.map((o) => (
               <li id={`outcome-${o.id}`}>
-                <span class="letter">({o.id})</span>
+                <span class="letter">{o.id}</span>
                 <div>
                   <span set:html={inline(o.text)} />
                   {servedBy(o.id).length > 0 && (
                     <div class="chips served" aria-label={t('process.outcomeServedBy')}>
                       {servedBy(o.id).map((io) => (
                         <a class="chip" href={`#${io.dir === 'in' ? 'input' : 'output'}-${io.workProduct}`}>
-                          <span aria-hidden="true">{io.dir === 'in' ? '→' : '←'}</span>
+                          <span class="num">{io.dir === 'in' ? 'IN' : 'OUT'}</span>
                           {io.name}
                         </a>
                       ))}
@@ -114,55 +145,77 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
         </ol>
       </section>
 
-      {
-        (['inputs', 'outputs'] as const).map((kind) => (
-          <section id={kind}>
-            <h2>{t(`process.${kind}`)}</h2>
-            <ul class="io">
-              {p[kind].map((io) => {
-                const wp = wps.get(io.workProduct);
-                const links = kind === 'inputs' ? wp?.producers : wp?.consumers.filter((c) => c.process !== id);
-                return (
-                  <li id={`${kind === 'inputs' ? 'input' : 'output'}-${io.workProduct}`} class="card">
-                    <div class="io-head">
-                      <a class="io-name" href={wpHref(io.workProduct)}>{io.name}</a>
-                      {io.optional && <span class="badge">{t('process.optional')}</span>}
-                      {wp && <span class="badge">{t(`wp.type.${wp.type}`)}</span>}
-                      {io.serves.length > 0 && (
-                        <span class="serves" title={t('process.serves')}>
-                          {io.serves.map((s) => (
-                            <a href={`#outcome-${s}`}>({s})</a>
-                          ))}
-                        </span>
-                      )}
+      <section id="interface">
+        <h2><span class="sec">{num('interface')}</span>{t('process.inputs')} · {t('process.outputs')}</h2>
+        <div class="flow grid-paper">
+          {
+            (['inputs', 'outputs'] as const).map((kind) => (
+              <div class:list={['flow-col', kind]} id={kind}>
+                <span class="label col-label">{t(`process.${kind}`)}</span>
+                {p[kind].length === 0 && <p class="muted small">—</p>}
+                {p[kind].map((io) => {
+                  const wp = wps.get(io.workProduct);
+                  const links = kind === 'inputs' ? wp?.producers : wp?.consumers.filter((c) => c.process !== id);
+                  return (
+                    <div class="io-node" id={`${kind === 'inputs' ? 'input' : 'output'}-${io.workProduct}`}>
+                      <div class="io-head">
+                        <a class="io-name" href={wpHref(io.workProduct)}>
+                          {io.name}
+                        </a>
+                        {io.serves.length > 0 && (
+                          <span class="serves" title={t('process.serves')}>
+                            {io.serves.map((s) => (
+                              <a href={`#outcome-${s}`}>{s}</a>
+                            ))}
+                          </span>
+                        )}
+                      </div>
+                      <div class="io-tags">
+                        {wp && <span class="badge">{t(`wp.type.${wp.type}`)}</span>}
+                        {io.optional && <span class="badge">{t('process.optional')}</span>}
+                      </div>
+                      {io.description && <p class="io-desc" set:html={inline(io.description)} />}
+                      <div class="io-links">
+                        <span class="label">{kind === 'inputs' ? t('process.producedBy') : t('process.usedBy')}</span>
+                        {links && links.length > 0 ? (
+                          <span class="chips">
+                            {links.map((l) => (
+                              <a class="chip" href={href(locale, version, 'processes', l.process)} title={name(l.process)}>
+                                <span class="num">{l.process}</span>
+                                <span class="link-name">{name(l.process)}</span>
+                              </a>
+                            ))}
+                          </span>
+                        ) : (
+                          <span class="muted small">{kind === 'inputs' ? t('process.external') : t('process.notUsed')}</span>
+                        )}
+                      </div>
                     </div>
-                    {io.description && <p class="io-desc" set:html={inline(io.description)} />}
-                    <div class="io-links">
-                      <span class="muted small">{kind === 'inputs' ? t('process.producedBy') : t('process.usedBy')}:</span>
-                      {links && links.length > 0 ? (
-                        <span class="chips">
-                          {links.map((l) => (
-                            <a class="chip" href={href(locale, version, 'processes', l.process)}>
-                              <span class="num">{l.process}</span>
-                              {name(l.process)}
-                            </a>
-                          ))}
-                        </span>
-                      ) : (
-                        <span class="muted small">{kind === 'inputs' ? t('process.external') : t('process.notUsed')}</span>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        ))
-      }
+                  );
+                })}
+              </div>
+            ))
+          }
+          <svg class="wires" aria-hidden="true">
+            <defs>
+              <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
+                <path d="M0 0 L8 4 L0 8 z" fill="currentColor" />
+              </marker>
+            </defs>
+          </svg>
+          <div class="flow-core" aria-hidden="true">
+            <div class="core-box">
+              <span class="mono core-id">{p.id}</span>
+              <span class="core-name">{p.name}</span>
+              <span class="core-outcomes mono">{p.outcomes.map((o) => o.id).join(' ')}</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section id="activities">
         <div class="section-head">
-          <h2>{t('process.activities')}</h2>
+          <h2><span class="sec">{num('activities')}</span>{t('process.activities')}</h2>
           <button type="button" class="toggle-all no-print" data-expand={t('process.expandAll')} data-collapse={t('process.collapseAll')}>
             {t('process.collapseAll')}
           </button>
@@ -174,37 +227,39 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
                 <details open>
                   <summary>
                     <span class="aid">{a.id}</span>
-                    <span set:html={inline(a.title)} />
+                    <span class="atitle" set:html={inline(a.title)} />
                   </summary>
-                  <p class="prose" set:html={inline(a.description)} />
-                  {(a.primaryStudies?.length || a.literature?.length) && (
-                    <dl class="sources small">
-                      {a.primaryStudies?.length ? (
-                        <>
-                          <dt>{t('process.primaryStudies')}</dt>
-                          <dd class="chips">
-                            {a.primaryStudies.map((s) => (
-                              <a class="chip" href={`${href(locale, 'references')}#${s}`} title={studyById.get(s)?.title}>
-                                {s}
-                              </a>
-                            ))}
-                          </dd>
-                        </>
-                      ) : null}
-                      {a.literature?.length ? (
-                        <>
-                          <dt>{t('process.literature')}</dt>
-                          <dd class="chips">
-                            {a.literature.map((k) => (
-                              <a class="chip" href={`${href(locale, 'references')}#${k}`} title={referenceByKey.get(k)?.title}>
-                                {shortCite(referenceByKey.get(k), k)}
-                              </a>
-                            ))}
-                          </dd>
-                        </>
-                      ) : null}
-                    </dl>
-                  )}
+                  <div class="abody">
+                    <p class="prose" set:html={inline(a.description)} />
+                    {(a.primaryStudies?.length || a.literature?.length) && (
+                      <dl class="sources small">
+                        {a.primaryStudies?.length ? (
+                          <>
+                            <dt class="label">{t('process.primaryStudies')}</dt>
+                            <dd class="chips">
+                              {a.primaryStudies.map((s) => (
+                                <a class="chip" href={`${href(locale, 'references')}#${s}`} title={studyById.get(s)?.title}>
+                                  <span class="num">{s}</span>
+                                </a>
+                              ))}
+                            </dd>
+                          </>
+                        ) : null}
+                        {a.literature?.length ? (
+                          <>
+                            <dt class="label">{t('process.literature')}</dt>
+                            <dd class="chips">
+                              {a.literature.map((k) => (
+                                <a class="chip" href={`${href(locale, 'references')}#${k}`} title={referenceByKey.get(k)?.title}>
+                                  {shortCite(referenceByKey.get(k), k)}
+                                </a>
+                              ))}
+                            </dd>
+                          </>
+                        ) : null}
+                      </dl>
+                    )}
+                  </div>
                 </details>
               </li>
             ))
@@ -215,7 +270,10 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
       {
         traced && (
           <section id="standards">
-            <h2>{t('process.standards')}</h2>
+            <h2>
+              <span class="sec">{num('standards')}</span>
+              {t('process.standards')}
+            </h2>
             <p class="muted small">
               {t('process.standardsNote')} {traced.version !== version && t('process.standardsV1', { version: traced.version })}
             </p>
@@ -232,7 +290,7 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
                   {traced.rows!.map((r) => (
                     <tr>
                       <td class="nowrap">
-                        {r.standard}
+                        <span class="mono small">{r.standard}</span>
                         {r.standardProcess && <div class="muted small">{r.standardProcess}</div>}
                       </td>
                       <td>{r.activity || <span class="muted">{t('process.noStandardActivity')}</span>}</td>
@@ -240,11 +298,11 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
                         {r.prmActivity ? (
                           traced.version === version ? (
                             <a href={`#activity-${r.prmActivity}`}>
-                              {r.prmActivity}. {activityTitle(r.prmActivity)}
+                              <span class="mono">{r.prmActivity}</span> {activityTitle(r.prmActivity)}
                             </a>
                           ) : (
                             <a href={`${href(locale, traced.version, 'processes', id)}#activity-${r.prmActivity}`}>
-                              {r.prmActivity}. {activityTitle(r.prmActivity)} ({traced.version})
+                              <span class="mono">{r.prmActivity}</span> {activityTitle(r.prmActivity)} ({traced.version})
                             </a>
                           )
                         ) : (
@@ -263,18 +321,21 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
       {
         p.changes?.length ? (
           <section id="changes">
-            <h2>{t('process.changes')}</h2>
+            <h2>
+              <span class="sec">{num('changes')}</span>
+              {t('process.changes')}
+            </h2>
             <p class="muted small">{t('process.changesNote')}</p>
             <ul class="changes">
               {p.changes.map((c) => (
-                <li class="card">
+                <li>
                   <div class="change-head">
-                    <strong>{c.annotation}</strong>
+                    <strong class="mono">{c.annotation}</strong>
                     <span class={`badge decision-${c.decision.replace(/\s+/g, '-')}`}>{t(`decision.${c.decision}` as any) ?? c.decision}</span>
                     {c.raisedElsewhere && <span class="badge">{t('process.raisedElsewhere')}</span>}
                     {(c.redVotes != null || c.yellowVotes != null) && (
                       <span class="votes small muted">
-                        {t('process.votes')}: <span class="dot red" /> {c.redVotes ?? 0} {t('process.redVotes')} · <span class="dot yellow" /> {c.yellowVotes ?? 0}{' '}
+                        <span class="dot red" /> {c.redVotes ?? 0} {t('process.redVotes')} · <span class="dot yellow" /> {c.yellowVotes ?? 0}{' '}
                         {t('process.yellowVotes')}
                       </span>
                     )}
@@ -298,13 +359,13 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
         ) : null
       }
 
-      <nav class="pager no-print">
+      <nav class="pager title-block no-print">
         {
           prev ? (
-            <a class="card" href={href(locale, version, 'processes', prev)}>
-              <span class="muted small">← {t('process.previous')}</span>
+            <a href={href(locale, version, 'processes', prev)}>
+              <span class="label">← {t('process.previous')}</span>
               <span>
-                <span class="num">{prev}</span> {name(prev)}
+                <span class="mono muted">{prev}</span> {name(prev)}
               </span>
             </a>
           ) : (
@@ -312,13 +373,15 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
           )
         }
         {
-          next && (
-            <a class="card next" href={href(locale, version, 'processes', next)}>
-              <span class="muted small">{t('process.next')} →</span>
+          next ? (
+            <a class="next" href={href(locale, version, 'processes', next)}>
+              <span class="label">{t('process.next')} →</span>
               <span>
-                <span class="num">{next}</span> {name(next)}
+                <span class="mono muted">{next}</span> {name(next)}
               </span>
             </a>
+          ) : (
+            <span />
           )
         }
       </nav>
@@ -327,6 +390,51 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
 </Layout>
 
 <script>
+  // Route a right-angle wire from every input to the process and from the
+  // process to every output. The wires share a vertical bus in each gap.
+  const flow = document.querySelector<HTMLElement>('.flow');
+  const svg = flow?.querySelector<SVGSVGElement>('.wires');
+  const core = flow?.querySelector<HTMLElement>('.core-box');
+  const NS = 'http://www.w3.org/2000/svg';
+
+  function drawWires() {
+    if (!flow || !svg || !core) return;
+    svg.querySelectorAll('path.wire').forEach((p) => p.remove());
+    if (getComputedStyle(svg).display === 'none') return;
+    const box = flow.getBoundingClientRect();
+    const c = core.getBoundingClientRect();
+    const coreY = c.top + c.height / 2 - box.top;
+    const wire = (d: string) => {
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('class', 'wire');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', 'currentColor');
+      path.setAttribute('stroke-width', '1');
+      path.setAttribute('marker-end', 'url(#arrow)');
+      svg.appendChild(path);
+    };
+    flow.querySelectorAll<HTMLElement>('.inputs .io-node').forEach((n) => {
+      const r = n.getBoundingClientRect();
+      const x1 = r.right - box.left;
+      const y1 = r.top - box.top + 20;
+      const x2 = c.left - box.left;
+      const mid = (x1 + x2) / 2;
+      wire(`M${x1} ${y1} H${mid} V${coreY} H${x2 - 1}`);
+    });
+    flow.querySelectorAll<HTMLElement>('.outputs .io-node').forEach((n) => {
+      const r = n.getBoundingClientRect();
+      const x1 = c.right - box.left;
+      const x2 = r.left - box.left;
+      const y2 = r.top - box.top + 20;
+      const mid = (x1 + x2) / 2;
+      wire(`M${x1} ${coreY} H${mid} V${y2} H${x2 - 1}`);
+    });
+  }
+
+  if (flow) new ResizeObserver(drawWires).observe(flow);
+  document.fonts?.ready.then(drawWires);
+
   const button = document.querySelector<HTMLButtonElement>('.toggle-all');
   const all = [...document.querySelectorAll<HTMLDetailsElement>('.activities details')];
   const sync = () => {
@@ -345,45 +453,63 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
 </script>
 
 <style>
-  .process-header h1 {
-    margin-bottom: 8px;
+  h1 {
+    margin-bottom: 16px;
   }
 
-  .pid {
+  .sheet {
+    margin: 0 0 8px;
+  }
+
+  @media (max-width: 560px) {
+    .sheet {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .sheet > div:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .sheet dd {
+    margin: 0;
+  }
+
+  .sheet dd a + a {
+    margin-left: 10px;
+  }
+
+  .sec {
     font-family: var(--mono);
-    font-size: 0.7em;
-    color: var(--muted);
+    font-size: 0.78rem;
     font-weight: 500;
-    vertical-align: 0.12em;
-  }
-
-  .header-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 12px;
-    align-items: center;
+    color: var(--surface);
+    background: var(--ink);
+    padding: 1px 6px;
+    letter-spacing: 0.04em;
+    align-self: center;
   }
 
   .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
+    gap: 32px;
   }
 
-  @media (min-width: 960px) {
+  @media (min-width: 1000px) {
     .layout {
-      grid-template-columns: 190px minmax(0, 1fr);
+      grid-template-columns: 200px minmax(0, 1fr);
     }
 
     .toc {
       position: sticky;
       top: 16px;
       align-self: start;
-      margin-top: 28px;
+      margin-top: 32px;
     }
   }
 
-  @media (max-width: 959px) {
+  @media (max-width: 999px) {
     .toc {
       display: none;
     }
@@ -393,162 +519,341 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
     list-style: none;
     padding: 0;
     margin: 0;
-    border-left: 2px solid var(--border);
-    font-size: 0.9rem;
+    border-left: 1px solid var(--ink);
+    font-size: 0.88rem;
   }
 
   .toc a {
-    display: block;
+    display: flex;
+    gap: 8px;
     padding: 4px 12px;
     color: var(--muted);
     text-decoration: none;
+  }
+
+  .toc a .mono {
+    font-size: 0.75rem;
+    padding-top: 2px;
   }
 
   .toc a:hover {
     color: var(--text);
   }
 
-  .purpose {
-    font-size: 1.05rem;
+  section {
+    scroll-margin-top: 16px;
   }
 
+  .purpose {
+    font-size: 1.08rem;
+  }
+
+  /* Outcomes */
   .outcomes {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
-    gap: 10px;
+    gap: 12px;
   }
 
   .outcomes li {
     display: grid;
-    grid-template-columns: 2.2em 1fr;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
     scroll-margin-top: 16px;
   }
 
   .outcomes li:target {
     background: var(--surface-2);
-    border-radius: 8px;
+    outline: 1px dashed var(--ink);
+    outline-offset: 4px;
   }
 
   .letter {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--ink);
     font-family: var(--mono);
-    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 1px;
   }
 
   .served {
-    margin-top: 4px;
+    margin-top: 6px;
   }
 
   .served .chip {
     font-size: 0.78rem;
-    padding: 0 7px;
+    padding: 0 6px;
   }
 
-  .io {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  /* Inputs, process and outputs as a diagram */
+  .flow {
+    position: relative;
     display: grid;
-    gap: 10px;
+    grid-template-columns: minmax(0, 1fr) 150px minmax(0, 1fr);
+    grid-template-areas: 'in core out';
+    gap: 0 32px;
+    padding: 20px;
+    border: 1px solid var(--ink);
   }
 
-  .io li {
+  .flow-col.inputs {
+    grid-area: in;
+  }
+
+  .flow-col.outputs {
+    grid-area: out;
+  }
+
+  .flow-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     scroll-margin-top: 16px;
   }
 
-  .io li:target {
-    border-color: var(--accent);
+  .col-label {
+    margin-bottom: -6px;
+  }
+
+  .flow-core {
+    grid-area: core;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 24px;
+  }
+
+  .core-box {
+    border: 2px solid var(--ink);
+    background: var(--surface);
+    padding: 14px 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .core-id {
+    font-size: 0.8rem;
+    background: var(--ink);
+    color: var(--surface);
+    align-self: center;
+    padding: 0 6px;
+  }
+
+  .core-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    line-height: 1.25;
+  }
+
+  .core-outcomes {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+  }
+
+  .wires {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    color: var(--ink);
+    overflow: visible;
+  }
+
+  .io-node {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--ink);
+    padding: 10px 12px;
+    scroll-margin-top: 16px;
+  }
+
+  .io-node:target {
+    box-shadow: var(--lift);
   }
 
   .io-head {
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px 10px;
+    gap: 8px;
     align-items: baseline;
+    justify-content: space-between;
   }
 
   .io-name {
-    font-weight: 650;
+    font-weight: 600;
+    color: var(--text);
   }
 
   .serves {
-    margin-left: auto;
-    font-family: var(--mono);
-    font-size: 0.85rem;
     display: inline-flex;
+    gap: 3px;
+    flex: none;
+  }
+
+  .serves a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    width: 18px;
+    height: 18px;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--muted);
+  }
+
+  .serves a:hover {
+    border-color: var(--ink);
+    color: var(--text);
+  }
+
+  .io-tags {
+    display: flex;
     gap: 4px;
+    margin-top: 4px;
   }
 
   .io-desc {
-    margin: 4px 0 8px;
+    margin: 6px 0 8px;
     color: var(--muted);
+    font-size: 0.9rem;
   }
 
   .io-links {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 8px;
+    gap: 4px 8px;
     align-items: center;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
   }
 
+  .io-links .chip {
+    font-size: 0.8rem;
+  }
+
+  /* On narrow screens the diagram becomes a vertical flow. */
+  @media (max-width: 860px) {
+    .flow {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'in' 'core' 'out';
+      padding: 12px;
+    }
+
+    .wires {
+      display: none;
+    }
+
+    .flow-core {
+      padding: 0;
+    }
+
+    .flow-core::before,
+    .flow-core::after {
+      content: '↓';
+      display: block;
+      text-align: center;
+      font-family: var(--mono);
+      color: var(--ink);
+      line-height: 2;
+    }
+
+    .link-name {
+      display: none;
+    }
+  }
+
+  /* Activities */
   .section-head {
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
     gap: 12px;
   }
 
+  .section-head h2 {
+    flex: 1;
+  }
+
   .toggle-all {
-    font-size: 0.85rem;
-    padding: 3px 10px;
+    font-size: 0.8rem;
+    padding: 2px 10px;
   }
 
   .activities {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: grid;
-    gap: 6px;
+    border: 1px solid var(--ink);
+    background: var(--surface);
   }
 
   .activities li {
     scroll-margin-top: 16px;
   }
 
-  .activities details {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    padding: 10px 16px;
+  .activities li + li {
+    border-top: 1px solid var(--border);
   }
 
-  .activities li:target details {
-    border-color: var(--accent);
+  .activities li:target {
+    background: var(--surface-2);
   }
 
   .activities summary {
     cursor: pointer;
     font-weight: 600;
     display: flex;
-    gap: 10px;
-    list-style-position: outside;
+    gap: 12px;
+    padding: 10px 14px;
+    list-style: none;
   }
 
   .activities summary::-webkit-details-marker {
     display: none;
   }
 
-  .aid {
-    font-family: var(--mono);
-    font-size: 0.85rem;
-    color: var(--accent-strong);
-    padding-top: 2px;
-    min-width: 2em;
+  .activities summary:hover .atitle {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
-  .activities details > p {
-    margin: 8px 0 4px;
+  .aid {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1px solid var(--ink);
+    padding: 0 5px;
+    height: fit-content;
+    margin-top: 2px;
+    min-width: 2.6em;
+    text-align: center;
+  }
+
+  details[open] .aid {
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  .abody {
+    padding: 0 14px 14px calc(14px + 2.6em + 12px);
+  }
+
+  .abody > p {
+    margin-top: 0;
+  }
+
+  @media (max-width: 560px) {
+    .abody {
+      padding-left: 14px;
+    }
   }
 
   .sources {
@@ -557,10 +862,6 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
     gap: 6px 12px;
     margin: 10px 0 0;
     align-items: center;
-  }
-
-  .sources dt {
-    color: var(--muted);
   }
 
   .sources dd {
@@ -577,11 +878,21 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
     white-space: nowrap;
   }
 
+  /* Changes */
   .changes {
     list-style: none;
     padding: 0;
-    display: grid;
-    gap: 10px;
+    margin: 0;
+    border: 1px solid var(--ink);
+    background: var(--surface);
+  }
+
+  .changes > li {
+    padding: 12px 14px;
+  }
+
+  .changes > li + li {
+    border-top: 1px solid var(--border);
   }
 
   .change-head {
@@ -599,7 +910,7 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
     display: inline-block;
     width: 9px;
     height: 9px;
-    border-radius: 50%;
+    border: 1px solid var(--ink);
   }
 
   .dot.red {
@@ -613,13 +924,11 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
   .decision-adopted {
     background: var(--ins-bg);
     color: var(--ins-text);
-    border-color: transparent;
   }
 
   .decision-rejected {
     background: var(--del-bg);
     color: var(--del-text);
-    border-color: transparent;
   }
 
   .annotation {
@@ -628,7 +937,7 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
 
   .change-list {
     margin: 6px 0 0;
-    padding-left: 0;
+    padding: 0;
     list-style: none;
     display: grid;
     gap: 4px;
@@ -636,14 +945,14 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
 
   .kind {
     display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.06em;
     margin-right: 6px;
-    padding: 0 6px;
-    border-radius: 4px;
-    background: var(--surface-2);
+    padding: 0 5px;
+    border: 1px solid var(--border);
   }
 
   .kind-added {
@@ -656,33 +965,38 @@ const wpHref = (wid: string) => `${href(locale, version, 'work-products')}#${wid
     color: var(--del-text);
   }
 
+  /* Pager */
   .pager {
-    display: grid;
+    margin-top: 48px;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 40px;
   }
 
   .pager a {
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    padding: 10px 14px;
     text-decoration: none;
     color: var(--text);
   }
 
-  .pager .next {
-    text-align: right;
+  .pager a:hover {
+    background: var(--surface-2);
   }
 
-  .pager .num {
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    color: var(--muted);
+  .pager .next {
+    text-align: right;
+    border-left: 1px solid var(--border);
   }
 
   @media (max-width: 560px) {
     .pager {
       grid-template-columns: 1fr;
+    }
+
+    .pager .next {
+      border-left: 0;
+      border-top: 1px solid var(--border);
     }
   }
 </style>

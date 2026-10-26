@@ -26,6 +26,7 @@ const origins = ['standards-and-literature', 'standards-only', 'decomposed'] as 
 ---
 
 <Layout locale={locale} title={`${t('map.title')} ${version}`} section="processes" version={version} versionLinks={versionLinks} translated={translated}>
+  <p class="breadcrumbs">ML-PRM / {version}</p>
   <h1>{t('map.title')} <span class="muted">· {pick(v.title, locale)}</span></h1>
   <p class="muted prose">{pick(v.description, locale)}</p>
 
@@ -46,19 +47,21 @@ const origins = ['standards-and-literature', 'standards-only', 'decomposed'] as 
 
   {
     groups.map((g) => (
-      <section class="group">
-        <h2>{g.name}</h2>
+      <section class="group grid-paper">
+        <h2 class="group-label">{g.name}</h2>
         <div class="columns">
           {g.columns.map((col) => (
             <ol class="column">
               {col.map(({ p, search }) => (
                 <li data-search={search}>
-                  <a class={`tile origin-${p.origin}`} href={href(locale, version, 'processes', p.id)} title={t(`origin.${p.origin}.long`)}>
-                    <span class="num">{p.id}</span>
-                    <span class="name">{p.name}</span>
-                    <span class="meta">
-                      {p.activities.length} {t('map.activities')}
+                  <a class="node" href={href(locale, version, 'processes', p.id)} title={t(`origin.${p.origin}.long`)}>
+                    <span class={`node-tab origin-${p.origin}`}>
+                      <span>{p.id}</span>
+                      <span>
+                        {p.activities.length} {t('map.activities')}
+                      </span>
                     </span>
+                    <span class="node-name">{p.name}</span>
                   </a>
                 </li>
               ))}
@@ -95,7 +98,7 @@ const origins = ['standards-and-literature', 'standards-only', 'decomposed'] as 
     flex-wrap: wrap;
     gap: 12px 24px;
     align-items: center;
-    margin: 16px 0 8px;
+    margin: 20px 0 16px;
   }
 
   .toolbar input {
@@ -104,23 +107,36 @@ const origins = ['standards-and-literature', 'standards-only', 'decomposed'] as 
   }
 
   .group {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 4px 16px 16px;
-    margin-top: 16px;
+    border: 1px solid var(--ink);
+    padding: 44px 24px 24px;
+    margin-top: 8px;
+    position: relative;
   }
 
-  .group h2 {
-    text-align: center;
-    margin: 12px 0;
-    font-size: 1.15rem;
+  /* The group name sits in a tab on the frame, like a drawing label. */
+  .group-label {
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    margin: 0;
+    padding: 4px 12px;
+    background: var(--ink);
+    color: var(--surface);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .group-label::after {
+    display: none;
   }
 
   .columns {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-    gap: 10px 16px;
+    gap: 14px 28px;
     align-items: start;
   }
 
@@ -129,52 +145,61 @@ const origins = ['standards-and-literature', 'standards-only', 'decomposed'] as 
     padding: 0;
     margin: 0;
     display: grid;
-    gap: 10px;
+    gap: 14px;
   }
 
-  .tile {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-areas: 'num name' '. meta';
-    column-gap: 10px;
-    min-height: 64px;
-    align-content: center;
-    padding: 10px 14px;
-    border-radius: 10px;
+  .node {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--ink);
+    color: var(--text);
     text-decoration: none;
-    box-shadow: var(--shadow);
     transition:
-      transform 0.12s ease,
+      transform 0.1s ease,
+      box-shadow 0.1s ease,
       opacity 0.15s ease;
   }
 
-  .tile:hover {
-    transform: translateY(-1px);
-    outline: 2px solid var(--accent);
-    outline-offset: 0;
+  .node:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--lift);
   }
 
-  .tile .num {
-    grid-area: num;
+  .node-tab {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 2px 8px;
+    border-bottom: 1px solid var(--ink);
     font-family: var(--mono);
-    font-size: 0.8rem;
-    opacity: 0.75;
-    padding-top: 2px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
   }
 
-  .tile .name {
-    grid-area: name;
+  .node-tab span:last-child {
+    opacity: 0.8;
+  }
+
+  .node-name {
+    padding: 8px 10px 10px;
     font-weight: 600;
     line-height: 1.3;
+    min-height: 3.2em;
   }
 
-  .tile .meta {
-    grid-area: meta;
-    font-size: 0.78rem;
-    opacity: 0.75;
-  }
-
-  .dim .tile {
+  .dim .node {
     opacity: 0.25;
+  }
+
+  @media (max-width: 600px) {
+    .group {
+      padding: 40px 12px 12px;
+    }
+
+    .node-name {
+      min-height: 0;
+    }
   }
 </style>

@@ -14,12 +14,12 @@ const t = useTranslations(locale);
 const phaseName = (id: string) => l.phases.find((p) => p.id === id)?.name ?? id;
 ---
 
-<ol class:list={['phases', { compact }]}>
+<ol class:list={['phases', { compact, 'grid-paper': !compact }]}>
   {
     l.phases.map((ph, i) => (
       <li class="phase" id={compact ? undefined : `phase-${ph.id}`}>
         <div class="phase-head">
-          <span class="step">{i + 1}</span>
+          <span class="step">{String(i + 1).padStart(2, '0')}</span>
           <strong>{ph.name}</strong>
           {ph.iterative && (
             <span class="badge" title={t('lc.iterative')}>
@@ -59,16 +59,18 @@ const phaseName = (id: string) => l.phases.find((p) => p.id === id)?.name ?? id;
     margin: 16px 0;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-    gap: 12px;
-    counter-reset: phase;
+    gap: 16px;
+  }
+
+  .phases.grid-paper {
+    padding: 20px;
+    border: 1px solid var(--ink);
   }
 
   .phase {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 14px;
-    position: relative;
+    border: 1px solid var(--ink);
+    padding: 0 0 12px;
   }
 
   .phase-head {
@@ -76,24 +78,31 @@ const phaseName = (id: string) => l.phases.find((p) => p.id === id)?.name ?? id;
     flex-wrap: wrap;
     gap: 6px 8px;
     align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .phase > p,
+  .procs,
+  .return {
+    margin-left: 12px;
+    margin-right: 12px;
   }
 
   .step {
-    display: inline-grid;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: var(--accent-text);
+    font-family: var(--mono);
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 500;
+    padding: 0 6px;
+    background: var(--ink);
+    color: var(--surface);
   }
 
   .procs {
     list-style: none;
     padding: 0;
-    margin: 10px 0 0;
+    margin-top: 12px;
+    margin-bottom: 0;
     display: grid;
     gap: 6px;
   }
@@ -101,27 +110,28 @@ const phaseName = (id: string) => l.phases.find((p) => p.id === id)?.name ?? id;
   .proc {
     display: flex;
     gap: 8px;
-    padding: 6px 10px;
-    border-radius: 7px;
+    padding: 5px 8px;
+    border: 1px solid var(--ink);
     text-decoration: none;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 600;
     line-height: 1.3;
   }
 
   .proc:hover {
-    outline: 2px solid var(--accent);
+    box-shadow: 2px 2px 0 var(--ink);
   }
 
   .proc .num {
     font-family: var(--mono);
-    font-size: 0.75rem;
-    opacity: 0.75;
+    font-size: 0.72rem;
+    font-weight: 500;
+    opacity: 0.8;
     padding-top: 1px;
   }
 
   .return {
-    margin: 10px 0 0;
+    margin-top: 12px;
     padding-top: 8px;
     border-top: 1px dashed var(--border);
   }
@@ -129,23 +139,27 @@ const phaseName = (id: string) => l.phases.find((p) => p.id === id)?.name ?? id;
   .compact {
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     gap: 6px;
-    margin: 8px 0 0;
+    margin: 12px 0 0;
   }
 
   .compact .phase {
-    padding: 8px;
+    padding: 0 0 6px;
     font-size: 0.8rem;
+  }
+
+  .compact .phase-head {
+    padding: 4px 6px;
   }
 
   .compact .procs {
     display: flex;
     flex-wrap: wrap;
     gap: 3px;
-    margin-top: 6px;
+    margin: 6px 6px 0;
   }
 
   .compact .proc {
-    padding: 1px 5px;
+    padding: 0 4px;
   }
 
   .compact .badge {

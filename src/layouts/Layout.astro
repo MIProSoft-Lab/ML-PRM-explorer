@@ -64,16 +64,7 @@ const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env
     <header class="site-header">
       <div class="container bar">
         <a class="brand" href={href(locale)}>
-          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
-            <rect x="1" y="1" width="7" height="7" rx="2" fill="var(--origin-sl-bg)" />
-            <rect x="10" y="1" width="7" height="7" rx="2" fill="var(--origin-dec-bg)" />
-            <rect x="19" y="1" width="7" height="7" rx="2" fill="var(--origin-so-bg)" />
-            <rect x="1" y="10" width="7" height="7" rx="2" fill="var(--origin-so-bg)" />
-            <rect x="10" y="10" width="7" height="7" rx="2" fill="var(--origin-dec-bg)" />
-            <rect x="19" y="10" width="7" height="7" rx="2" fill="var(--origin-sl-bg)" />
-            <rect x="1" y="19" width="7" height="7" rx="2" fill="var(--origin-dec-bg)" />
-            <rect x="10" y="19" width="7" height="7" rx="2" fill="var(--origin-sl-bg)" />
-          </svg>
+          <span class="brand-code" aria-hidden="true">ML-PRM</span>
           <span>{siteTitle}</span>
         </a>
         <div class="switchers">
@@ -129,13 +120,30 @@ const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env
     </main>
     <footer class="site-footer">
       <div class="container">
-        <span>{t('footer.thesis')} · {site.author}{site.institution && ` · ${site.institution}`}</span>
-        <a class="license" href="https://creativecommons.org/licenses/by/4.0/" rel="license">{t('footer.license')}</a>
-        <span>
-          {repo && <a href={repo}>{t('footer.source')}</a>}
-          {repo && ' · '}
-          <a href={`${base}/admin/`}>{t('nav.admin')}</a>
-        </span>
+        <div class="title-block">
+          <div>
+            <span class="label">{t('footer.thesis')}</span>
+            {site.author}
+          </div>
+          {
+            site.institution && (
+              <div>
+                <span class="label">{t('footer.institution')}</span>
+                {site.institution}
+              </div>
+            )
+          }
+          <div>
+            <span class="label">{t('footer.licence')}</span>
+            <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">{t('footer.license')}</a>
+          </div>
+          <div>
+            <span class="label">{t('footer.links')}</span>
+            {repo && <a href={repo}>{t('footer.source')}</a>}
+            {repo && ' · '}
+            <a href={`${base}/admin/`}>{t('nav.admin')}</a>
+          </div>
+        </div>
       </div>
     </footer>
     <script is:inline>

@@ -19,44 +19,72 @@ const cards = [
 
 <Layout locale={locale}>
   <section class="hero">
+    <p class="breadcrumbs">ML-PRM · {t('footer.thesis')} · {site.institution}</p>
     <h1>{pick(site.title, locale)}</h1>
     <p class="lead prose">{pick(site.intro, locale)}</p>
     <p><a class="button primary" href={href(locale, defaultVersion)}>{t('home.explore')} →</a></p>
   </section>
 
   <h2>{t('home.whatYouCanDo')}</h2>
-  <div class="cards">
+  <ol class="sheets">
     {
-      cards.map(([title, text, url]) => (
-        <a class="card feature" href={url}>
-          <strong>{t(title)}</strong>
-          <span class="muted">{t(text)}</span>
-        </a>
-      ))
-    }
-  </div>
-
-  <h2>{t('home.versions')}</h2>
-  <ul class="versions">
-    {
-      [...versions].reverse().map((v) => (
-        <li class="card">
-          <a href={href(locale, v.id)}>
-            <strong>{v.id}</strong> · {pick(v.title, locale)}
+      cards.map(([title, text, url], i) => (
+        <li>
+          <a class="sheet" href={url}>
+            <span class="sheet-head">
+              <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+              <strong>{t(title)}</strong>
+              <span class="arrow" aria-hidden="true">
+                →
+              </span>
+            </span>
+            <span class="sheet-body muted">{t(text)}</span>
           </a>
-          <span class="badge">{t(`home.${v.status}`)}</span>
-          <p class="muted small">
-            {pick(v.description, locale)} {processIds(v.id).length} {t('home.processes')}.
-          </p>
         </li>
       ))
     }
-  </ul>
+  </ol>
+
+  <h2>{t('home.versions')}</h2>
+  <div class="table-wrap">
+    <table class="revisions">
+      <tbody>
+        {
+          [...versions].reverse().map((v) => (
+            <tr>
+              <td class="rev">
+                <a class="mono" href={href(locale, v.id)}>
+                  {v.id}
+                </a>
+              </td>
+              <td>
+                <a href={href(locale, v.id)}>{pick(v.title, locale)}</a>
+                <div class="muted small">{pick(v.description, locale)}</div>
+              </td>
+              <td class="mono small nowrap">
+                {processIds(v.id).length} {t('home.processes')}
+              </td>
+              <td>
+                <span class="badge">{t(`home.${v.status}`)}</span>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
 </Layout>
 
 <style>
   .hero {
-    padding: 16px 0 8px;
+    padding: 8px 0 16px;
+    max-width: 860px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 1.4rem + 2.6vw, 3.1rem);
+    letter-spacing: -0.02em;
+    margin: 0.2em 0 0.4em;
   }
 
   .lead {
@@ -64,42 +92,66 @@ const cards = [
     color: var(--muted);
   }
 
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-    gap: 12px;
-  }
-
-  .feature {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    text-decoration: none;
-    color: var(--text);
-    font-size: 0.95rem;
-  }
-
-  .feature:hover {
-    border-color: var(--accent);
-  }
-
-  .versions {
+  .sheets {
     list-style: none;
     padding: 0;
-    display: grid;
-    gap: 10px;
-    max-width: var(--measure);
-  }
-
-  .versions li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 4px 10px;
-  }
-
-  .versions p {
-    flex-basis: 100%;
     margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 16px;
+  }
+
+  .sheet {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--surface);
+    border: 1px solid var(--ink);
+    color: var(--text);
+    text-decoration: none;
+    transition:
+      transform 0.1s ease,
+      box-shadow 0.1s ease;
+  }
+
+  .sheet:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--lift);
+  }
+
+  .sheet-head {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .sheet-head .mono {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .arrow {
+    margin-left: auto;
+    font-family: var(--mono);
+  }
+
+  .sheet-body {
+    padding: 10px 12px 14px;
+    font-size: 0.93rem;
+  }
+
+  .revisions td {
+    vertical-align: middle;
+  }
+
+  .rev {
+    width: 4em;
+    font-size: 1rem;
+  }
+
+  .nowrap {
+    white-space: nowrap;
   }
 </style>
