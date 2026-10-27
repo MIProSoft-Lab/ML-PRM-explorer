@@ -804,7 +804,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 
   function markdown() {
     const r = rows();
-    const title = state.project || document.querySelector('h1')!.textContent;
+    const title = state.project || s('tailor.untitled');
     let out = `# ${title}\n\nPRM ${state.version} · ${location.href}\n\n`;
     if (state.description) out += `${state.description}\n\n`;
     const phased = state.phases.length > 0;
@@ -847,7 +847,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
   function json() {
     return JSON.stringify(
       {
-        project: state.project,
+        name: state.project || undefined,
         prmVersion: state.version,
         link: location.href,
         description: state.description || undefined,
@@ -890,7 +890,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     // Plain scalars when they are unambiguous, double-quoted (JSON) strings otherwise.
     const q = (x: string) => (/^[\p{L}\p{N}][\p{L}\p{N} ,.()'’/&–—-]*$/u.test(x) && !/^(true|false|yes|no|on|off|null|~)$/i.test(x) ? x : JSON.stringify(x));
     const name = state.project || s('tailor.untitled');
-    let out = `id: ${slug(name) || 'lifecycle'}\nname: ${q(name)}\nstatus: draft\nprmVersion: ${state.version}\n`;
+    let out = `id: ${slug(state.project) || 'lifecycle-model'}\nname: ${q(name)}\nstatus: draft\nprmVersion: ${state.version}\n`;
     if (state.description) out += `description: ${q(state.description)}\n`;
     out += 'phases:\n';
     for (const p of lifecyclePhases()) {
@@ -911,21 +911,21 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  const fileBase = () => (slug(state.project) || 'prm-tailoring') + `-${state.version}`;
+  const fileBase = () => (slug(state.project) || 'lifecycle-model') + `-${state.version}`;
   document.querySelectorAll<HTMLButtonElement>('[data-export]').forEach((b) =>
     b.addEventListener('click', () => {
       const kind = b.dataset.export!;
       if (kind === 'md') download(`${fileBase()}.md`, 'text/markdown', markdown());
       if (kind === 'csv') download(`${fileBase()}.csv`, 'text/csv', csv());
       if (kind === 'json') download(`${fileBase()}.json`, 'application/json', json());
-      if (kind === 'yaml') download(`${slug(state.project || s('tailor.untitled')) || 'lifecycle'}.yaml`, 'application/yaml', yaml());
+      if (kind === 'yaml') download(`${slug(state.project) || 'lifecycle-model'}.yaml`, 'application/yaml', yaml());
     }),
   );
 
   $('#print').addEventListener('click', () => {
     const phased = state.phases.length > 0;
     $('#print-view').innerHTML =
-      `<h1>${esc(state.project || '')}</h1><p>PRM ${esc(state.version)}</p>` +
+      `<h1>${esc(state.project || s('tailor.untitled'))}</h1><p>PRM ${esc(state.version)}</p>` +
       groups()
         .map(
           (g) =>
