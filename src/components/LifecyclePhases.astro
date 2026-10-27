@@ -73,13 +73,25 @@ const phaseName = (id: string) => l.phases.find((p) => p.id === id)?.name ?? id;
     padding: 0 0 12px;
   }
 
+  /* The name stays beside the number, wrapping in its own column; the
+     iterative badge goes below the name. */
   .phase-head {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     gap: 6px 8px;
-    align-items: center;
+    align-items: baseline;
     padding: 8px 12px;
     border-bottom: 1px solid var(--ink);
+  }
+
+  .phase-head strong {
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+
+  .phase-head .badge {
+    grid-column: 2;
+    justify-self: start;
   }
 
   .phase > p,
