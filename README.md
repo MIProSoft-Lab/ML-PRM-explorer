@@ -7,7 +7,7 @@ A website to explore the Process Reference Model (PRM) for Machine Learning from
 - **Work products**: which process produces each input and which processes use each output.
 - **Compare versions**: word-level diff of every process between two versions.
 - **Lifecycle templates** that arrange the processes of a version into phases and iterations, and serve as starting points for the lifecycle builder.
-- **Lifecycle builder**: create a custom lifecycle model for a project: choose the processes and activities, arrange them into phases with repetitions and feedback loops, preview its diagram, see inputs left without a producer, and export it as a Markdown checklist, CSV, JSON or a lifecycle template file (YAML). The model lives in the link.
+- **Lifecycle builder**: create a custom lifecycle model for a project: choose the processes and activities, arrange them into phases with repetitions and feedback loops, preview its diagram, see inputs left without a producer, and export it as a Markdown checklist, CSV, JSON or a lifecycle template file (YAML). The model lives in the link, and the JSON, YAML and CSV exports can be imported to share it as a file.
 
 ## How to cite
 
