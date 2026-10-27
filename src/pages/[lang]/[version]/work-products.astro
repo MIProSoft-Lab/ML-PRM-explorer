@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import ProcessModal from '../../../components/ProcessModal.astro';
 import { getProcess, getWorkProducts, versions } from '../../../lib/content';
 import { versionPaths } from '../../../lib/paths';
 import { useTranslations, href, type Locale } from '../../../i18n/ui';
@@ -51,7 +52,7 @@ const types = ['information-item', 'artifact', 'record'] as const;
                 {w.producers.length ? (
                   <span class="chips">
                     {w.producers.map((l) => (
-                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#output-${w.id}`}>
+                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#output-${w.id}`} data-process={l.process} data-version={version} data-name={name(l.process)}>
                         <span class="num">{l.process}</span>
                         {name(l.process)}
                       </a>
@@ -65,7 +66,7 @@ const types = ['information-item', 'artifact', 'record'] as const;
                 {w.consumers.length ? (
                   <span class="chips">
                     {w.consumers.map((l) => (
-                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#input-${w.id}`}>
+                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#input-${w.id}`} data-process={l.process} data-version={version} data-name={name(l.process)}>
                         <span class="num">{l.process}</span>
                         {name(l.process)}
                       </a>
@@ -81,9 +82,14 @@ const types = ['information-item', 'artifact', 'record'] as const;
       </tbody>
     </table>
   </div>
+  <ProcessModal locale={locale} />
 </Layout>
 
 <script>
+  import { createProcessModal, openLinksInModal } from '../../../lib/process-modal';
+
+  openLinksInModal(document.getElementById('main')!, createProcessModal());
+
   const input = document.querySelector<HTMLInputElement>('#q')!;
   const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-type]:is(button)')];
   const rows = [...document.querySelectorAll<HTMLTableRowElement>('tbody tr')];

@@ -1,0 +1,32 @@
+---
+// Stable links to the newest PRM version: /<lang>/latest/… forwards to the
+// same page of the default version in versions.yaml, keeping the #fragment.
+import { defaultVersion, processIds } from '../../../lib/content';
+import { locales, href } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  const paths = [undefined, 'work-products', ...processIds(defaultVersion).map((id) => `processes/${id}`)];
+  return locales.flatMap((lang) => paths.map((path) => ({ params: { lang, path } })));
+}
+
+const { lang, path } = Astro.params as { lang: string; path?: string };
+const target = href(lang, defaultVersion, path ?? '');
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{defaultVersion}</title>
+    <link rel="canonical" href={target} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <script is:inline define:vars={{ target }}>
+      location.replace(target + location.hash);
+    </script>
+  </head>
+  <body>
+    <p><a href={target}>{target}</a></p>
+  </body>
+</html>

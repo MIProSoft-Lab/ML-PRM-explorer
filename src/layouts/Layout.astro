@@ -31,6 +31,8 @@ const rest = Astro.url.pathname.slice(base.length).split('/').slice(2).join('/')
 const languageLinks = locales.map((l) => ({ locale: l, href: `${base}/${l}/${rest}` }));
 
 const navVersion = version ?? defaultVersion;
+// The same page under /latest/, which always forwards to the default version.
+const latestLink = versionLinks?.[defaultVersion]?.replace(`/${locale}/${defaultVersion}/`, `/${locale}/latest/`);
 const nav = [
   ['processes', href(locale, navVersion)],
   ['workProducts', href(locale, navVersion, 'work-products')],
@@ -71,30 +73,53 @@ const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env
         <div class="switchers">
           {
             version && versionLinks && (
-              <nav class="pills" aria-label={t('nav.version')}>
-                {versions.map((v) =>
-                  versionLinks[v.id] ? (
-                    <a href={versionLinks[v.id]} aria-current={v.id === version ? 'true' : undefined}>
-                      {v.id}
-                    </a>
-                  ) : null,
-                )}
-              </nav>
+              <details class="menu">
+                <summary aria-label={`${t('nav.version')}: ${version}`}>
+                  {version}
+                  {version === defaultVersion && <span class="menu-note">· {t('nav.latest')}</span>}
+                </summary>
+                <ul>
+                  {latestLink && (
+                    <li>
+                      <a href={latestLink}>
+                        <span class="menu-key">{t('nav.latest')}</span>
+                        <span class="menu-note">{defaultVersion}</span>
+                      </a>
+                    </li>
+                  )}
+                  {versions.map((v) =>
+                    versionLinks[v.id] ? (
+                      <li>
+                        <a href={versionLinks[v.id]} aria-current={v.id === version ? 'true' : undefined}>
+                          <span class="menu-key">{v.id}</span>
+                          <span class="menu-note">{pick(v.title, locale)}</span>
+                        </a>
+                      </li>
+                    ) : null,
+                  )}
+                </ul>
+              </details>
             )
           }
           <button type="button" class="theme-toggle" id="theme-toggle" data-label-dark={t('nav.theme.dark')} data-label-light={t('nav.theme.light')} aria-label={t('nav.theme.dark')} title={t('nav.theme.dark')}>
             <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></svg>
             <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" /></svg>
           </button>
-          <nav class="pills" aria-label={t('nav.language')}>
-            {
-              languageLinks.map((l) => (
-                <a href={l.href} hreflang={l.locale} lang={l.locale} title={languageNames[l.locale]} aria-current={l.locale === locale ? 'true' : undefined}>
-                  {l.locale.toUpperCase()}
-                </a>
-              ))
-            }
-          </nav>
+          <details class="menu">
+            <summary aria-label={`${t('nav.language')}: ${languageNames[locale]}`}>{locale.toUpperCase()}</summary>
+            <ul>
+              {
+                languageLinks.map((l) => (
+                  <li>
+                    <a href={l.href} hreflang={l.locale} lang={l.locale} aria-current={l.locale === locale ? 'true' : undefined}>
+                      <span class="menu-key">{l.locale.toUpperCase()}</span>
+                      <span class="menu-note">{languageNames[l.locale]}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </details>
         </div>
       </div>
       <nav class="main-nav" aria-label="Main">
@@ -169,6 +194,21 @@ const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env
         });
         system.addEventListener('change', sync);
         sync();
+      })();
+      // Close the header menus on a click outside them or on Escape.
+      (() => {
+        const menus = [...document.querySelectorAll('.site-header details.menu')];
+        document.addEventListener('click', (e) => {
+          for (const m of menus) if (m.open && !m.contains(e.target)) m.open = false;
+        });
+        document.addEventListener('keydown', (e) => {
+          const m = menus.find((x) => x.open);
+          if (e.key !== 'Escape' || !m) return;
+          m.open = false;
+          m.querySelector('summary').focus();
+        });
+        // Opening one menu closes the other.
+        for (const m of menus) m.addEventListener('toggle', () => m.open && menus.forEach((x) => x !== m && (x.open = false)));
       })();
     </script>
     <ProcessHover locale={locale} />

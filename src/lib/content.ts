@@ -293,6 +293,7 @@ export function validate(): string[] {
   const studyIds = new Set(studies.map((s) => s.id));
   const refKeys = new Set(references.map((r) => r.key));
   if (!versions.some((v) => v.id === defaultVersion)) errors.push(`versions.yaml: default version ${defaultVersion} does not exist`);
+  if (versions.some((v) => v.id === 'latest')) errors.push('versions.yaml: the version ID "latest" is reserved for links to the default version');
 
   for (const v of versions) {
     const ids = new Set(processIds(v.id));
