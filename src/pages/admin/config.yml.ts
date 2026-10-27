@@ -121,7 +121,6 @@ const sectionLabels: Record<string, string> = {
   origin: 'Process origins',
   map: 'Process map',
   process: 'Process page',
-  decision: 'Workshop decisions',
   change: 'Workshop changes',
   wp: 'Work products',
   compare: 'Compare versions',

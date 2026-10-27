@@ -15,20 +15,11 @@ const v = getVersion(version);
 
 const wps = new Map(getWorkProducts(version, locale).map((w) => [w.id, w]));
 const name = (pid: string) => getProcess(version, pid, locale).data.name;
-// Workshop decisions with a label; anything else, such as "–", is shown as written.
-const decisions = ['adopted', 'partial', 'rejected', 'deferred'];
-const decisionLabel = (d: string) => (decisions.includes(d) ? t(`decision.${d}`) : d);
-
-// Traceability lives in the version that was traced against the standards.
-const traced = p.standards
-  ? { version, rows: p.standards }
-  : versions
-      .map((x) => x.id)
-      .filter((x) => x !== version && processIds(x).includes(id))
-      .map((x) => ({ version: x, rows: getProcess(x, id, locale).data.standards }))
-      .find((x) => x.rows?.length);
-const tracedActivities = traced && traced.version !== version ? getProcess(traced.version, id, locale).data.activities : p.activities;
-const activityTitle = (aid?: string) => tracedActivities.find((a) => a.id === aid)?.title;
+// Changelog: what changed from the previous version. The content records the
+// changes under the workshop annotations that motivated them; the live site
+// lists only the changes.
+const changelog = (p.changes ?? []).flatMap((c) => c.changes);
+const previousVersion = versions[versions.findIndex((x) => x.id === version) - 1]?.id;
 
 const ids = processIds(version);
 const i = ids.indexOf(id);
@@ -57,8 +48,7 @@ const sections = [
   ['outcomes', t('process.outcomes')],
   ['interface', `${t('process.inputs')} · ${t('process.outputs')}`],
   ['activities', t('process.activities')],
-  ...(traced ? [['standards', t('process.standards')]] : []),
-  ...(p.changes?.length ? [['changes', t('process.changes')]] : []),
+  ...(changelog.length ? [['changes', t('process.changes')]] : []),
 ] as [string, string][];
 const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).padStart(2, '0');
 ---
@@ -262,95 +252,24 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
       </section>
 
       {
-        traced && (
-          <section id="standards">
-            <h2>
-              <span class="sec">{num('standards')}</span>
-              {t('process.standards')}
-            </h2>
-            <p class="muted small">
-              {t('process.standardsNote')} {traced.version !== version && t('process.standardsV1', { version: traced.version })}
-            </p>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>{t('process.standard')}</th>
-                    <th>{t('process.standardActivity')}</th>
-                    <th>{t('process.prmActivity')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {traced.rows!.map((r) => (
-                    <tr>
-                      <td class="nowrap">
-                        <span class="mono small">{r.standard}</span>
-                        {r.standardProcess && <div class="muted small">{r.standardProcess}</div>}
-                      </td>
-                      <td>{r.activity || <span class="muted">{t('process.noStandardActivity')}</span>}</td>
-                      <td>
-                        {r.prmActivity ? (
-                          traced.version === version ? (
-                            <a href={`#activity-${r.prmActivity}`}>
-                              <span class="mono">{r.prmActivity}</span> {activityTitle(r.prmActivity)}
-                            </a>
-                          ) : (
-                            <a href={`${href(locale, traced.version, 'processes', id)}#activity-${r.prmActivity}`}>
-                              <span class="mono">{r.prmActivity}</span> {activityTitle(r.prmActivity)} ({traced.version})
-                            </a>
-                          )
-                        ) : (
-                          r.note && <span class="muted">{r.note}</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )
-      }
-
-      {
-        p.changes?.length ? (
+        changelog.length > 0 && (
           <section id="changes">
             <h2>
               <span class="sec">{num('changes')}</span>
               {t('process.changes')}
             </h2>
-            <p class="muted small">{t('process.changesNote')}</p>
+            {previousVersion && <p class="muted small">{t('process.changesFrom', { version: previousVersion })}</p>}
             <ul class="changes">
-              {p.changes.map((c) => (
+              {changelog.map((ch) => (
                 <li>
-                  <div class="change-head">
-                    <strong class="mono">{c.annotation}</strong>
-                    <span class={`badge decision-${c.decision.replace(/\s+/g, '-')}`}>{decisionLabel(c.decision)}</span>
-                    {c.raisedElsewhere && <span class="badge">{t('process.raisedElsewhere')}</span>}
-                    {(c.redVotes != null || c.yellowVotes != null) && (
-                      <span class="votes small muted">
-                        <span class="dot red" /> {c.redVotes ?? 0} {t('process.redVotes')} · <span class="dot yellow" /> {c.yellowVotes ?? 0}{' '}
-                        {t('process.yellowVotes')}
-                      </span>
-                    )}
-                  </div>
-                  <p class="annotation" set:html={inline(c.text)} />
-                  {c.changes.length > 0 && (
-                    <ul class="change-list small">
-                      {c.changes.map((ch) => (
-                        <li>
-                          <span class={`kind kind-${ch.kind}`}>{t(`change.${ch.kind}`)}</span>
-                          {ch.target && <strong>{ch.target}: </strong>}
-                          <span set:html={inline(ch.text)} />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <span class={`kind kind-${ch.kind}`}>{t(`change.${ch.kind}`)}</span>
+                  {ch.target && <strong>{ch.target}: </strong>}
+                  <span set:html={inline(ch.text)} />
                 </li>
               ))}
             </ul>
           </section>
-        ) : null
+        )
       }
 
       <nav class="pager title-block no-print">
@@ -877,11 +796,7 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
     }
   }
 
-  .nowrap {
-    white-space: nowrap;
-  }
-
-  /* Changes */
+  /* Changelog */
   .changes {
     list-style: none;
     padding: 0;
@@ -891,59 +806,11 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
   }
 
   .changes > li {
-    padding: 12px 14px;
+    padding: 10px 14px;
   }
 
   .changes > li + li {
     border-top: 1px solid var(--border);
-  }
-
-  .change-head {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 10px;
-    align-items: center;
-  }
-
-  .votes {
-    margin-left: auto;
-  }
-
-  .dot {
-    display: inline-block;
-    width: 9px;
-    height: 9px;
-    border: 1px solid var(--ink);
-  }
-
-  .dot.red {
-    background: #d9534f;
-  }
-
-  .dot.yellow {
-    background: #f0c419;
-  }
-
-  .decision-adopted {
-    background: var(--ins-bg);
-    color: var(--ins-text);
-  }
-
-  .decision-rejected {
-    background: var(--del-bg);
-    color: var(--del-text);
-  }
-
-  .annotation {
-    font-style: italic;
-  }
-
-  .change-list {
-    margin: 6px 0 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 4px;
   }
 
   .kind {

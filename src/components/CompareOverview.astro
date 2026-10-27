@@ -21,7 +21,7 @@ const rows = ids.map((id) => {
   const a = inFrom ? getProcess(from, id, locale).data : undefined;
   const b = inTo ? getProcess(to, id, locale).data : undefined;
   const d = a && b ? diffProcess(a, b) : undefined;
-  return { id, name: (b ?? a)!.name, inFrom, inTo, d, annotations: b?.changes?.length ?? 0 };
+  return { id, name: (b ?? a)!.name, inFrom, inTo, d };
 });
 ---
 
@@ -58,11 +58,6 @@ const rows = ids.map((id) => {
                 ~{r.d.counts.changed} {t('compare.changedFields')}
               </span>
             ) : null}
-            {r.annotations > 0 && (
-              <span class="muted">
-                · {r.annotations} {t('compare.annotations')}
-              </span>
-            )}
           </span>
         </a>
       </li>

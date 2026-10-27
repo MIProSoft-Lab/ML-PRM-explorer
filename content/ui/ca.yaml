@@ -56,31 +56,15 @@ process:
   optional: opcional
   primaryStudies: Estudis primaris
   literature: Literatura especialitzada
-  standards: Traçabilitat amb les normes
-  standardsNote: Activitats de les normes que cobreix aquest procés.
-  standardsV1: Traçat amb les activitats de la {version}.
-  noStandardActivity: Sense equivalent a la norma
-  standard: Norma
-  standardActivity: Activitat de la norma
-  prmActivity: Activitat del PRM
   changes: Canvis en aquesta versió
-  changesNote: Anotacions del taller d'experts i decisions preses.
+  changesFrom: "Canvis respecte a {version}, la versió anterior del PRM."
   annotation: Anotació
   votes: Vots
-  redVotes: vermells
-  yellowVotes: grocs
-  decision: Decisió
-  raisedElsewhere: Plantejada en un altre procés
   previous: Procés anterior
   next: Procés següent
   outcomeServedBy: Productes de treball que contribueixen a aquest resultat
   expandAll: Desplega-ho tot
   collapseAll: Plega-ho tot
-decision:
-  adopted: Adoptada
-  rejected: Rebutjada
-  partial: Adoptada en part
-  deferred: Ajornada
 change:
   added: Afegit
   updated: Modificat
@@ -103,7 +87,6 @@ compare:
   to: A
   unchanged: sense canvis
   changedFields: amb canvis
-  annotations: anotacions del taller
   added: Nou a la {version}
   removed: Eliminat a la {version}
   showUnchanged: Mostra les seccions sense canvis

@@ -56,31 +56,15 @@ process:
   optional: opcional
   primaryStudies: Estudios primarios
   literature: Literatura especializada
-  standards: Trazabilidad con las normas
-  standardsNote: Actividades de las normas que cubre este proceso.
-  standardsV1: Trazado con las actividades de la {version}.
-  noStandardActivity: Sin equivalente en la norma
-  standard: Norma
-  standardActivity: Actividad de la norma
-  prmActivity: Actividad del PRM
   changes: Cambios en esta versión
-  changesNote: Anotaciones del taller de expertos y decisiones tomadas.
+  changesFrom: "Cambios respecto a {version}, la versión anterior del PRM."
   annotation: Anotación
   votes: Votos
-  redVotes: rojos
-  yellowVotes: amarillos
-  decision: Decisión
-  raisedElsewhere: Planteada en otro proceso
   previous: Proceso anterior
   next: Proceso siguiente
   outcomeServedBy: Productos de trabajo que contribuyen a este resultado
   expandAll: Desplegar todo
   collapseAll: Plegar todo
-decision:
-  adopted: Adoptada
-  rejected: Rechazada
-  partial: Adoptada en parte
-  deferred: Aplazada
 change:
   added: Añadido
   updated: Modificado
@@ -103,7 +87,6 @@ compare:
   to: A
   unchanged: sin cambios
   changedFields: con cambios
-  annotations: anotaciones del taller
   added: Nuevo en la {version}
   removed: Eliminado en la {version}
   showUnchanged: Mostrar las secciones sin cambios
