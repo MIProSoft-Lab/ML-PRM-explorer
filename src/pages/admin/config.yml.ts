@@ -175,8 +175,9 @@ const lifecycleFields = [
 ];
 
 export const GET: APIRoute = () => {
-  const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
-  const siteUrl = import.meta.env.SITE ? new URL(base, import.meta.env.SITE).href : base;
+  // Sveltia needs an absolute URL. Without one, as when running locally, it
+  // uses the address it is served from.
+  const siteUrl = import.meta.env.SITE && new URL(import.meta.env.BASE_URL.replace(/\/?$/, '/'), import.meta.env.SITE).href;
   const repo = import.meta.env.PUBLIC_REPO ?? 'OWNER/REPO';
   const config = {
     backend: {
@@ -192,8 +193,7 @@ export const GET: APIRoute = () => {
     },
     // The published site, which the app icon in the header links to: the
     // domain plus the project path of a GitHub Pages site, e.g. /<repo>/.
-    site_url: siteUrl,
-    display_url: siteUrl,
+    ...(siteUrl ? { site_url: siteUrl, display_url: siteUrl } : {}),
     // The sign-in page and the header show the site's name and icon.
     app_title: pick(site.title, defaultLocale),
     logo: { src: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg` },
