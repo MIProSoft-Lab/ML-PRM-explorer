@@ -1,6 +1,6 @@
 # MLProcessMap
 
-A website to explore the Process Reference Model (PRM) for Machine Learning from the doctoral thesis. Anyone can browse it without signing in; admins edit the model from `/admin` with their GitHub account.
+A website to explore the Process Reference Model (PRM) for Machine Learning from the doctoral thesis. Anyone can browse it without signing in, and admins edit the model from `/admin` with their GitHub account.
 
 - **Process map** of each PRM version, coloured by origin, with full-text search.
 - **Process pages** with purpose, outcomes, inputs, outputs, activities, the sources of each activity, traceability to the ISO/IEC standards and the workshop annotations that changed it.
@@ -8,7 +8,6 @@ A website to explore the Process Reference Model (PRM) for Machine Learning from
 - **Compare versions**: word-level diff of every process between two versions.
 - **Lifecycle templates** that arrange the processes of a version into phases and iterations, and serve as starting points for the lifecycle builder.
 - **Lifecycle builder**: create a custom lifecycle model for a project: choose the processes and activities, arrange them into phases with repetitions and feedback loops, preview its diagram, see inputs left without a producer, and export it as a Markdown checklist, CSV, JSON or a lifecycle template file (YAML). The model lives in the link.
-- **English, Spanish and Catalan**, with a notice wherever a translation is still missing.
 
 ## How to cite
 
@@ -34,8 +33,7 @@ If you use the PRM, cite the thesis:
 
 ```sh
 npm install
-npm run dev        # http://localhost:4321
-npm run build      # static site in dist/, fails on broken content
+npm run dev
 ```
 
 Requires Node 22.12 or newer.
@@ -76,17 +74,6 @@ npm run new-version -- v3 --from v1
 
 This copies the process files, drops the workshop annotations (they belong to the version they produced), and adds the version to `versions.yaml` as a draft. Edit it from the admin panel, then set its status to `current` and make it the default.
 
-### Re-importing from the thesis
-
-The content was imported once from the LaTeX sources of the thesis:
-
-```sh
-npm run import-thesis -- "<path to the thesis LaTeX folder>"            # skips existing files
-npm run import-thesis -- "<path to the thesis LaTeX folder>" --force    # overwrites them
-```
-
-It reads `tables/prm/v1`, `tables/prm/v2`, the PRM overview, information items, standards mapping and workshop change tables, the selected studies and `references.bib`. After the import the YAML files are the source of truth; `--force` discards edits made since.
-
 ## Publishing on GitHub Pages
 
 1. Push the repository to GitHub with `main` as the default branch.
@@ -112,9 +99,7 @@ git switch main
 git merge thesis
 ```
 
-Git only stops for a conflict where `main` has changed the same lines since, which is resolved once. Never merge `main` into `thesis`: that would bring the live edition's features into the thesis edition.
-
-To cite the thesis edition, publish a GitHub release from `thesis` (e.g. `thesis-1.0`) with the repository connected to [Zenodo](https://zenodo.org/), which archives the release and gives it a DOI. Later corrections can be released as `thesis-1.1` and so on, under the same Zenodo record.
+Git only stops for a conflict where `main` has changed the same lines since, which is resolved once. Never merge `main` into `thesis`.
 
 ## Admin access
 
@@ -127,4 +112,3 @@ Admins can sign in in two ways:
 - **Access token** (no setup): create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new) for this repository with *Contents: Read and write*, and paste it in **Sign In Using Access Token**.
 - **Sign in with GitHub**: deploy [sveltia-cms-auth](https://github.com/sveltia/sveltia-cms-auth) to Cloudflare Workers (free) and set its URL as the repository variable `CMS_AUTH_URL` in **Settings → Secrets and variables → Actions → Variables**.
 
-In Chrome or Edge, **Work with Local Repository** edits a local clone directly, without signing in; commit and push the changes yourself.
