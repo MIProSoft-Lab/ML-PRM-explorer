@@ -99,7 +99,7 @@ git switch main
 git merge thesis
 ```
 
-Git only stops for a conflict where `main` has changed the same lines since, which is resolved once. Never merge `main` into `thesis`: that would bring the live edition's features into the thesis edition.
+Git only stops for a conflict where `main` has changed the same lines since, which is resolved once. Never merge `main` into `thesis`.
 
 ## Admin access
 
