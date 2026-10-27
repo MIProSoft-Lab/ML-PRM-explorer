@@ -1,0 +1,58 @@
+---
+// The admin panel, Sveltia CMS. Its configuration is generated from the
+// content by ./config.yml.ts, and src/styles/admin.css gives it the look of
+// the site.
+import '../../styles/admin.css';
+import { site, pick } from '../../lib/content';
+import { defaultLocale } from '../../i18n/ui';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{pick(site.title, defaultLocale)} admin</title>
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <script is:inline>
+      // Share the light/dark choice with the site, in both directions. The site
+      // keeps it in localStorage "theme" (light, dark or absent for the system
+      // setting) and Sveltia in the "theme" of its "sveltia-cms.prefs" (light,
+      // dark or auto). Both pages share an origin, so each can read the other's.
+      (() => {
+        const PREFS = 'sveltia-cms.prefs';
+        const readPrefs = () => {
+          try {
+            return JSON.parse(localStorage.getItem(PREFS) || '{}') || {};
+          } catch {
+            return {};
+          }
+        };
+        try {
+          // Before Sveltia starts: open in the theme last chosen on the site.
+          const site = localStorage.getItem('theme');
+          const prefs = readPrefs();
+          const wanted = site === 'light' || site === 'dark' ? site : 'auto';
+          if (prefs.theme !== wanted) localStorage.setItem(PREFS, JSON.stringify({ ...prefs, theme: wanted }));
+        } catch {}
+        // When Sveltia saves its settings: save its choice for the site too.
+        const setItem = Storage.prototype.setItem;
+        Storage.prototype.setItem = function (key, value) {
+          setItem.call(this, key, value);
+          if (this !== localStorage || key !== PREFS) return;
+          try {
+            const { theme } = JSON.parse(value) || {};
+            if (theme === 'light' || theme === 'dark') setItem.call(this, 'theme', theme);
+            else if (theme === 'auto') localStorage.removeItem('theme');
+          } catch {}
+        };
+      })();
+    </script>
+  </head>
+  <body>
+    <script is:inline src="https://unpkg.com/@sveltia/cms@0.235.0/dist/sveltia-cms.js"></script>
+  </body>
+</html>

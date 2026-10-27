@@ -1,0 +1,142 @@
+/* The admin panel (Sveltia CMS) in the look of the site: its colors, IBM Plex
+   type and square corners. Sveltia builds its interface from --sui-* custom
+   properties; these override them. Sveltia adds its own rules to the page
+   after this stylesheet, so every selector here is more specific than the one
+   it replaces (a doubled :root, or a :root prefix). Colors follow
+   src/styles/global.css, for the theme Sveltia shows (data-theme). */
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/400-italic.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+:root:root,
+:root:root[data-theme='light'] {
+  --sui-base-hue: 80;
+  --sui-font-family-default: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --sui-font-family-monospace: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --sui-button-large-border-radius: 0;
+  --sui-button-medium-border-radius: 0;
+  --sui-button-small-border-radius: 0;
+  --sui-checkbox-border-radius: 0;
+  --sui-control-large-border-radius: 0;
+  --sui-control-medium-border-radius: 0;
+  --sui-control-small-border-radius: 0;
+  --sui-listbox-border-radius: 0;
+  --sui-menu-border-radius: 0;
+  --sui-option-border-radius: 0;
+  --sui-textbox-border-radius: 0;
+  --sui-tree-border-radius: 0;
+  --sui-tree-item-border-radius: 0;
+  color-scheme: light;
+  --ink: #2a3022;
+  --grid-minor: rgb(42 48 34 / 5%);
+  --grid-major: rgb(42 48 34 / 9%);
+  --sui-background-color-1-hsl: 48 56% 98%;
+  --sui-background-color-2-hsl: 51 26% 95%;
+  --sui-background-color-3-hsl: 54 21% 91%;
+  --sui-background-color-4-hsl: 51 26% 95%;
+  --sui-background-color-5-hsl: 55 18% 87%;
+  --sui-foreground-color-1-hsl: 90 15% 11%;
+  --sui-foreground-color-2-hsl: 86 17% 16%;
+  --sui-foreground-color-3-hsl: 84 8% 35%;
+  --sui-foreground-color-4-hsl: 80 6% 47%;
+  --sui-foreground-color-5-hsl: 77 7% 59%;
+  --sui-border-color-1-hsl: 86 17% 16%;
+  --sui-border-color-2-hsl: 71 7% 52%;
+  --sui-border-color-3-hsl: 56 11% 76%;
+  --sui-primary-accent-color: #3d6129;
+  --sui-primary-accent-color-light: #4a7533;
+  --sui-primary-accent-color-dark: #2f4c1f;
+  --sui-primary-accent-color-text: #3d6129;
+  --sui-primary-accent-color-inverted: #ffffff;
+  --sui-focus-ring-color: #b08968;
+}
+
+:root:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: #b9c4a8;
+  --grid-minor: rgb(200 220 180 / 4%);
+  --grid-major: rgb(200 220 180 / 8%);
+  --sui-background-color-1-hsl: 94 15% 9%;
+  --sui-background-color-2-hsl: 96 14% 7%;
+  --sui-background-color-3-hsl: 93 17% 12%;
+  --sui-background-color-4-hsl: 93 17% 12%;
+  --sui-background-color-5-hsl: 92 17% 20%;
+  --sui-foreground-color-1-hsl: 79 25% 87%;
+  --sui-foreground-color-2-hsl: 82 21% 79%;
+  --sui-foreground-color-3-hsl: 85 12% 62%;
+  --sui-foreground-color-4-hsl: 87 9% 49%;
+  --sui-foreground-color-5-hsl: 87 10% 39%;
+  --sui-border-color-1-hsl: 84 19% 71%;
+  --sui-border-color-2-hsl: 90 11% 35%;
+  --sui-border-color-3-hsl: 90 14% 23%;
+  --sui-primary-accent-color: #9cc67c;
+  --sui-primary-accent-color-light: #b5d999;
+  --sui-primary-accent-color-dark: #86b166;
+  --sui-primary-accent-color-text: #a7d386;
+  --sui-primary-accent-color-inverted: #10170b;
+  --sui-focus-ring-color: #b08968;
+}
+
+/* --- Sign-in page ------------------------------------------------------- */
+
+/* Grid paper behind the sign-in box, as on the site's diagrams. */
+:root .app-shell .main:has(> .container > .inner > .logo) {
+  background-color: hsl(var(--sui-background-color-2-hsl));
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size:
+    100px 100px,
+    100px 100px,
+    20px 20px,
+    20px 20px;
+  background-position: -1px -1px;
+}
+
+:root .app-shell .main > .container > .inner:has(> .logo) {
+  padding: 40px 48px 36px;
+  background: hsl(var(--sui-background-color-1-hsl));
+  border: 1px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+:root .app-shell .main > .container > .inner > img.logo {
+  width: 72px;
+  height: 72px;
+}
+
+:root .app-shell .main > .container > .inner:has(> .logo) > h1 {
+  font-size: 1.75rem;
+  margin-bottom: 4px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* A label under the name, like the site's section labels. */
+:root .app-shell .main > .container > .inner:has(> .logo) > h1::after {
+  content: 'Content editor';
+  display: block;
+  margin-top: 6px;
+  font-family: var(--sui-font-family-monospace);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--sui-foreground-color-3-hsl));
+}
+
+/* Buttons with the site's offset shadow on hover. */
+.sui.button.primary,
+.sui.button.secondary {
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
+}
+
+:root .app-shell .inner:has(> .logo) .sui.button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--ink);
+}

@@ -2,7 +2,7 @@
 // content/versions.yaml gets its own collections in the admin panel.
 import type { APIRoute } from 'astro';
 import { parse, stringify } from 'yaml';
-import { versions } from '../../lib/content';
+import { versions, site, pick } from '../../lib/content';
 import { locales, defaultLocale } from '../../i18n/ui';
 
 const dup = { i18n: 'duplicate' as const };
@@ -189,6 +189,9 @@ export const GET: APIRoute = () => {
       },
     },
     site_url: import.meta.env.SITE,
+    // The sign-in page and the header show the site's name and icon.
+    app_title: pick(site.title, defaultLocale),
+    logo: { src: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg` },
     media_folder: 'public/uploads',
     public_folder: '/uploads',
     i18n: { structure: 'multiple_folders', locales: [...locales], default_locale: defaultLocale },
