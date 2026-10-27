@@ -71,8 +71,6 @@ process:
   yellowVotes: grocs
   decision: Decisió
   raisedElsewhere: Plantejada en un altre procés
-  otherVersions: Altres versions
-  compare: Compara amb la {version}
   previous: Procés anterior
   next: Procés següent
   outcomeServedBy: Productes de treball que contribueixen a aquest resultat
@@ -109,6 +107,7 @@ compare:
   added: Nou a la {version}
   removed: Eliminat a la {version}
   showUnchanged: Mostra les seccions sense canvis
+  allChanges: "Tots els processos comparats, {from} → {to}"
 lc:
   title: Models de cicle de vida
   intro: El PRM defineix els processos d'un projecte de ML i deixa el seu ordre i repetició a un model de cicle de vida. Aquestes plantilles organitzen els processos d'una versió del PRM en fases.

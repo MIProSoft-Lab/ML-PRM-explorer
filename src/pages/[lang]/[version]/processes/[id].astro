@@ -38,11 +38,11 @@ const next = ids[i + 1];
 const versionLinks = Object.fromEntries(
   versions.map((x) => [x.id, processIds(x.id).includes(id) ? href(locale, x.id, 'processes', id) : href(locale, x.id)]),
 );
-const otherVersions = versions.filter((x) => x.id !== version && processIds(x.id).includes(id));
-const comparePair = (other: string) => {
-  const order = versions.map((x) => x.id);
-  return order.indexOf(other) < order.indexOf(version) ? `${other}-vs-${version}` : `${version}-vs-${other}`;
-};
+// Compare this version with the previous one, or with the next from the first.
+const order = versions.map((x) => x.id);
+const at = order.indexOf(version);
+const compareHref =
+  order.length > 1 ? href(locale, 'compare', at > 0 ? `${order[at - 1]}-vs-${version}` : `${version}-vs-${order[at + 1]}`, id) : undefined;
 
 // Work products that support each outcome, from the serves lists.
 const servedBy = (oid: string) => [
@@ -68,7 +68,10 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
     <a href={href(locale, version)}>ML-PRM / {version}</a> / {p.id}
   </nav>
 
-  <h1>{p.name}</h1>
+  <div class="title-row">
+    <h1>{p.name}</h1>
+    {compareHref && <a class="button no-print" href={compareHref}>⇄ {t('compare.title')}</a>}
+  </div>
 
   <dl class="sheet title-block">
     <div>
@@ -87,18 +90,6 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
       <dt class="label">{t('process.sheet-sheet')}</dt>
       <dd class="mono">{String(i + 1).padStart(2, '0')} / {String(ids.length).padStart(2, '0')}</dd>
     </div>
-    {
-      otherVersions.length > 0 && (
-        <div class="no-print">
-          <dt class="label">{t('process.otherVersions')}</dt>
-          <dd>
-            {otherVersions.map((o) => (
-              <a href={href(locale, 'compare', comparePair(o.id), id)}>{t('process.compare', { version: o.id })}</a>
-            ))}
-          </dd>
-        </div>
-      )
-    }
   </dl>
 
   <div class="layout">
@@ -1010,5 +1001,17 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
       border-left: 0;
       border-top: 1px solid var(--border);
     }
+  }
+
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 20px;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .title-row .button {
+    flex: none;
   }
 </style>

@@ -1,6 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
-import { getProcess, processIds } from '../../../../lib/content';
+import { getProcess, processIds, versions, pick } from '../../../../lib/content';
 import { diffProcess, wordDiff, type Pair } from '../../../../lib/diff';
 import { compareProcessPaths } from '../../../../lib/paths';
 import { escapeHtml, plain } from '../../../../lib/text';
@@ -35,13 +35,46 @@ const sections = [
   { key: 'activities', pairs: d.activities, label: (x: any) => x.id, text: (x: any) => `${x.title}. ${x.description}` },
 ] as const;
 const changes = b?.data.changes ?? [];
+
+// Version pickers: any older version against any newer one. The pages exist
+// for every such pair, so choosing one only needs to go to its address.
+const order = versions.map((v) => v.id);
+const pairHref = href(locale, 'compare', 'FROM-vs-TO', id);
+const home = b ? to : from;
 ---
 
-<Layout locale={locale} title={`${name} · ${from} → ${to}`} section="compare" translated={translated}>
+<Layout locale={locale} title={`${name} · ${from} → ${to}`} section="processes" translated={translated}>
   <nav class="breadcrumbs" aria-label="Breadcrumb">
-    <a href={href(locale, 'compare', slug)}>{t('compare.title')} {from} → {to}</a> / {id}
+    <a href={href(locale, home)}>ML-PRM / {home}</a> / <a href={href(locale, home, 'processes', id)}>{id}</a> / {t('compare.title')}
   </nav>
   <h1><span class="pid">{id}</span> {name}</h1>
+
+  <form class="pick card no-print" data-pattern={pairHref} data-order={JSON.stringify(order)}>
+    <span class="label">{t('compare.title')}</span>
+    <label>
+      <span class="small muted">{t('compare.from')}</span>
+      <select name="from">
+        {versions.map((v, i) => (
+          <option value={v.id} selected={v.id === from} disabled={i >= order.indexOf(to)}>
+            {v.id} · {pick(v.title, locale)}
+          </option>
+        ))}
+      </select>
+    </label>
+    <span class="arrow" aria-hidden="true">→</span>
+    <label>
+      <span class="small muted">{t('compare.to')}</span>
+      <select name="to">
+        {versions.map((v, i) => (
+          <option value={v.id} selected={v.id === to} disabled={i <= order.indexOf(from)}>
+            {v.id} · {pick(v.title, locale)}
+          </option>
+        ))}
+      </select>
+    </label>
+    <a class="small all" href={href(locale, 'compare', slug)}>{t('compare.allChanges', { from, to })} →</a>
+  </form>
+
   <p class="links small">
     {a && <a href={href(locale, from, 'processes', id)}>{from}</a>}
     {a && b && ' · '}
@@ -88,6 +121,14 @@ const changes = b?.data.changes ?? [];
 </Layout>
 
 <script>
+  // Choosing a version goes to the page of the new pair.
+  const pick = document.querySelector<HTMLFormElement>('form.pick')!;
+  pick.addEventListener('change', () => {
+    const from = pick.elements.namedItem('from') as HTMLSelectElement;
+    const to = pick.elements.namedItem('to') as HTMLSelectElement;
+    location.href = pick.dataset.pattern!.replace('FROM-vs-TO', `${from.value}-vs-${to.value}`);
+  });
+
   const box = document.querySelector<HTMLInputElement>('#show-same')!;
   const apply = () => document.body.classList.toggle('show-same', box.checked);
   box.addEventListener('change', apply);
@@ -153,5 +194,32 @@ const changes = b?.data.changes ?? [];
 
   .text {
     line-height: 1.65;
+  }
+
+  .pick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    align-items: flex-end;
+    margin: 16px 0;
+  }
+
+  .pick > .label {
+    flex-basis: 100%;
+  }
+
+  .pick label {
+    display: grid;
+    gap: 4px;
+  }
+
+  .pick .arrow {
+    padding-bottom: 8px;
+    font-family: var(--mono);
+  }
+
+  .pick .all {
+    margin-left: auto;
+    padding-bottom: 8px;
   }
 </style>
