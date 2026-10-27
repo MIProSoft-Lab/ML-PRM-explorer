@@ -1,180 +1,41 @@
 ---
-// Diagram of a lifecycle model: phases in order, repeated phases with a
-// circular arrow, and feedback loops as numbered arcs back to earlier phases.
-// It is drawn twice, left to right for wide screens and top to bottom for
-// narrow ones, and the stylesheet shows the one that fits.
+// Diagram of a lifecycle model, drawn by src/lib/lifecycle-diagram.ts, with
+// zoom, panning and hover information. Without a lifecycle it renders an empty
+// frame that a page script fills in and announces with an "lc-diagram:update"
+// event, as the tailoring page does.
 import { getProcess, type Lifecycle } from '../lib/content';
+import { diagramSvgs, lifecycleLoops } from '../lib/lifecycle-diagram';
 import { useTranslations, href, type Locale } from '../i18n/ui';
 import { plain } from '../lib/text';
 
 interface Props {
   locale: Locale;
-  lifecycle: Lifecycle;
+  lifecycle?: Lifecycle;
 }
 
 const { locale, lifecycle: l } = Astro.props;
 const t = useTranslations(locale);
 
-/** Greedy word wrap by character count; SVG text does not wrap by itself. */
-function wrap(text: string, max: number) {
-  const lines: string[] = [];
-  let line = '';
-  for (const word of text.split(/\s+/)) {
-    if (line && (line + ' ' + word).length > max) {
-      lines.push(line);
-      line = word;
-    } else {
-      line = line ? `${line} ${word}` : word;
-    }
-  }
-  if (line) lines.push(line);
-  return lines;
-}
-
-const index = new Map(l.phases.map((p, i) => [p.id, i]));
-const phases = l.phases.map((ph, i) => ({
-  ...ph,
-  n: String(i + 1).padStart(2, '0'),
-  procs: ph.processes.map((pid) => {
-    const p = getProcess(l.prmVersion, pid, locale).data;
-    return { id: pid, name: p.name, origin: p.origin, purpose: plain(p.purpose) };
-  }),
-}));
-
-// Feedback loops, numbered in order of appearance. A loop to the same phase
-// is drawn as a repetition instead.
-const loops = l.phases
-  .map((ph, i) => ({ from: i, to: ph.returnsTo ? index.get(ph.returnsTo) : undefined, note: ph.returnNote }))
-  .filter((x): x is { from: number; to: number; note: string | undefined } => x.to !== undefined && x.to !== x.from)
-  .map((x, k) => ({ ...x, label: `L${k + 1}` }));
-// Loops that leave or reach the same phase get their own attachment point,
-// spread around the middle of the box, so their arrowheads do not overlap.
-const spread = (k: number, key: 'from' | 'to') => {
-  const same = loops.filter((x) => x[key] === loops[k][key]);
-  return same.indexOf(loops[k]) - (same.length - 1) / 2;
-};
-const repeated = (i: number) => l.phases[i].iterative || l.phases[i].returnsTo === l.phases[i].id;
-
-const TAG_W = 38;
-const TAG_H = 18;
-const TAG_GAP = 5;
-
-// --- Left to right ---------------------------------------------------------
-
-const H = (() => {
-  const W = 160;
-  const GAP = 46;
-  const TOP = 40;
-  const LEFT = 8;
-  const perRow = Math.floor((W - 16 + TAG_GAP) / (TAG_W + TAG_GAP));
-  const names = phases.map((p) => wrap(p.name, 19));
-  const nameLines = Math.max(...names.map((n) => n.length));
-  const tagRows = Math.max(...phases.map((p) => Math.ceil(p.procs.length / perRow)));
-  const boxH = 36 + nameLines * 17 + 8 + tagRows * (TAG_H + TAG_GAP) + 6;
-  const boxes = phases.map((p, i) => ({
-    x: LEFT + i * (W + GAP),
-    y: TOP,
-    w: W,
-    h: boxH,
-    name: names[i],
-    tags: p.procs.map((proc, k) => ({
-      ...proc,
-      x: LEFT + i * (W + GAP) + 8 + (k % perRow) * (TAG_W + TAG_GAP),
-      y: TOP + 36 + nameLines * 17 + 8 + Math.floor(k / perRow) * (TAG_H + TAG_GAP),
-    })),
-  }));
-  const bottom = TOP + boxH;
-  const arcs = loops.map((loop, k) => {
-    const a = boxes[loop.from];
-    const b = boxes[loop.to];
-    const sx = a.x + a.w / 2 + spread(k, 'from') * 20;
-    const tx = b.x + b.w / 2 + spread(k, 'to') * 20;
-    const depth = 46 + k * 30;
-    return {
-      ...loop,
-      d: `M${sx} ${bottom} C${sx} ${bottom + depth}, ${tx} ${bottom + depth}, ${tx} ${bottom + 3}`,
-      lx: (sx + tx) / 2,
-      ly: bottom + depth * 0.75,
-    };
-  });
-  const width = LEFT * 2 + phases.length * W + (phases.length - 1) * GAP;
-  const height = bottom + (loops.length ? 46 + (loops.length - 1) * 30 + 20 : 16);
-  return { boxes, arcs, width, height, bottom };
-})();
-
-// --- Top to bottom ---------------------------------------------------------
-
-const V = (() => {
-  const LEFT = 44;
-  const W = 232;
-  const GAP = 40;
-  const perRow = Math.floor((W - 16 + TAG_GAP) / (TAG_W + TAG_GAP));
-  let y = 8;
-  const boxes = phases.map((p) => {
-    const name = wrap(p.name, 26);
-    const rows = Math.ceil(p.procs.length / perRow);
-    const h = 36 + name.length * 17 + 8 + rows * (TAG_H + TAG_GAP) + 6;
-    const box = {
-      x: LEFT,
-      y,
-      w: W,
-      h,
-      name,
-      tags: p.procs.map((proc, k) => ({
-        ...proc,
-        x: LEFT + 8 + (k % perRow) * (TAG_W + TAG_GAP),
-        y: y + 36 + name.length * 17 + 8 + Math.floor(k / perRow) * (TAG_H + TAG_GAP),
-      })),
-    };
-    y += h + GAP;
-    return box;
-  });
-  const right = LEFT + W;
-  const arcs = loops.map((loop, k) => {
-    const a = boxes[loop.from];
-    const b = boxes[loop.to];
-    const sy = a.y + a.h / 2 + spread(k, 'from') * 14;
-    const ty = b.y + b.h / 2 + spread(k, 'to') * 14;
-    const x = right + 22 + k * 22;
-    return { ...loop, d: `M${right} ${sy} H${x} V${ty} H${right + 3}`, lx: x, ly: (sy + ty) / 2 };
-  });
-  const width = right + 22 + Math.max(loops.length, 1) * 22 + 20;
-  return { boxes, arcs, width, height: y - GAP + 8 };
-})();
-
-// Hover information. Each element carries a title and a body of plain text.
-const snippet = (text: string, max = 190) => (text.length <= max ? text : `${text.slice(0, text.lastIndexOf(' ', max))}…`);
-const tipTag = (proc: (typeof phases)[number]['procs'][number]) => ({
-  'data-tip-title': `${proc.id} · ${proc.name}`,
-  'data-tip-meta': t(`origin.${proc.origin}`),
-  'data-tip-body': snippet(proc.purpose),
-});
-const tipPhase = (i: number) => {
-  const ph = phases[i];
-  const lines = [
-    t('lc.tipProcesses', { n: ph.procs.length }),
-    ...(repeated(i) ? [t('lc.legendRepeated')] : []),
-    ...loops.filter((x) => x.from === i).map((x) => t('lc.tipReturns', { loop: x.label, phase: phases[x.to].name })),
-    ...loops.filter((x) => x.to === i).map((x) => t('lc.tipReceives', { loop: x.label, phase: phases[x.from].name })),
-  ];
-  return {
-    'data-tip-title': `${ph.n} · ${ph.name}`,
-    'data-tip-body': [ph.description && plain(ph.description), ...lines].filter(Boolean).join('\n'),
-  };
-};
-const tipLoop = (loop: (typeof loops)[number]) => ({
-  'data-tip-title': `${loop.label} · ${phases[loop.from].name} → ${phases[loop.to].name}`,
-  'data-tip-meta': t('lc.legendLoop'),
-  'data-tip-body': loop.note ?? '',
-});
-const tipRepeat = (i: number) => ({
-  'data-tip-title': `↻ ${phases[i].name}`,
-  'data-tip-body': t('lc.legendRepeated'),
-});
-
-const desc = t('lc.diagramDesc', { phases: phases.map((p) => p.name).join(', ') });
-const loopText = (loop: (typeof loops)[number]) => `${phases[loop.from].name} → ${phases[loop.to].name}`;
-const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
+const svgs = l
+  ? diagramSvgs(
+      {
+        name: l.name,
+        version: l.prmVersion,
+        procHref: (pid) => href(locale, l.prmVersion, 'processes', pid),
+        phases: l.phases.map((ph) => ({
+          ...ph,
+          description: ph.description && plain(ph.description),
+          procs: ph.processes.map((pid) => {
+            const p = getProcess(l.prmVersion, pid, locale).data;
+            return { id: pid, name: p.name, origin: p.origin, purpose: plain(p.purpose) };
+          }),
+        })),
+      },
+      t as (key: string, vars?: Record<string, string | number>) => string,
+    )
+  : '';
+const loops = l ? lifecycleLoops(l.phases) : [];
+const loopText = (loop: (typeof loops)[number]) => `${l!.phases[loop.from].name} → ${l!.phases[loop.to].name}`;
 ---
 
 <figure class="lc-diagram grid-paper">
@@ -186,87 +47,7 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
       <button type="button" data-zoom="in" aria-label={t('lc.zoomIn')} title={t('lc.zoomIn')}>+</button>
     </div>
   </div>
-  <div class="viewport" tabindex="0" aria-label={t('lc.zoomHint')}>
-  {
-    [
-      { key: 'h', g: H, horizontal: true },
-      { key: 'v', g: V, horizontal: false },
-    ].map(({ key, g, horizontal }) => (
-      <svg
-        class={`diagram diagram-${key}`}
-        viewBox={`0 0 ${g.width} ${g.height}`}
-        role="img"
-        aria-labelledby={`lc-title-${key} lc-desc-${key}`}
-      >
-        <title id={`lc-title-${key}`}>{t('lc.diagram', { name: l.name })}</title>
-        <desc id={`lc-desc-${key}`}>{desc}</desc>
-        <defs>
-          <marker id={`head-${key}`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
-            <path d="M0 0 L8 4 L0 8 z" class="head" />
-          </marker>
-        </defs>
-
-        {/* Forward arrows between consecutive phases */}
-        {g.boxes.slice(1).map((b, i) => {
-          const a = g.boxes[i];
-          return horizontal ? (
-            <line class="wire" x1={a.x + a.w} y1={a.y + 24} x2={b.x - 2} y2={b.y + 24} marker-end={`url(#head-${key})`} />
-          ) : (
-            <line class="wire" x1={a.x + 40} y1={a.y + a.h} x2={b.x + 40} y2={b.y - 2} marker-end={`url(#head-${key})`} />
-          );
-        })}
-
-        {/* Feedback loops */}
-        {g.arcs.map((arc) => (
-          <g class="loop" data-from={arc.from} data-to={arc.to} {...tipLoop(arc)}>
-            <path class="hit" d={arc.d} />
-            <path class="wire loop-wire" d={arc.d} marker-end={`url(#head-${key})`} />
-            <rect class="loop-label-bg" x={arc.lx - 13} y={arc.ly - 9} width="26" height="18" />
-            <text class="loop-label" x={arc.lx} y={arc.ly + 4} text-anchor="middle">
-              {arc.label}
-            </text>
-          </g>
-        ))}
-
-        {g.boxes.map((b, i) => (
-          <g class="phase" data-phase={i} {...tipPhase(i)}>
-            {/* Repetition: a circular arrow above the box (or to its left when vertical) */}
-            {repeated(i) &&
-              (() => {
-                const d = horizontal
-                  ? `M${b.x + b.w * 0.66} ${b.y} C${b.x + b.w * 0.66} ${b.y - 34}, ${b.x + b.w * 0.34} ${b.y - 34}, ${b.x + b.w * 0.34} ${b.y - 3}`
-                  : `M${b.x} ${b.y + b.h * 0.3} C${b.x - 34} ${b.y + b.h * 0.3}, ${b.x - 34} ${b.y + b.h * 0.7}, ${b.x - 3} ${b.y + b.h * 0.7}`;
-                return (
-                  <g class="repeat" {...tipRepeat(i)}>
-                    <path class="hit" d={d} />
-                    <path class="wire" d={d} marker-end={`url(#head-${key})`} />
-                  </g>
-                );
-              })()}
-            <rect class="box" x={b.x} y={b.y} width={b.w} height={b.h} />
-            <rect class="step" x={b.x + 8} y={b.y + 8} width="24" height="16" />
-            <text class="step-text" x={b.x + 20} y={b.y + 20} text-anchor="middle">
-              {phases[i].n}
-            </text>
-            {b.name.map((line, k) => (
-              <text class="name" x={b.x + 8} y={b.y + 44 + k * 17}>
-                {line}
-              </text>
-            ))}
-            {b.tags.map((tag) => (
-              <a href={procHref(tag.id)} class={`tag origin-${tag.origin}`} data-process={tag.id} data-version={l.prmVersion} data-name={tag.name} aria-label={`${tag.id} ${tag.name}`} {...tipTag(tag)}>
-                <rect x={tag.x} y={tag.y} width={TAG_W} height={TAG_H} />
-                <text x={tag.x + TAG_W / 2} y={tag.y + 13} text-anchor="middle">
-                  {tag.id}
-                </text>
-              </a>
-            ))}
-          </g>
-        ))}
-      </svg>
-    ))
-  }
-  </div>
+  <div class="viewport" tabindex="0" aria-label={t('lc.zoomHint')} set:html={svgs} />
   <div class="tip" role="tooltip" hidden>
     <strong class="tip-title"></strong>
     <span class="tip-meta label"></span>
@@ -282,7 +63,7 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
 
 {
   loops.length > 0 && (
-    <section class="loops">
+    <section class="lc-loops">
       <h2>{t('lc.loops')}</h2>
       <ol>
         {loops.map((loop) => (
@@ -318,18 +99,22 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
     const viewport = fig.querySelector<HTMLElement>('.viewport')!;
     const tip = fig.querySelector<HTMLElement>('.tip')!;
     const level = fig.querySelector<HTMLElement>('.level')!;
-    const svgs = [...fig.querySelectorAll<SVGSVGElement>('svg.diagram')];
-    const views = new Map<SVGSVGElement, View>(
-      svgs.map((svg) => {
-        const [, , W, H] = svg.getAttribute('viewBox')!.split(' ').map(Number);
-        return [svg, { W, H, x: 0, y: 0, k: 1 }];
-      }),
-    );
+    // The drawings are looked up on use, since a page may redraw them.
+    const svgs = () => [...fig.querySelectorAll<SVGSVGElement>('svg.diagram')];
+    const views = new WeakMap<SVGSVGElement, View>();
+    const view = (svg: SVGSVGElement) => {
+      if (!views.has(svg)) {
+        const [W, H] = svg.dataset.size!.split(' ').map(Number);
+        views.set(svg, { W, H, x: 0, y: 0, k: 1 });
+      }
+      return views.get(svg)!;
+    };
     // Both drawings are in the page; the stylesheet shows one of them.
-    const active = () => svgs.find((svg) => svg.getBoundingClientRect().width > 0) ?? svgs[0];
+    const active = () => svgs().find((svg) => svg.getBoundingClientRect().width > 0) ?? svgs()[0];
 
-    function apply(svg: SVGSVGElement) {
-      const v = views.get(svg)!;
+    function apply(svg: SVGSVGElement | undefined) {
+      if (!svg) return;
+      const v = view(svg);
       const w = v.W / v.k;
       const h = v.H / v.k;
       v.x = clamp(v.x, 0, v.W - w);
@@ -344,7 +129,8 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
     /** Zoom by a factor around a point given in client coordinates (the centre by default). */
     function zoomAt(factor: number, cx?: number, cy?: number) {
       const svg = active();
-      const v = views.get(svg)!;
+      if (!svg) return;
+      const v = view(svg);
       const r = svg.getBoundingClientRect();
       const fx = cx === undefined ? 0.5 : (cx - r.left) / r.width;
       const fy = cy === undefined ? 0.5 : (cy - r.top) / r.height;
@@ -358,7 +144,8 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
 
     function panBy(dx: number, dy: number) {
       const svg = active();
-      const v = views.get(svg)!;
+      if (!svg) return;
+      const v = view(svg);
       const r = svg.getBoundingClientRect();
       v.x -= (dx / r.width) * (v.W / v.k);
       v.y -= (dy / r.height) * (v.H / v.k);
@@ -367,11 +154,15 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
 
     function fit() {
       const svg = active();
-      Object.assign(views.get(svg)!, { x: 0, y: 0, k: 1 });
+      if (!svg) return;
+      Object.assign(view(svg), { x: 0, y: 0, k: 1 });
       apply(svg);
     }
 
-    const zoomed = () => views.get(active())!.k > 1.001;
+    const zoomed = () => {
+      const svg = active();
+      return !!svg && view(svg).k > 1.001;
+    };
 
     fig.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((b) =>
       b.addEventListener('click', () => {
@@ -557,6 +348,12 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
 
     // Switching between the wide and the narrow drawing shows the other one's zoom.
     matchMedia('(max-width: 860px)').addEventListener('change', () => apply(active()));
+    // A redrawn diagram starts at full view.
+    fig.addEventListener('lc-diagram:update', () => {
+      hideTip();
+      viewport.classList.remove('zoomed');
+      level.textContent = '100%';
+    });
   }
 
   document.querySelectorAll<HTMLElement>('.lc-diagram').forEach(init);
@@ -611,25 +408,25 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
     cursor: grabbing !important;
   }
 
-  .diagram {
+  .lc-diagram :global(.diagram) {
     display: block;
     width: 100%;
     height: auto;
     font-family: var(--font);
   }
 
-  .diagram-v {
+  .lc-diagram :global(.diagram-v) {
     display: none;
     max-width: 420px;
     margin: 0 auto;
   }
 
   @media (max-width: 860px) {
-    .diagram-h {
+    .lc-diagram :global(.diagram-h) {
       display: none;
     }
 
-    .diagram-v {
+    .lc-diagram :global(.diagram-v) {
       display: block;
     }
 
@@ -646,51 +443,51 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
     }
   }
 
-  .wire {
+  .lc-diagram :global(.wire) {
     fill: none;
     stroke: var(--ink);
     stroke-width: 1.25;
   }
 
-  .loop-wire {
+  .lc-diagram :global(.loop-wire) {
     stroke-dasharray: 5 3;
   }
 
   /* Wide invisible strokes make the thin lines easy to point at. */
-  .hit {
+  .lc-diagram :global(.hit) {
     fill: none;
     stroke: transparent;
     stroke-width: 14;
     pointer-events: stroke;
   }
 
-  .loop,
-  .repeat,
-  .phase {
+  .lc-diagram :global(.loop),
+  .lc-diagram :global(.repeat),
+  .lc-diagram :global(.phase) {
     cursor: help;
   }
 
-  .tag {
+  .lc-diagram :global(.tag) {
     cursor: pointer;
   }
 
   /* Highlight of the hovered element and what it connects. */
-  .loop.hl .loop-wire,
-  .repeat.hl .wire {
+  .lc-diagram :global(.loop.hl .loop-wire),
+  .lc-diagram :global(.repeat.hl .wire) {
     stroke-width: 2.5;
     stroke-dasharray: none;
     stroke: var(--accent);
   }
 
-  .loop.hl .loop-label-bg {
+  .lc-diagram :global(.loop.hl .loop-label-bg) {
     fill: var(--ink);
   }
 
-  .loop.hl .loop-label {
+  .lc-diagram :global(.loop.hl .loop-label) {
     fill: var(--surface);
   }
 
-  .phase.hl > .box {
+  .lc-diagram :global(.phase.hl > .box) {
     stroke-width: 2.5;
     stroke: var(--accent);
   }
@@ -726,79 +523,79 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
     white-space: pre-line;
   }
 
-  .head {
+  .lc-diagram :global(.head) {
     fill: var(--ink);
   }
 
-  .box {
+  .lc-diagram :global(.box) {
     fill: var(--surface);
     stroke: var(--ink);
     stroke-width: 1.25;
   }
 
-  .step {
+  .lc-diagram :global(.step) {
     fill: var(--ink);
   }
 
-  .step-text {
+  .lc-diagram :global(.step-text) {
     fill: var(--surface);
     font-family: var(--mono);
     font-size: 11px;
     font-weight: 500;
   }
 
-  .name {
+  .lc-diagram :global(.name) {
     fill: var(--text);
     font-size: 14px;
     font-weight: 600;
   }
 
-  .tag rect {
+  .lc-diagram :global(.tag rect) {
     stroke: var(--ink);
     stroke-width: 1;
   }
 
-  .tag text {
+  .lc-diagram :global(.tag text) {
     font-family: var(--mono);
     font-size: 10.5px;
     font-weight: 500;
   }
 
-  .tag:hover rect,
-  .tag:focus-visible rect {
+  .lc-diagram :global(.tag:hover rect),
+  .lc-diagram :global(.tag:focus-visible rect) {
     stroke-width: 2.5;
   }
 
-  .tag.origin-standards-and-literature rect {
+  .lc-diagram :global(.tag.origin-standards-and-literature rect) {
     fill: var(--origin-sl-bg);
   }
 
-  .tag.origin-standards-and-literature text {
+  .lc-diagram :global(.tag.origin-standards-and-literature text) {
     fill: var(--origin-sl-text);
   }
 
-  .tag.origin-standards-only rect {
+  .lc-diagram :global(.tag.origin-standards-only rect) {
     fill: var(--origin-so-bg);
   }
 
-  .tag.origin-standards-only text {
+  .lc-diagram :global(.tag.origin-standards-only text) {
     fill: var(--origin-so-text);
   }
 
-  .tag.origin-decomposed rect {
+  .lc-diagram :global(.tag.origin-decomposed rect) {
     fill: var(--origin-dec-bg);
   }
 
-  .tag.origin-decomposed text {
+  .lc-diagram :global(.tag.origin-decomposed text) {
     fill: var(--origin-dec-text);
   }
 
-  .loop-label-bg {
+  .lc-diagram :global(.loop-label-bg) {
     fill: var(--surface);
     stroke: var(--ink);
   }
 
-  .loop-label {
+  .lc-diagram :global(.loop-label) {
     fill: var(--text);
     font-family: var(--mono);
     font-size: 11px;
@@ -830,7 +627,7 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
     padding: 0 3px;
   }
 
-  .loops ol {
+  .lc-loops ol {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -839,7 +636,7 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
     max-width: var(--measure);
   }
 
-  .loops li {
+  .lc-loops li {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 12px;
@@ -852,7 +649,7 @@ const procHref = (pid: string) => href(locale, l.prmVersion, 'processes', pid);
     font-size: 0.78rem;
   }
 
-  .loops p {
+  .lc-loops p {
     margin: 2px 0 0;
   }
 </style>

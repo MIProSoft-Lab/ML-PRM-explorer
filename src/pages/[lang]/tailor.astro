@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ProcessModal from '../../components/ProcessModal.astro';
+import LifecycleDiagram from '../../components/LifecycleDiagram.astro';
 import { versions, defaultVersion, getProcesses, getWorkProducts, lifecycleIds, getLifecycle, pick } from '../../lib/content';
 import { localePaths } from '../../lib/paths';
 import { plain } from '../../lib/text';
@@ -31,7 +32,14 @@ const data = {
   })),
   lifecycles: lifecycleIds().map((id) => {
     const l = getLifecycle(id, locale).data;
-    return { id, name: l.name, version: l.prmVersion, processes: l.phases.flatMap((p) => p.processes) };
+    return {
+      id,
+      name: l.name,
+      version: l.prmVersion,
+      description: plain(l.description),
+      processes: l.phases.flatMap((p) => p.processes),
+      phases: l.phases.map((ph) => ({ ...ph, description: ph.description ? plain(ph.description) : '' })),
+    };
   }),
 };
 
@@ -50,6 +58,34 @@ const keys: UiKey[] = [
   'process.producedBy',
   'nav.lifecycles',
   'modal.details',
+  'tailor.phase.new',
+  'tailor.phase.name',
+  'tailor.phase.up',
+  'tailor.phase.down',
+  'tailor.phase.remove',
+  'tailor.phase.description',
+  'tailor.phase.returnsTo',
+  'tailor.phase.noReturn',
+  'tailor.phase.returnNote',
+  'tailor.phase.drop',
+  'tailor.phase.addProcess',
+  'tailor.phase.unassign',
+  'tailor.phase.none',
+  'tailor.phase.of',
+  'tailor.unassigned.none',
+  'tailor.phases.summary',
+  'tailor.untitled',
+  'lc.iterative',
+  'lc.diagram',
+  'lc.diagramDesc',
+  'lc.legendRepeated',
+  'lc.legendLoop',
+  'lc.tipProcesses',
+  'lc.tipReturns',
+  'lc.tipReceives',
+  'origin.standards-and-literature',
+  'origin.standards-only',
+  'origin.decomposed',
 ];
 const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 ---
@@ -78,30 +114,66 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 
   <div class="layout">
     <section class="no-print">
-      <div class="bulk">
-        <button type="button" id="all">{t('tailor.selectAll')}</button>
-        <button type="button" id="none">{t('tailor.selectNone')}</button>
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tab-processes" data-tab="processes" aria-controls="panel-processes" aria-selected="true">
+          {t('tailor.tab.processes')}
+        </button>
+        <button type="button" role="tab" id="tab-phases" data-tab="phases" aria-controls="panel-phases" aria-selected="false" tabindex="-1">
+          {t('tailor.tab.phases')} <span id="phase-count" class="count"></span>
+        </button>
       </div>
-      <ol id="processes" class="processes"></ol>
+
+      <div id="panel-processes" role="tabpanel" aria-labelledby="tab-processes">
+        <div class="bulk">
+          <button type="button" id="all">{t('tailor.selectAll')}</button>
+          <button type="button" id="none">{t('tailor.selectNone')}</button>
+        </div>
+        <ol id="processes" class="processes"></ol>
+      </div>
+
+      <div id="panel-phases" role="tabpanel" aria-labelledby="tab-phases" hidden>
+        <p class="small muted prose">{t('tailor.phases.intro')}</p>
+        <label class="lc-description">
+          <span class="small muted">{t('tailor.lcDescription')}</span>
+          <textarea id="lc-description" rows="2"></textarea>
+        </label>
+        <ol id="phases" class="phase-list"></ol>
+        <p><button type="button" id="add-phase">+ {t('tailor.phase.add')}</button></p>
+        <section class="unassigned">
+          <h2 class="label">{t('tailor.unassigned')}</h2>
+          <ul id="unassigned" class="pc-procs dropzone" data-drop=""></ul>
+        </section>
+      </div>
     </section>
 
     <aside class="side no-print">
       <div class="card sticky">
         <p id="summary" class="summary"></p>
+        <p id="phase-summary" class="small muted" hidden></p>
         <h2>{t('tailor.export')}</h2>
         <div class="exports">
           <button type="button" data-export="md">{t('tailor.markdown')}</button>
           <button type="button" data-export="csv">{t('tailor.csv')}</button>
           <button type="button" data-export="json">{t('tailor.json')}</button>
           <button type="button" id="print">{t('tailor.print')}</button>
+          <button type="button" data-export="yaml" id="export-yaml">{t('tailor.yaml')}</button>
           <button type="button" id="copy" class="primary button">{t('tailor.copyLink')}</button>
         </div>
+        <p class="small muted">{t('tailor.yamlNote')}</p>
         <h2>{t('tailor.missingInputs')}</h2>
         <p class="small muted">{t('tailor.missingInputsNote')}</p>
         <ul id="missing" class="missing small"></ul>
       </div>
     </aside>
   </div>
+
+  <section id="preview-section" class="no-print" hidden>
+    <h2 class="preview-title">{t('tailor.preview')}</h2>
+    <p id="preview-empty" class="muted small">{t('tailor.preview.empty')}</p>
+    <div id="preview">
+      <LifecycleDiagram locale={locale} />
+    </div>
+  </section>
 
   <div id="print-view" class="print-only"></div>
 
@@ -111,7 +183,8 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 </Layout>
 
 <script>
-  import { createProcessModal } from '../../lib/process-modal';
+  import { createProcessModal, openLinksInModal } from '../../lib/process-modal';
+  import { diagramSvgs } from '../../lib/lifecycle-diagram';
 
   type Proc = {
     id: string;
@@ -127,11 +200,27 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     processes: Proc[];
     workProducts: Record<string, { name: string; external: boolean; producers: string[] }>;
   };
+  type Phase = {
+    id: string;
+    name: string;
+    description: string;
+    processes: string[];
+    iterative: boolean;
+    returnsTo: string;
+    returnNote: string;
+  };
   type Data = {
     defaultVersion: string;
     base: string;
     versions: Version[];
-    lifecycles: { id: string; name: string; version: string; processes: string[] }[];
+    lifecycles: {
+      id: string;
+      name: string;
+      version: string;
+      description: string;
+      processes: string[];
+      phases: (Partial<Phase> & { id: string; name: string; processes: string[] })[];
+    }[];
   };
 
   const { data, strings } = JSON.parse(document.getElementById('tailor-data')!.textContent!) as {
@@ -142,6 +231,13 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     Object.entries(vars).reduce((acc, [key, v]) => acc.replace(`{${key}}`, String(v)), strings[k] ?? k);
   const $ = <T extends HTMLElement>(sel: string) => document.querySelector<T>(sel)!;
   const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  const slug = (x: string) =>
+    x
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
 
   // --- State, kept in the URL hash so a selection can be shared ---------
 
@@ -152,9 +248,61 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     /** Excluded activities of selected processes, as "P01.A3". */
     excluded: Set<string>;
     rationale: Record<string, string>;
+    /** Lifecycle phases with the selected processes in order. */
+    phases: Phase[];
+    description: string;
+    tab: 'processes' | 'phases';
   }
 
   const version = (id: string) => data.versions.find((v) => v.id === id) ?? data.versions.find((v) => v.id === data.defaultVersion)!;
+
+  const phase = (p: Partial<Phase> & { id: string }): Phase => ({
+    name: '',
+    description: '',
+    processes: [],
+    iterative: false,
+    returnsTo: '',
+    returnNote: '',
+    ...p,
+  });
+
+  function phasesOf(lc: Data['lifecycles'][number]) {
+    return lc.phases.map((ph) => phase({ ...ph, processes: [...ph.processes] }));
+  }
+
+  /** Phases in the link, in a compact form. */
+  function readPhases(text: string | null): Phase[] {
+    if (!text) return [];
+    try {
+      return (JSON.parse(text) as Record<string, any>[]).map((x) =>
+        phase({
+          id: String(x.i),
+          name: String(x.n ?? ''),
+          description: String(x.d ?? ''),
+          processes: Array.isArray(x.p) ? x.p.map(String) : [],
+          iterative: !!x.r,
+          returnsTo: String(x.t ?? ''),
+          returnNote: String(x.w ?? ''),
+        }),
+      );
+    } catch {
+      return [];
+    }
+  }
+
+  function writePhases(phases: Phase[]) {
+    return JSON.stringify(
+      phases.map((p) => ({
+        i: p.id,
+        n: p.name,
+        ...(p.description && { d: p.description }),
+        p: p.processes,
+        ...(p.iterative && { r: 1 }),
+        ...(p.returnsTo && { t: p.returnsTo }),
+        ...(p.returnsTo && p.returnNote && { w: p.returnNote }),
+      })),
+    );
+  }
 
   function fromHash(): State {
     const h = new URLSearchParams(location.hash.slice(1));
@@ -168,14 +316,28 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     } catch {}
     return {
       version: v.id,
-      project: h.get('n') ?? '',
+      project: h.get('n') ?? (lc && !h.has('p') ? lc.name : ''),
       selected: new Set(selected.filter((id) => all.includes(id))),
       excluded: new Set((h.get('x') ?? '').split(',').filter(Boolean)),
       rationale,
+      phases: h.has('ph') ? readPhases(h.get('ph')) : lc ? phasesOf(lc) : [],
+      description: h.get('ld') ?? (lc && !h.has('p') ? lc.description : ''),
+      tab: h.get('t') === 'phases' || (lc && !h.has('p')) ? 'phases' : 'processes',
     };
   }
 
   let state = fromHash();
+
+  /** Keep the phases in step with the selection: only selected processes of the version, each loop to an existing phase. */
+  function syncPhases() {
+    const ids = new Set(version(state.version).processes.map((p) => p.id));
+    const phaseIds = new Set(state.phases.map((p) => p.id));
+    for (const p of state.phases) {
+      p.processes = p.processes.filter((id) => ids.has(id) && state.selected.has(id));
+      if (p.returnsTo && !phaseIds.has(p.returnsTo)) p.returnsTo = '';
+    }
+  }
+  syncPhases();
 
   function toHash() {
     const h = new URLSearchParams();
@@ -185,12 +347,33 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     if (state.excluded.size) h.set('x', [...state.excluded].join(','));
     const r = Object.fromEntries(Object.entries(state.rationale).filter(([id, text]) => text && !state.selected.has(id)));
     if (Object.keys(r).length) h.set('r', JSON.stringify(r));
+    if (state.phases.length) h.set('ph', writePhases(state.phases));
+    if (state.description) h.set('ld', state.description);
+    if (state.tab === 'phases') h.set('t', 'phases');
     history.replaceState(null, '', `#${h}`);
   }
 
   // --- Rendering ---------------------------------------------------------
 
   const list = $('#processes');
+  const phaseList = $('#phases');
+  const unassignedList = $('#unassigned');
+  const figure = $('#preview .lc-diagram');
+  const viewport = figure.querySelector<HTMLElement>('.viewport')!;
+
+  const procOf = (id: string) => version(state.version).processes.find((p) => p.id === id);
+  const phaseOf = (id: string) => state.phases.find((p) => p.processes.includes(id));
+  const unassigned = () => version(state.version).processes.filter((p) => state.selected.has(p.id) && !phaseOf(p.id));
+  const phaseLabel = (p: Phase, i: number) => `${String(i + 1).padStart(2, '0')} ${p.name || s('tailor.phase.new', { n: i + 1 })}`;
+
+  function phaseSelect(id: string) {
+    if (!state.phases.length || !state.selected.has(id)) return '';
+    const current = phaseOf(id)?.id ?? '';
+    const options = [`<option value="">${esc(s('tailor.phase.none'))}</option>`]
+      .concat(state.phases.map((p, i) => `<option value="${esc(p.id)}" ${p.id === current ? 'selected' : ''}>${esc(phaseLabel(p, i))}</option>`))
+      .join('');
+    return `<select class="phase-select" data-phase-of="${id}" aria-label="${esc(s('tailor.phase.of', { id }))}">${options}</select>`;
+  }
 
   function renderList() {
     const v = version(state.version);
@@ -207,7 +390,8 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
           <div class="proc-head" data-hover-process="${p.id}" data-hover-version="${state.version}">
             <label class="proc-label"><input type="checkbox" data-proc="${p.id}" ${on ? 'checked' : ''}>
               <span class="dot origin-${p.origin}"></span><span class="num">${p.id}</span> <strong>${esc(p.name)}</strong></label>
-            <button type="button" class="info" data-info="${p.id}" aria-label="${esc(s('modal.details', { name: p.name }))}">i</button>
+            <span class="proc-tools">${phaseSelect(p.id)}
+              <button type="button" class="info" data-info="${p.id}" aria-label="${esc(s('modal.details', { name: p.name }))}">i</button></span>
           </div>
           <details><summary class="small muted">${s('process.activities')} (<span data-count="${p.id}"></span>)</summary><ul class="acts">${acts}</ul></details>
           <label class="rationale small" ${on ? 'hidden' : ''}><span>${s('tailor.rationale')}</span>
@@ -215,7 +399,80 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
         </li>`;
       })
       .join('');
+    renderPhases();
+  }
+
+  const chip = (id: string, from: string) => {
+    const p = procOf(id);
+    if (!p) return '';
+    return `<li class="pchip origin-${p.origin}" draggable="true" data-pid="${id}" data-from="${esc(from)}" data-hover-process="${id}" data-hover-version="${state.version}">
+      <span class="num">${id}</span><span class="pchip-name">${esc(p.name)}</span>
+      ${from ? `<button type="button" class="pchip-x" data-unassign="${id}" data-from="${esc(from)}" aria-label="${esc(s('tailor.phase.unassign', { id }))}">×</button>` : ''}
+    </li>`;
+  };
+
+  function renderPhases() {
+    const free = unassigned();
+    phaseList.innerHTML = state.phases
+      .map((p, i) => {
+        const others = state.phases
+          .map((o, k) => (o.id === p.id ? '' : `<option value="${esc(o.id)}" ${o.id === p.returnsTo ? 'selected' : ''}>${esc(phaseLabel(o, k))}</option>`))
+          .join('');
+        const add = free.length
+          ? `<select class="pc-add" data-add-to="${esc(p.id)}"><option value="">${esc(s('tailor.phase.addProcess'))}</option>${free
+              .map((f) => `<option value="${f.id}">${f.id} ${esc(f.name)}</option>`)
+              .join('')}</select>`
+          : '';
+        return `<li class="phase-card" data-phase="${esc(p.id)}">
+          <div class="pc-head">
+            <span class="pc-step">${String(i + 1).padStart(2, '0')}</span>
+            <input type="text" class="pc-name" data-field="name" value="${esc(p.name)}" placeholder="${esc(s('tailor.phase.new', { n: i + 1 }))}" aria-label="${esc(s('tailor.phase.name'))}">
+            <span class="pc-tools">
+              <button type="button" data-move="-1" ${i === 0 ? 'disabled' : ''} aria-label="${esc(s('tailor.phase.up'))}" title="${esc(s('tailor.phase.up'))}">↑</button>
+              <button type="button" data-move="1" ${i === state.phases.length - 1 ? 'disabled' : ''} aria-label="${esc(s('tailor.phase.down'))}" title="${esc(s('tailor.phase.down'))}">↓</button>
+              <button type="button" data-remove aria-label="${esc(s('tailor.phase.remove'))}" title="${esc(s('tailor.phase.remove'))}">✕</button>
+            </span>
+          </div>
+          <ul class="pc-procs dropzone" data-drop="${esc(p.id)}">${p.processes.map((id) => chip(id, p.id)).join('') || `<li class="pc-empty small muted">${esc(s('tailor.phase.drop'))}</li>`}</ul>
+          ${add}
+          <div class="pc-options small">
+            <label><input type="checkbox" data-field="iterative" ${p.iterative ? 'checked' : ''}> ↻ ${esc(s('lc.iterative'))}</label>
+            <label>↩ ${esc(s('tailor.phase.returnsTo'))}
+              <select data-field="returnsTo"><option value="">${esc(s('tailor.phase.noReturn'))}</option>${others}</select></label>
+            <label class="pc-note" ${p.returnsTo ? '' : 'hidden'}>${esc(s('tailor.phase.returnNote'))}
+              <input type="text" data-field="returnNote" value="${esc(p.returnNote)}"></label>
+          </div>
+          <details class="small" ${p.description ? 'open' : ''}><summary class="muted">${esc(s('tailor.phase.description'))}</summary>
+            <textarea data-field="description" rows="2">${esc(p.description)}</textarea></details>
+        </li>`;
+      })
+      .join('');
+    unassignedList.innerHTML = free.map((p) => chip(p.id, '')).join('') || `<li class="pc-empty small muted">${esc(s('tailor.unassigned.none'))}</li>`;
+    $('#phase-count').textContent = state.phases.length ? `(${state.phases.length})` : '';
+    renderPreview();
     renderSummary();
+  }
+
+  function renderPreview() {
+    const has = state.phases.length > 0;
+    $('#preview').hidden = !has;
+    $('#preview-empty').hidden = has;
+    if (!has) return;
+    const v = state.version;
+    viewport.innerHTML = diagramSvgs(
+      {
+        name: state.project || s('tailor.untitled'),
+        version: v,
+        procHref: (id) => `${data.base}${v}/processes/${id}/`,
+        phases: state.phases.map((p, i) => ({
+          ...p,
+          name: p.name || s('tailor.phase.new', { n: i + 1 }),
+          procs: p.processes.map(procOf).filter((x): x is Proc => !!x),
+        })),
+      },
+      s,
+    );
+    figure.dispatchEvent(new Event('lc-diagram:update'));
   }
 
   function activeActivities(p: Proc) {
@@ -242,6 +499,10 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     const v = version(state.version);
     const acts = v.processes.reduce((n, p) => n + activeActivities(p).length, 0);
     $('#summary').textContent = s('tailor.selected', { n: state.selected.size, total: v.processes.length, a: acts });
+    const phaseSummary = $('#phase-summary');
+    phaseSummary.hidden = !state.phases.length;
+    phaseSummary.textContent = s('tailor.phases.summary', { n: state.phases.length, u: unassigned().length });
+    $<HTMLButtonElement>('#export-yaml').disabled = !state.phases.length;
     for (const p of v.processes) {
       const el = list.querySelector(`[data-count="${p.id}"]`);
       if (el) el.textContent = `${activeActivities(p).length}/${p.activities.length}`;
@@ -268,20 +529,37 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
       (lcs.length ? `<optgroup label="${esc(s('nav.lifecycles'))}">${lcs.map((l) => `<option value="lc:${l.id}">${esc(l.name)}</option>`).join('')}</optgroup>` : '');
   }
 
-  // --- Events -----------------------------------------------------------
+  function showTab(tab: State['tab'], focus = false) {
+    state.tab = tab;
+    document.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((b) => {
+      const on = b.dataset.tab === tab;
+      b.setAttribute('aria-selected', String(on));
+      b.tabIndex = on ? 0 : -1;
+      if (on && focus) b.focus();
+      document.getElementById(b.getAttribute('aria-controls')!)!.hidden = !on;
+    });
+    // The preview spans the page, below the editor and the sidebar.
+    $('#preview-section').hidden = tab !== 'phases';
+    toHash();
+  }
+
+  // --- Events: processes --------------------------------------------------
 
   list.addEventListener('change', (e) => {
     const el = e.target as HTMLInputElement;
     if (el.dataset.proc) {
       el.checked ? state.selected.add(el.dataset.proc) : state.selected.delete(el.dataset.proc);
-      const li = el.closest('.proc')!;
-      li.classList.toggle('off', !el.checked);
-      li.querySelector<HTMLElement>('.rationale')!.hidden = el.checked;
-      li.querySelectorAll<HTMLInputElement>('[data-act]').forEach((a) => (a.disabled = !el.checked));
-      renderSummary();
+      syncPhases();
+      renderList();
     } else if (el.dataset.act) {
       el.checked ? state.excluded.delete(el.dataset.act) : state.excluded.add(el.dataset.act);
       renderSummary();
+    } else if (el.dataset.phaseOf) {
+      const id = el.dataset.phaseOf;
+      for (const p of state.phases) p.processes = p.processes.filter((x) => x !== id);
+      const target = state.phases.find((p) => p.id === el.value);
+      if (target) insertInOrder(target, id);
+      renderList();
     }
   });
 
@@ -302,6 +580,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 
   $<HTMLInputElement>('#project').addEventListener('input', (e) => {
     state.project = (e.target as HTMLInputElement).value;
+    if (state.phases.length) renderPreview();
     toHash();
   });
 
@@ -310,6 +589,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     // Keep the processes that exist in both versions; activities may differ.
     const ids = new Set(v.processes.map((p) => p.id));
     state = { ...state, version: v.id, selected: new Set([...state.selected].filter((id) => ids.has(id))), excluded: new Set() };
+    syncPhases();
     renderStartOptions();
     renderList();
   });
@@ -319,8 +599,17 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     const v = version(state.version);
     if (value === 'all') state.selected = new Set(v.processes.map((p) => p.id));
     else if (value === 'none') state.selected = new Set();
-    else if (value.startsWith('lc:')) state.selected = new Set(data.lifecycles.find((l) => l.id === value.slice(3))!.processes);
+    else if (value.startsWith('lc:')) {
+      const lc = data.lifecycles.find((l) => l.id === value.slice(3))!;
+      state.selected = new Set(lc.processes);
+      state.phases = phasesOf(lc);
+      state.description = lc.description;
+      state.project = lc.name;
+      $<HTMLInputElement>('#project').value = state.project;
+      $<HTMLTextAreaElement>('#lc-description').value = state.description;
+    }
     state.excluded = new Set();
+    syncPhases();
     (e.target as HTMLSelectElement).value = '';
     renderList();
   });
@@ -331,7 +620,162 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
   });
   $('#none').addEventListener('click', () => {
     state.selected = new Set();
+    syncPhases();
     renderList();
+  });
+
+  // --- Events: tabs -------------------------------------------------------
+
+  document.querySelectorAll<HTMLButtonElement>('[role="tab"]').forEach((b) => {
+    b.addEventListener('click', () => showTab(b.dataset.tab as State['tab']));
+    b.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      e.preventDefault();
+      showTab(state.tab === 'processes' ? 'phases' : 'processes', true);
+    });
+  });
+
+  // --- Events: phases -----------------------------------------------------
+
+  /** Add a process to a phase in the order of the PRM, unless it is already there. */
+  function insertInOrder(p: Phase, id: string) {
+    if (p.processes.includes(id)) return;
+    const order = version(state.version).processes.map((x) => x.id);
+    const at = p.processes.findIndex((x) => order.indexOf(x) > order.indexOf(id));
+    p.processes.splice(at < 0 ? p.processes.length : at, 0, id);
+  }
+
+  function newPhaseId() {
+    let n = state.phases.length + 1;
+    while (state.phases.some((p) => p.id === `phase-${n}`)) n++;
+    return `phase-${n}`;
+  }
+
+  $('#add-phase').addEventListener('click', () => {
+    state.phases.push(phase({ id: newPhaseId() }));
+    renderList();
+    phaseList.querySelector<HTMLInputElement>('.phase-card:last-child .pc-name')?.focus();
+  });
+
+  $<HTMLTextAreaElement>('#lc-description').addEventListener('input', (e) => {
+    state.description = (e.target as HTMLTextAreaElement).value;
+    toHash();
+  });
+
+  const cardPhase = (el: Element) => state.phases.find((p) => p.id === el.closest<HTMLElement>('.phase-card')?.dataset.phase);
+
+  // Typing only redraws the preview, so the field keeps the focus.
+  phaseList.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement;
+    const p = cardPhase(el);
+    const field = el.dataset.field as 'name' | 'description' | 'returnNote' | undefined;
+    if (!p || !field || el.type === 'checkbox' || el.tagName === 'SELECT') return;
+    p[field] = el.value;
+    if (field === 'name') {
+      // Rename the phase in the menus in place; redrawing them would lose the focus.
+      const label = phaseLabel(p, state.phases.indexOf(p));
+      document.querySelectorAll<HTMLOptionElement>(`#panel-processes option[value="${CSS.escape(p.id)}"], #phases option[value="${CSS.escape(p.id)}"]`).forEach((o) => (o.textContent = label));
+      renderSummary();
+    }
+    renderPreview();
+    toHash();
+  });
+
+  phaseList.addEventListener('change', (e) => {
+    const el = e.target as HTMLInputElement;
+    const p = cardPhase(el);
+    if (!p) return;
+    if (el.dataset.field === 'iterative') p.iterative = el.checked;
+    else if (el.dataset.field === 'returnsTo') p.returnsTo = el.value;
+    else if (el.dataset.addTo && el.value) insertInOrder(p, el.value);
+    else return;
+    renderList();
+  });
+
+  phaseList.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest<HTMLButtonElement>('button');
+    if (!el) return;
+    const p = cardPhase(el);
+    if (!p) return;
+    const i = state.phases.indexOf(p);
+    if (el.dataset.move) {
+      const j = i + Number(el.dataset.move);
+      [state.phases[i], state.phases[j]] = [state.phases[j], state.phases[i]];
+      renderList();
+      phaseList.querySelector<HTMLButtonElement>(`.phase-card[data-phase="${CSS.escape(p.id)}"] [data-move="${el.dataset.move}"]:not(:disabled)`)?.focus();
+    } else if (el.hasAttribute('data-remove')) {
+      state.phases.splice(i, 1);
+      syncPhases();
+      renderList();
+    } else if (el.dataset.unassign) {
+      p.processes = p.processes.filter((x) => x !== el.dataset.unassign);
+      renderList();
+    }
+  });
+
+  // Drag a process between phases, or within one to change its order.
+  let dragged: { id: string; from: string } | null = null;
+
+  const panel = $('#panel-phases');
+  panel.addEventListener('dragstart', (e) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>('.pchip');
+    if (!el) return;
+    dragged = { id: el.dataset.pid!, from: el.dataset.from! };
+    e.dataTransfer!.effectAllowed = 'move';
+    e.dataTransfer!.setData('text/plain', dragged.id);
+    requestAnimationFrame(() => el.classList.add('dragging'));
+  });
+
+  /** The chip a drop at this point goes before, or null for the end. */
+  function dropBefore(zone: HTMLElement, x: number, y: number) {
+    for (const c of zone.querySelectorAll<HTMLElement>('.pchip:not(.dragging)')) {
+      const r = c.getBoundingClientRect();
+      if (y < r.top || (y <= r.bottom && x < r.left + r.width / 2)) return c;
+    }
+    return null;
+  }
+
+  function clearMarks() {
+    panel.querySelectorAll('.drop-target, .drop-before, .drop-end').forEach((x) => x.classList.remove('drop-target', 'drop-before', 'drop-end'));
+  }
+
+  panel.addEventListener('dragover', (e) => {
+    const zone = (e.target as HTMLElement).closest<HTMLElement>('.dropzone');
+    if (!dragged || !zone) return;
+    e.preventDefault();
+    e.dataTransfer!.dropEffect = 'move';
+    clearMarks();
+    zone.classList.add('drop-target');
+    const before = dropBefore(zone, e.clientX, e.clientY);
+    if (before) before.classList.add('drop-before');
+    else if (zone.dataset.drop) zone.classList.add('drop-end');
+  });
+
+  panel.addEventListener('dragleave', (e) => {
+    if (!(e.relatedTarget instanceof Node) || !panel.contains(e.relatedTarget)) clearMarks();
+  });
+
+  panel.addEventListener('drop', (e) => {
+    const zone = (e.target as HTMLElement).closest<HTMLElement>('.dropzone');
+    if (!dragged || !zone) return;
+    e.preventDefault();
+    const before = dropBefore(zone, e.clientX, e.clientY)?.dataset.pid;
+    const source = state.phases.find((p) => p.id === dragged!.from);
+    if (source) source.processes.splice(source.processes.indexOf(dragged.id), 1);
+    const target = state.phases.find((p) => p.id === zone.dataset.drop);
+    if (target) {
+      target.processes = target.processes.filter((x) => x !== dragged!.id);
+      const at = before ? target.processes.indexOf(before) : -1;
+      target.processes.splice(at < 0 ? target.processes.length : at, 0, dragged.id);
+    }
+    dragged = null;
+    renderList();
+  });
+
+  panel.addEventListener('dragend', () => {
+    dragged = null;
+    clearMarks();
+    panel.querySelectorAll('.dragging').forEach((x) => x.classList.remove('dragging'));
   });
 
   // --- Export -----------------------------------------------------------
@@ -346,16 +790,39 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     }));
   }
 
+  const phaseName = (p: Phase) => p.name || s('tailor.phase.new', { n: state.phases.indexOf(p) + 1 });
+
+  /** The included processes grouped by phase, in lifecycle order; those without a phase come last. */
+  function groups() {
+    const r = rows().filter((x) => x.included);
+    const byId = new Map(r.map((x) => [x.p.id, x]));
+    const out = state.phases.map((ph) => ({ phase: ph as Phase | null, rows: ph.processes.map((id) => byId.get(id)!).filter(Boolean) }));
+    const rest = r.filter((x) => !phaseOf(x.p.id));
+    if (rest.length || !out.length) out.push({ phase: null, rows: rest });
+    return out;
+  }
+
   function markdown() {
     const r = rows();
     const title = state.project || document.querySelector('h1')!.textContent;
     let out = `# ${title}\n\nPRM ${state.version} · ${location.href}\n\n`;
-    for (const x of r.filter((x) => x.included)) {
-      out += `## ${x.p.id} ${x.p.name}\n\n${x.p.purpose}\n\n`;
-      for (const a of x.activities) if (a.included) out += `- [ ] ${a.id}. ${a.title}\n`;
-      const skipped = x.activities.filter((a) => !a.included);
-      if (skipped.length) out += `\n${s('tailor.excluded')}: ${skipped.map((a) => a.id).join(', ')}\n`;
-      out += '\n';
+    if (state.description) out += `${state.description}\n\n`;
+    const phased = state.phases.length > 0;
+    for (const g of groups()) {
+      if (phased) {
+        const ph = g.phase;
+        out += ph ? `## ${String(state.phases.indexOf(ph) + 1).padStart(2, '0')} ${phaseName(ph)}${ph.iterative ? ` (↻ ${s('lc.iterative')})` : ''}\n\n` : `## ${s('tailor.unassigned')}\n\n`;
+        if (ph?.description) out += `${ph.description}\n\n`;
+        const back = ph?.returnsTo && state.phases.find((x) => x.id === ph.returnsTo);
+        if (back) out += `↩ ${s('tailor.phase.returnsTo')} ${phaseName(back)}${ph!.returnNote ? `: ${ph!.returnNote}` : ''}\n\n`;
+      }
+      for (const x of g.rows) {
+        out += `${phased ? '###' : '##'} ${x.p.id} ${x.p.name}\n\n${x.p.purpose}\n\n`;
+        for (const a of x.activities) if (a.included) out += `- [ ] ${a.id}. ${a.title}\n`;
+        const skipped = x.activities.filter((a) => !a.included);
+        if (skipped.length) out += `\n${s('tailor.excluded')}: ${skipped.map((a) => a.id).join(', ')}\n`;
+        out += '\n';
+      }
     }
     const excluded = r.filter((x) => !x.included);
     if (excluded.length) {
@@ -367,10 +834,11 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 
   function csv() {
     const q = (x: string) => `"${x.replace(/"/g, '""')}"`;
-    const lines = [['process_id', 'process', 'activity_id', 'activity', 'included', 'rationale'].join(',')];
+    const lines = [['process_id', 'process', 'phase', 'activity_id', 'activity', 'included', 'rationale'].join(',')];
     for (const x of rows()) {
+      const ph = phaseOf(x.p.id);
       for (const a of x.activities) {
-        lines.push([x.p.id, q(x.p.name), a.id, q(a.title), a.included ? 'yes' : 'no', q(x.included ? '' : x.rationale)].join(','));
+        lines.push([x.p.id, q(x.p.name), q(ph ? phaseName(ph) : ''), a.id, q(a.title), a.included ? 'yes' : 'no', q(x.included ? '' : x.rationale)].join(','));
       }
     }
     return lines.join('\n');
@@ -382,6 +850,8 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
         project: state.project,
         prmVersion: state.version,
         link: location.href,
+        description: state.description || undefined,
+        phases: state.phases.length ? lifecyclePhases() : undefined,
         processes: rows().map((x) => ({
           id: x.p.id,
           name: x.p.name,
@@ -395,6 +865,45 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     );
   }
 
+  /** Phases with readable, unique IDs made from their names, as in content/lifecycles. */
+  function lifecyclePhases() {
+    const ids = new Map<string, string>();
+    for (const p of state.phases) {
+      const base = slug(phaseName(p)) || 'phase';
+      let id = base;
+      for (let n = 2; [...ids.values()].includes(id); n++) id = `${base}-${n}`;
+      ids.set(p.id, id);
+    }
+    return state.phases.map((p) => ({
+      id: ids.get(p.id)!,
+      name: phaseName(p),
+      ...(p.description && { description: p.description }),
+      processes: p.processes,
+      ...(p.iterative && { iterative: true }),
+      ...(p.returnsTo && { returnsTo: ids.get(p.returnsTo) }),
+      ...(p.returnsTo && p.returnNote && { returnNote: p.returnNote }),
+    }));
+  }
+
+  /** A lifecycle file in the format of content/lifecycles/<lang>/<id>.yaml. */
+  function yaml() {
+    // Plain scalars when they are unambiguous, double-quoted (JSON) strings otherwise.
+    const q = (x: string) => (/^[\p{L}\p{N}][\p{L}\p{N} ,.()'’/&–—-]*$/u.test(x) && !/^(true|false|yes|no|on|off|null|~)$/i.test(x) ? x : JSON.stringify(x));
+    const name = state.project || s('tailor.untitled');
+    let out = `id: ${slug(name) || 'lifecycle'}\nname: ${q(name)}\nstatus: draft\nprmVersion: ${state.version}\n`;
+    if (state.description) out += `description: ${q(state.description)}\n`;
+    out += 'phases:\n';
+    for (const p of lifecyclePhases()) {
+      out += `  - id: ${p.id}\n    name: ${q(p.name)}\n`;
+      if (p.description) out += `    description: ${q(p.description)}\n`;
+      out += `    processes: [${p.processes.join(', ')}]\n`;
+      if (p.iterative) out += '    iterative: true\n';
+      if (p.returnsTo) out += `    returnsTo: ${p.returnsTo}\n`;
+      if (p.returnNote) out += `    returnNote: ${q(p.returnNote)}\n`;
+    }
+    return out;
+  }
+
   function download(name: string, type: string, text: string) {
     const url = URL.createObjectURL(new Blob([text], { type }));
     const a = Object.assign(document.createElement('a'), { href: url, download: name });
@@ -402,27 +911,34 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  const fileBase = () => (state.project || 'prm-tailoring').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + `-${state.version}`;
+  const fileBase = () => (slug(state.project) || 'prm-tailoring') + `-${state.version}`;
   document.querySelectorAll<HTMLButtonElement>('[data-export]').forEach((b) =>
     b.addEventListener('click', () => {
       const kind = b.dataset.export!;
       if (kind === 'md') download(`${fileBase()}.md`, 'text/markdown', markdown());
       if (kind === 'csv') download(`${fileBase()}.csv`, 'text/csv', csv());
       if (kind === 'json') download(`${fileBase()}.json`, 'application/json', json());
+      if (kind === 'yaml') download(`${slug(state.project || s('tailor.untitled')) || 'lifecycle'}.yaml`, 'application/yaml', yaml());
     }),
   );
 
   $('#print').addEventListener('click', () => {
-    const r = rows().filter((x) => x.included);
+    const phased = state.phases.length > 0;
     $('#print-view').innerHTML =
       `<h1>${esc(state.project || '')}</h1><p>PRM ${esc(state.version)}</p>` +
-      r
+      groups()
         .map(
-          (x) =>
-            `<h2>${x.p.id} ${esc(x.p.name)}</h2><ul>${x.activities
-              .filter((a) => a.included)
-              .map((a) => `<li>☐ ${a.id}. ${esc(a.title)}</li>`)
-              .join('')}</ul>`,
+          (g) =>
+            (phased ? `<h2>${esc(g.phase ? `${String(state.phases.indexOf(g.phase) + 1).padStart(2, '0')} ${phaseName(g.phase)}` : s('tailor.unassigned'))}</h2>` : '') +
+            g.rows
+              .map(
+                (x) =>
+                  `<h3>${x.p.id} ${esc(x.p.name)}</h3><ul>${x.activities
+                    .filter((a) => a.included)
+                    .map((a) => `<li>☐ ${a.id}. ${esc(a.title)}</li>`)
+                    .join('')}</ul>`,
+              )
+              .join(''),
         )
         .join('');
     window.print();
@@ -446,6 +962,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
       isIncluded: (id) => state.selected.has(id),
       setIncluded(id, on) {
         on ? state.selected.add(id) : state.selected.delete(id);
+        syncPhases();
         renderList();
       },
       isActivityIncluded: (key) => !state.excluded.has(key),
@@ -464,13 +981,16 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     const p = version(state.version).processes.find((x) => x.id === id);
     modal.open(state.version, id, p?.name);
   });
+  openLinksInModal(figure, modal);
 
   // --- Start ------------------------------------------------------------
 
   $<HTMLInputElement>('#project').value = state.project;
+  $<HTMLTextAreaElement>('#lc-description').value = state.description;
   $<HTMLSelectElement>('#version').value = state.version;
   renderStartOptions();
   renderList();
+  showTab(state.tab);
 </script>
 
 <style>
@@ -673,5 +1193,257 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     font-size: 0.8rem;
     font-weight: 500;
     flex: none;
+  }
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .tabs [role='tab'] {
+    border: 1px solid transparent;
+    border-bottom: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 6px 14px;
+    margin-bottom: -1px;
+    font-weight: 600;
+  }
+
+  .tabs [role='tab'][aria-selected='true'] {
+    border-color: var(--ink);
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  .tabs .count {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  [role='tabpanel'][hidden] {
+    display: none;
+  }
+
+  .processes :global(.proc-tools) {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex: none;
+  }
+
+  .processes :global(.phase-select) {
+    max-width: 180px;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+  }
+
+  .lc-description {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+
+  .phase-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .phase-list :global(.phase-card) {
+    border: 1px solid var(--ink);
+    background: var(--surface);
+    padding: 10px 12px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .phase-list :global(.pc-head) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .phase-list :global(.pc-step) {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0 6px;
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  .phase-list :global(.pc-name) {
+    font-weight: 600;
+    padding: 4px 8px;
+  }
+
+  .phase-list :global(.pc-tools) {
+    display: flex;
+    gap: 4px;
+  }
+
+  .phase-list :global(.pc-tools button) {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .phase-list :global(.pc-add) {
+    justify-self: start;
+    padding: 3px 8px;
+    font-size: 0.85rem;
+  }
+
+  .phase-list :global(.pc-options) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    align-items: center;
+  }
+
+  .phase-list :global(.pc-options label) {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .phase-list :global(.pc-options select),
+  .phase-list :global(.pc-options input[type='text']) {
+    padding: 2px 6px;
+    font-size: 0.85rem;
+  }
+
+  .phase-list :global(.pc-note) {
+    flex: 1 1 260px;
+  }
+
+  .phase-list :global(.pc-note input) {
+    flex: 1;
+  }
+
+  .phase-list :global(.pc-note[hidden]) {
+    display: none;
+  }
+
+  .phase-list :global(textarea),
+  .lc-description textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    resize: vertical;
+  }
+
+  .phase-list :global(details summary) {
+    cursor: pointer;
+  }
+
+  /* Process chips that can be dragged between phases */
+  .pc-procs,
+  .phase-list :global(.pc-procs) {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    min-height: 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-content: flex-start;
+    border: 1px dashed var(--border);
+  }
+
+  #panel-phases :global(.dropzone.drop-target) {
+    border-color: var(--accent);
+    background: var(--surface-2);
+  }
+
+  #panel-phases :global(.pchip) {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    padding: 3px 4px 3px 8px;
+    border: 1px solid var(--ink);
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.25;
+    cursor: grab;
+    max-width: 100%;
+  }
+
+  #panel-phases :global(.pchip .num) {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    opacity: 0.8;
+  }
+
+  #panel-phases :global(.pchip-name) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 22ch;
+  }
+
+  #panel-phases :global(.pchip-x) {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 0 4px;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  #panel-phases :global(.pchip.dragging) {
+    opacity: 0.35;
+  }
+
+  #panel-phases :global(.pchip.drop-before) {
+    box-shadow: -4px 0 0 var(--accent);
+  }
+
+  #panel-phases :global(.dropzone.drop-end)::after {
+    content: '';
+    width: 3px;
+    align-self: stretch;
+    background: var(--accent);
+  }
+
+  #panel-phases :global(.pc-empty) {
+    align-self: center;
+    padding: 0 4px;
+  }
+
+  #panel-phases :global(.pc-empty:not(:only-child)) {
+    display: none;
+  }
+
+  .unassigned {
+    margin: 20px 0;
+  }
+
+  .unassigned h2 {
+    margin: 0 0 6px;
+  }
+
+  .preview-title {
+    font-size: 1rem;
+    margin: 20px 0 0;
+  }
+
+  #preview-section[hidden],
+  #preview[hidden] {
+    display: none;
+  }
+
+  #preview :global(.lc-diagram) {
+    margin-top: 8px;
   }
 </style>
