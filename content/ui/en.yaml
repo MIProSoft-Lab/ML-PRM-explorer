@@ -1,0 +1,225 @@
+# Interface text in English, the reference for the other languages. Each key is
+# "section.key" in the code, e.g. t('nav.processes'). Words in braces, such as
+# {n}, are filled in by the site and must be kept as they are in every language.
+# A string missing from another language is shown in English.
+
+nav:
+  processes: Processes
+  workProducts: Work products
+  lifecycles: Lifecycle models
+  tailor: Build a lifecycle
+  compare: Compare versions
+  references: References
+  admin: Admin
+  language: Language
+  version: PRM version
+  latest: Latest
+  skip: Skip to content
+  theme-dark: Switch to dark theme
+  theme-light: Switch to light theme
+home:
+  explore: Explore the processes
+  versions: Versions
+  current: current
+  superseded: superseded
+  draft: draft
+  processes: processes
+  whatYouCanDo: What you can do here
+  card-map: "Browse the process map and read each process: purpose, outcomes, activities, inputs and outputs."
+  card-flow: Follow the work products to see which process produces each input and which processes use each output.
+  card-lifecycles: See how lifecycle models arrange the processes of the PRM into phases and iterations.
+  card-tailor: "Build a custom lifecycle model for your project: choose the processes, arrange them into phases and loops, and export it."
+  card-compare: See what changed between versions of the PRM and why.
+origin:
+  standards-and-literature: Standards and literature
+  standards-only: Standards only
+  decomposed: Decomposed
+  standards-and-literature-long: Present in both the international standards and the ML literature.
+  standards-only-long: Preserved from the standards; not discussed in the reviewed literature.
+  decomposed-long: Expanded from a larger standard process to reflect the activities found in the literature.
+map:
+  title: Process map
+  search: Search processes, outcomes and activities
+  noResults: No process matches your search.
+  legend: Origin
+  activities: activities
+process:
+  sheet-process: Process
+  sheet-sheet: Sheet
+  purpose: Purpose
+  outcomes: Outcomes
+  inputs: Inputs
+  outputs: Outputs
+  activities: Activities
+  serves: Supports outcomes
+  producedBy: Produced by
+  usedBy: Used by
+  external: From outside the PRM
+  notUsed: Not used by another process
+  optional: optional
+  primaryStudies: Primary studies
+  literature: Specialized literature
+  standards: Traceability to the standards
+  standardsNote: Activities of the standards covered by this process.
+  standardsV1: Traced against the activities of {version}.
+  noStandardActivity: No counterpart in the standard
+  standard: Standard
+  standardActivity: Standard activity
+  prmActivity: PRM activity
+  changes: Changes in this version
+  changesNote: Annotations from the expert workshop and the decisions taken.
+  annotation: Annotation
+  votes: Votes
+  redVotes: red
+  yellowVotes: yellow
+  decision: Decision
+  raisedElsewhere: Raised in another process
+  otherVersions: Other versions
+  compare: Compare with {version}
+  previous: Previous process
+  next: Next process
+  outcomeServedBy: Work products that support this outcome
+  expandAll: Expand all
+  collapseAll: Collapse all
+decision:
+  adopted: Adopted
+  rejected: Rejected
+  partial: Partially adopted
+  deferred: Deferred
+change:
+  added: Added
+  updated: Updated
+  removed: Removed
+wp:
+  title: Work products
+  intro: Every input and output of the processes, with the processes that produce and use it.
+  type: Type
+  type-information-item: Information item
+  type-artifact: Artifact
+  type-record: Record
+  producers: Produced by
+  consumers: Used by
+  filter: Filter work products
+  all: All
+compare:
+  title: Compare versions
+  intro: Changes in the text of each process between two versions of the PRM.
+  from: From
+  to: To
+  unchanged: unchanged
+  changedFields: changed
+  annotations: workshop annotations
+  added: New in {version}
+  removed: Removed in {version}
+  showUnchanged: Show unchanged sections
+lc:
+  title: Lifecycle models
+  intro: The PRM defines the processes of an ML project and leaves their order and repetition to a lifecycle model. These templates arrange the processes of a PRM version into phases.
+  basedOn: Based on PRM {version}
+  phase: Phase
+  phases: Phases
+  iterative: Repeated
+  returnsTo: Returns to {phase}
+  draft: Draft
+  useInTailor: Use as the starting point for your own lifecycle model
+  notCovered: Processes not included in this lifecycle
+  empty: There are no lifecycle templates yet.
+  source: Source
+  diagram: Diagram of {name}
+  diagramDesc: "Phases in order: {phases}."
+  loops: Feedback loops
+  legendRepeated: Phase repeated before moving on
+  legendLoop: Feedback loop to an earlier phase
+  legendNext: Next phase
+  tipProcesses: "{n} processes"
+  tipReturns: Returns to {phase} ({loop})
+  tipReceives: Receives {loop} from {phase}
+  zoom: Zoom
+  zoomIn: Zoom in
+  zoomOut: Zoom out
+  zoomFit: Fit to view
+  zoomHint: Ctrl + scroll or pinch to zoom, drag to move
+tailor:
+  title: Build a lifecycle model for your project
+  intro: "Create a custom lifecycle model from the processes of the PRM: choose the processes and activities your project needs, arrange them into phases, and mark the phases that repeat and the loops back to earlier phases. The model is saved in the link, so you can share it."
+  project: Name of the lifecycle model
+  version: PRM version
+  start: Start from
+  start-all: All processes
+  start-none: No processes
+  selected: "{n} of {total} processes, {a} activities in the model"
+  missingInputs: Inputs without a producer in the model
+  missingInputsNote: These inputs of the processes in the model are produced by processes you have left out. Make sure your project gets them from somewhere else.
+  allCovered: Every input of the processes in the model is produced by another process of the model or comes from outside the PRM.
+  export: Export
+  markdown: Markdown checklist
+  csv: CSV
+  json: JSON
+  print: Print
+  copyLink: Copy link
+  copied: Link copied
+  selectAll: Select all
+  selectNone: Select none
+  rationale: Reason for leaving it out (optional)
+  excluded: Left out
+  noscript: The lifecycle builder needs JavaScript.
+  tab-processes: 1. Processes
+  tab-phases: 2. Phases
+  phases-intro: Arrange the processes of the model into phases. Drag processes between phases or choose a phase next to each process, mark the phases that are repeated, and add the loops that return to an earlier phase.
+  lcDescription: Description of the lifecycle (optional)
+  phase-name: Phase name
+  phase-new: Phase {n}
+  phase-add: Add phase
+  phase-remove: Remove phase
+  phase-up: Move phase up
+  phase-down: Move phase down
+  phase-description: Description (optional)
+  phase-returnsTo: Returns to
+  phase-noReturn: No loop
+  phase-returnNote: When it returns
+  phase-drop: Drag processes here
+  phase-addProcess: + Add process
+  phase-unassign: Remove {id} from the phase
+  phase-none: No phase
+  phase-of: Phase of {id}
+  unassigned: Processes of the model without a phase
+  unassigned-none: Every process of the model is in a phase.
+  preview: Preview
+  preview-empty: Add a phase to see the diagram of the lifecycle.
+  phases-summary: "{n} phases, {u} processes without a phase"
+  yaml: Lifecycle model (YAML)
+  yamlNote: The YAML file uses the format of the lifecycle templates, so an admin can publish your model on this site.
+  untitled: Untitled lifecycle model
+  include: Include in the lifecycle model
+modal:
+  details: Details of {name}
+  goTo: Go to process
+  close: Close
+  loading: Loading…
+  loadError: The details could not be loaded.
+tip:
+  counts: "{o} outcomes · {a} activities · {i} inputs · {u} outputs"
+  from: Takes inputs from
+  to: Feeds outputs to
+refs:
+  title: References
+  studies: Primary studies of the systematic literature review
+  literature: Specialized literature
+  citedBy: Cited by
+i18n:
+  untranslated: This content has not been translated into {language} yet. It is shown in English.
+footer:
+  thesis: Doctoral thesis
+  source: Source
+  institution: Institution
+  licence: Licence
+  links: Links
+  license: Content under CC BY 4.0 · Code under MIT
+notFound:
+  title: Page not found
+  back: Back to the home page
+language:
+  name: English
+  en: English
+  es: Spanish
+  ca: Catalan

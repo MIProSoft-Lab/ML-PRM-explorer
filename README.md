@@ -54,17 +54,18 @@ content/
     processes/<lang>/P01.yaml …     one file per process and language
     work-products.yaml              type of each work product (information item, artifact, record)
   lifecycles/<lang>/<id>.yaml       lifecycle templates
+  ui/<lang>.yaml                    interface text (menus, buttons, page texts)
 ```
 
 Text fields accept `*emphasis*` and `**bold**`.
 
-The build checks the content and stops with a message naming the file when something is inconsistent: an input that serves an outcome letter that does not exist, an activity that cites an unknown study or reference, a lifecycle that lists a process missing from its PRM version, or a translation whose outcomes, activities, inputs or outputs differ from the English file.
+The build checks the content and stops with a message naming the file when something is inconsistent: an input that serves an outcome letter that does not exist, an activity that cites an unknown study or reference, a lifecycle that lists a process missing from its PRM version, a translation whose outcomes, activities, inputs or outputs differ from the English file, or interface text that does not match `content/ui/en.yaml`.
 
 ### Translations
 
 The English files are the reference. To translate a process, copy `content/prm/v2/processes/en/P09.yaml` to `content/prm/v2/processes/es/P09.yaml` and translate the text, keeping the IDs, outcome letters, work product IDs and sources. Untranslated processes are shown in English with a notice. The admin panel shows the languages side by side and copies the fields that are not translated.
 
-Interface strings are in `src/i18n/ui.ts`.
+Interface text is in `content/ui/<lang>.yaml`, grouped by section, and can be translated from the admin panel under **Interface text**. `en.yaml` is the reference: a string missing in another language is shown in English, and the build fails if a translation has a key that English does not or changes a placeholder such as `{n}`. To add a string, add it to `en.yaml` and use it in the code as `t('section.key')`.
 
 ### New PRM version
 

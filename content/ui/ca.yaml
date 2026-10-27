@@ -1,0 +1,222 @@
+# Interface text in Catalan. Keys and {placeholders} as in en.yaml.
+
+nav:
+  processes: Processos
+  workProducts: Productes de treball
+  lifecycles: Models de cicle de vida
+  tailor: Crear un cicle de vida
+  compare: Comparar versions
+  references: Referències
+  admin: Administració
+  language: Idioma
+  version: Versió del PRM
+  latest: Darrera
+  skip: Vés al contingut
+  theme-dark: Canvia al tema fosc
+  theme-light: Canvia al tema clar
+home:
+  explore: Explora els processos
+  versions: Versions
+  current: actual
+  superseded: substituïda
+  draft: esborrany
+  processes: processos
+  whatYouCanDo: Què hi pots fer
+  card-map: "Recorre el mapa de processos i consulta cada procés: propòsit, resultats, activitats, entrades i sortides."
+  card-flow: Segueix els productes de treball per veure quin procés produeix cada entrada i quins processos fan servir cada sortida.
+  card-lifecycles: Mira com els models de cicle de vida organitzen els processos del PRM en fases i iteracions.
+  card-tailor: "Crea un model de cicle de vida a mida per al teu projecte: tria els processos, organitza'ls en fases i bucles, i exporta'l."
+  card-compare: Consulta què ha canviat entre versions del PRM i per què.
+origin:
+  standards-and-literature: Normes i literatura
+  standards-only: Només normes
+  decomposed: Descompost
+  standards-and-literature-long: Present tant a les normes internacionals com a la literatura de ML.
+  standards-only-long: Conservat de les normes; no es tracta a la literatura revisada.
+  decomposed-long: Desglossat d'un procés més ampli de les normes per reflectir les activitats de la literatura.
+map:
+  title: Mapa de processos
+  search: Cerca processos, resultats i activitats
+  noResults: Cap procés no coincideix amb la cerca.
+  legend: Origen
+  activities: activitats
+process:
+  sheet-process: Procés
+  sheet-sheet: Full
+  purpose: Propòsit
+  outcomes: Resultats
+  inputs: Entrades
+  outputs: Sortides
+  activities: Activitats
+  serves: Contribueix als resultats
+  producedBy: Produït per
+  usedBy: Usat per
+  external: Extern al PRM
+  notUsed: No el fa servir cap altre procés
+  optional: opcional
+  primaryStudies: Estudis primaris
+  literature: Literatura especialitzada
+  standards: Traçabilitat amb les normes
+  standardsNote: Activitats de les normes que cobreix aquest procés.
+  standardsV1: Traçat amb les activitats de la {version}.
+  noStandardActivity: Sense equivalent a la norma
+  standard: Norma
+  standardActivity: Activitat de la norma
+  prmActivity: Activitat del PRM
+  changes: Canvis en aquesta versió
+  changesNote: Anotacions del taller d'experts i decisions preses.
+  annotation: Anotació
+  votes: Vots
+  redVotes: vermells
+  yellowVotes: grocs
+  decision: Decisió
+  raisedElsewhere: Plantejada en un altre procés
+  otherVersions: Altres versions
+  compare: Compara amb la {version}
+  previous: Procés anterior
+  next: Procés següent
+  outcomeServedBy: Productes de treball que contribueixen a aquest resultat
+  expandAll: Desplega-ho tot
+  collapseAll: Plega-ho tot
+decision:
+  adopted: Adoptada
+  rejected: Rebutjada
+  partial: Adoptada en part
+  deferred: Ajornada
+change:
+  added: Afegit
+  updated: Modificat
+  removed: Eliminat
+wp:
+  title: Productes de treball
+  intro: Totes les entrades i sortides dels processos, amb els processos que les produeixen i les fan servir.
+  type: Tipus
+  type-information-item: Element d'informació
+  type-artifact: Artefacte
+  type-record: Registre
+  producers: Produït per
+  consumers: Usat per
+  filter: Filtra els productes de treball
+  all: Tots
+compare:
+  title: Comparar versions
+  intro: Canvis en el text de cada procés entre dues versions del PRM.
+  from: De
+  to: A
+  unchanged: sense canvis
+  changedFields: amb canvis
+  annotations: anotacions del taller
+  added: Nou a la {version}
+  removed: Eliminat a la {version}
+  showUnchanged: Mostra les seccions sense canvis
+lc:
+  title: Models de cicle de vida
+  intro: El PRM defineix els processos d'un projecte de ML i deixa el seu ordre i repetició a un model de cicle de vida. Aquestes plantilles organitzen els processos d'una versió del PRM en fases.
+  basedOn: Basat en el PRM {version}
+  phase: Fase
+  phases: Fases
+  iterative: Es repeteix
+  returnsTo: Torna a {phase}
+  draft: Esborrany
+  useInTailor: Fes-lo servir com a punt de partida per al teu propi model de cicle de vida
+  notCovered: Processos no inclosos en aquest cicle de vida
+  empty: Encara no hi ha plantilles de cicle de vida.
+  source: Font
+  diagram: Diagrama de {name}
+  diagramDesc: "Fases en ordre: {phases}."
+  loops: Bucles de retroalimentació
+  legendRepeated: Fase que es repeteix abans de continuar
+  legendLoop: Tornada a una fase anterior
+  legendNext: Fase següent
+  tipProcesses: "{n} processos"
+  tipReturns: Torna a {phase} ({loop})
+  tipReceives: Rep {loop} de {phase}
+  zoom: Zoom
+  zoomIn: Apropa
+  zoomOut: Allunya
+  zoomFit: Ajusta a la vista
+  zoomHint: Ctrl + roda o pessiga per fer zoom, arrossega per moure't
+tailor:
+  title: Crea un model de cicle de vida per al teu projecte
+  intro: "Crea un model de cicle de vida a mida a partir dels processos del PRM: tria els processos i les activitats que necessita el teu projecte, organitza'ls en fases i marca les fases que es repeteixen i els bucles que tornen a fases anteriors. El model es desa a l'enllaç, així que el pots compartir."
+  project: Nom del model de cicle de vida
+  version: Versió del PRM
+  start: Comença des de
+  start-all: Tots els processos
+  start-none: Cap procés
+  selected: "{n} de {total} processos, {a} activitats al model"
+  missingInputs: Entrades sense productor al model
+  missingInputsNote: Aquestes entrades dels processos del model les produeixen processos que has deixat fora. Assegura't que el teu projecte les obté d'un altre lloc.
+  allCovered: Totes les entrades dels processos del model les produeix un altre procés del model o vénen de fora del PRM.
+  export: Exporta
+  markdown: Llista en Markdown
+  csv: CSV
+  json: JSON
+  print: Imprimeix
+  copyLink: Copia l'enllaç
+  copied: Enllaç copiat
+  selectAll: Selecciona-ho tot
+  selectNone: No seleccionis res
+  rationale: Motiu per deixar-lo fora (opcional)
+  excluded: Fora del model
+  noscript: El creador de cicles de vida necessita JavaScript.
+  tab-processes: 1. Processos
+  tab-phases: 2. Fases
+  phases-intro: Organitza els processos del model en fases. Arrossega els processos entre fases o tria una fase al costat de cada procés, marca les fases que es repeteixen i afegeix els bucles que tornen a una fase anterior.
+  lcDescription: Descripció del cicle de vida (opcional)
+  phase-name: Nom de la fase
+  phase-new: Fase {n}
+  phase-add: Afegeix una fase
+  phase-remove: Elimina la fase
+  phase-up: Puja la fase
+  phase-down: Baixa la fase
+  phase-description: Descripció (opcional)
+  phase-returnsTo: Torna a
+  phase-noReturn: Sense bucle
+  phase-returnNote: Quan torna
+  phase-drop: Arrossega processos aquí
+  phase-addProcess: + Afegeix un procés
+  phase-unassign: Treu {id} de la fase
+  phase-none: Sense fase
+  phase-of: Fase de {id}
+  unassigned: Processos del model sense fase
+  unassigned-none: Tots els processos del model són en una fase.
+  preview: Previsualització
+  preview-empty: Afegeix una fase per veure el diagrama del cicle de vida.
+  phases-summary: "{n} fases, {u} processos sense fase"
+  yaml: Model de cicle de vida (YAML)
+  yamlNote: El fitxer YAML fa servir el format de les plantilles de cicle de vida, perquè un administrador pugui publicar el teu model en aquest lloc.
+  untitled: Model de cicle de vida sense títol
+  include: Inclou-lo al model de cicle de vida
+modal:
+  details: Detalls de {name}
+  goTo: Vés al procés
+  close: Tanca
+  loading: S'està carregant…
+  loadError: No s'han pogut carregar els detalls.
+tip:
+  counts: "{o} resultats · {a} activitats · {i} entrades · {u} sortides"
+  from: Rep entrades de
+  to: Lliura sortides a
+refs:
+  title: Referències
+  studies: Estudis primaris de la revisió sistemàtica de la literatura
+  literature: Literatura especialitzada
+  citedBy: Citat per
+i18n:
+  untranslated: Aquest contingut encara no està traduït al {language}. Es mostra en anglès.
+footer:
+  thesis: Tesi doctoral
+  source: Codi font
+  institution: Institució
+  licence: Llicència
+  links: Enllaços
+  license: Contingut sota CC BY 4.0 · Codi sota MIT
+notFound:
+  title: Pàgina no trobada
+  back: Torna a la pàgina principal
+language:
+  name: Català
+  en: anglès
+  es: castellà
+  ca: català

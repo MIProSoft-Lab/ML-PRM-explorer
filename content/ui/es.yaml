@@ -1,0 +1,222 @@
+# Interface text in Spanish. Keys and {placeholders} as in en.yaml.
+
+nav:
+  processes: Procesos
+  workProducts: Productos de trabajo
+  lifecycles: Modelos de ciclo de vida
+  tailor: Crear un ciclo de vida
+  compare: Comparar versiones
+  references: Referencias
+  admin: Administración
+  language: Idioma
+  version: Versión del PRM
+  latest: Última
+  skip: Ir al contenido
+  theme-dark: Cambiar al tema oscuro
+  theme-light: Cambiar al tema claro
+home:
+  explore: Explorar los procesos
+  versions: Versiones
+  current: actual
+  superseded: sustituida
+  draft: borrador
+  processes: procesos
+  whatYouCanDo: Qué puedes hacer aquí
+  card-map: "Recorre el mapa de procesos y consulta cada proceso: propósito, resultados, actividades, entradas y salidas."
+  card-flow: Sigue los productos de trabajo para ver qué proceso produce cada entrada y qué procesos usan cada salida.
+  card-lifecycles: Mira cómo los modelos de ciclo de vida organizan los procesos del PRM en fases e iteraciones.
+  card-tailor: "Crea un modelo de ciclo de vida a medida para tu proyecto: elige los procesos, organízalos en fases y bucles, y expórtalo."
+  card-compare: Consulta qué ha cambiado entre versiones del PRM y por qué.
+origin:
+  standards-and-literature: Normas y literatura
+  standards-only: Solo normas
+  decomposed: Descompuesto
+  standards-and-literature-long: Presente tanto en las normas internacionales como en la literatura de ML.
+  standards-only-long: Conservado de las normas; no se trata en la literatura revisada.
+  decomposed-long: Desglosado de un proceso más amplio de las normas para reflejar las actividades de la literatura.
+map:
+  title: Mapa de procesos
+  search: Buscar procesos, resultados y actividades
+  noResults: Ningún proceso coincide con la búsqueda.
+  legend: Origen
+  activities: actividades
+process:
+  sheet-process: Proceso
+  sheet-sheet: Hoja
+  purpose: Propósito
+  outcomes: Resultados
+  inputs: Entradas
+  outputs: Salidas
+  activities: Actividades
+  serves: Contribuye a los resultados
+  producedBy: Producido por
+  usedBy: Usado por
+  external: Externo al PRM
+  notUsed: No lo usa otro proceso
+  optional: opcional
+  primaryStudies: Estudios primarios
+  literature: Literatura especializada
+  standards: Trazabilidad con las normas
+  standardsNote: Actividades de las normas que cubre este proceso.
+  standardsV1: Trazado con las actividades de la {version}.
+  noStandardActivity: Sin equivalente en la norma
+  standard: Norma
+  standardActivity: Actividad de la norma
+  prmActivity: Actividad del PRM
+  changes: Cambios en esta versión
+  changesNote: Anotaciones del taller de expertos y decisiones tomadas.
+  annotation: Anotación
+  votes: Votos
+  redVotes: rojos
+  yellowVotes: amarillos
+  decision: Decisión
+  raisedElsewhere: Planteada en otro proceso
+  otherVersions: Otras versiones
+  compare: Comparar con la {version}
+  previous: Proceso anterior
+  next: Proceso siguiente
+  outcomeServedBy: Productos de trabajo que contribuyen a este resultado
+  expandAll: Desplegar todo
+  collapseAll: Plegar todo
+decision:
+  adopted: Adoptada
+  rejected: Rechazada
+  partial: Adoptada en parte
+  deferred: Aplazada
+change:
+  added: Añadido
+  updated: Modificado
+  removed: Eliminado
+wp:
+  title: Productos de trabajo
+  intro: Todas las entradas y salidas de los procesos, con los procesos que las producen y las usan.
+  type: Tipo
+  type-information-item: Elemento de información
+  type-artifact: Artefacto
+  type-record: Registro
+  producers: Producido por
+  consumers: Usado por
+  filter: Filtrar productos de trabajo
+  all: Todos
+compare:
+  title: Comparar versiones
+  intro: Cambios en el texto de cada proceso entre dos versiones del PRM.
+  from: De
+  to: A
+  unchanged: sin cambios
+  changedFields: con cambios
+  annotations: anotaciones del taller
+  added: Nuevo en la {version}
+  removed: Eliminado en la {version}
+  showUnchanged: Mostrar las secciones sin cambios
+lc:
+  title: Modelos de ciclo de vida
+  intro: El PRM define los procesos de un proyecto de ML y deja su orden y repetición a un modelo de ciclo de vida. Estas plantillas organizan los procesos de una versión del PRM en fases.
+  basedOn: Basado en el PRM {version}
+  phase: Fase
+  phases: Fases
+  iterative: Se repite
+  returnsTo: Vuelve a {phase}
+  draft: Borrador
+  useInTailor: Usar como punto de partida para tu propio modelo de ciclo de vida
+  notCovered: Procesos no incluidos en este ciclo de vida
+  empty: Todavía no hay plantillas de ciclo de vida.
+  source: Fuente
+  diagram: Diagrama de {name}
+  diagramDesc: "Fases en orden: {phases}."
+  loops: Bucles de retroalimentación
+  legendRepeated: Fase que se repite antes de continuar
+  legendLoop: Vuelta a una fase anterior
+  legendNext: Fase siguiente
+  tipProcesses: "{n} procesos"
+  tipReturns: Vuelve a {phase} ({loop})
+  tipReceives: Recibe {loop} de {phase}
+  zoom: Zoom
+  zoomIn: Acercar
+  zoomOut: Alejar
+  zoomFit: Ajustar a la vista
+  zoomHint: Ctrl + rueda o pellizca para hacer zoom, arrastra para moverte
+tailor:
+  title: Crea un modelo de ciclo de vida para tu proyecto
+  intro: "Crea un modelo de ciclo de vida a medida a partir de los procesos del PRM: elige los procesos y actividades que necesita tu proyecto, organízalos en fases y marca las fases que se repiten y los bucles que vuelven a fases anteriores. El modelo se guarda en el enlace, así que puedes compartirlo."
+  project: Nombre del modelo de ciclo de vida
+  version: Versión del PRM
+  start: Empezar desde
+  start-all: Todos los procesos
+  start-none: Ningún proceso
+  selected: "{n} de {total} procesos, {a} actividades en el modelo"
+  missingInputs: Entradas sin productor en el modelo
+  missingInputsNote: Estas entradas de los procesos del modelo las producen procesos que has dejado fuera. Asegúrate de que tu proyecto las obtiene de otro lugar.
+  allCovered: Todas las entradas de los procesos del modelo las produce otro proceso del modelo o vienen de fuera del PRM.
+  export: Exportar
+  markdown: Lista en Markdown
+  csv: CSV
+  json: JSON
+  print: Imprimir
+  copyLink: Copiar enlace
+  copied: Enlace copiado
+  selectAll: Seleccionar todo
+  selectNone: No seleccionar nada
+  rationale: Motivo para dejarlo fuera (opcional)
+  excluded: Fuera del modelo
+  noscript: El creador de ciclos de vida necesita JavaScript.
+  tab-processes: 1. Procesos
+  tab-phases: 2. Fases
+  phases-intro: Organiza los procesos del modelo en fases. Arrastra los procesos entre fases o elige una fase junto a cada proceso, marca las fases que se repiten y añade los bucles que vuelven a una fase anterior.
+  lcDescription: Descripción del ciclo de vida (opcional)
+  phase-name: Nombre de la fase
+  phase-new: Fase {n}
+  phase-add: Añadir fase
+  phase-remove: Eliminar fase
+  phase-up: Subir fase
+  phase-down: Bajar fase
+  phase-description: Descripción (opcional)
+  phase-returnsTo: Vuelve a
+  phase-noReturn: Sin bucle
+  phase-returnNote: Cuándo vuelve
+  phase-drop: Arrastra procesos aquí
+  phase-addProcess: + Añadir proceso
+  phase-unassign: Quitar {id} de la fase
+  phase-none: Sin fase
+  phase-of: Fase de {id}
+  unassigned: Procesos del modelo sin fase
+  unassigned-none: Todos los procesos del modelo están en una fase.
+  preview: Vista previa
+  preview-empty: Añade una fase para ver el diagrama del ciclo de vida.
+  phases-summary: "{n} fases, {u} procesos sin fase"
+  yaml: Modelo de ciclo de vida (YAML)
+  yamlNote: El archivo YAML usa el formato de las plantillas de ciclo de vida, para que un administrador pueda publicar tu modelo en este sitio.
+  untitled: Modelo de ciclo de vida sin título
+  include: Incluir en el modelo de ciclo de vida
+modal:
+  details: Detalles de {name}
+  goTo: Ir al proceso
+  close: Cerrar
+  loading: Cargando…
+  loadError: No se han podido cargar los detalles.
+tip:
+  counts: "{o} resultados · {a} actividades · {i} entradas · {u} salidas"
+  from: Recibe entradas de
+  to: Entrega salidas a
+refs:
+  title: Referencias
+  studies: Estudios primarios de la revisión sistemática de la literatura
+  literature: Literatura especializada
+  citedBy: Citado por
+i18n:
+  untranslated: Este contenido todavía no está traducido al {language}. Se muestra en inglés.
+footer:
+  thesis: Tesis doctoral
+  source: Código fuente
+  institution: Institución
+  licence: Licencia
+  links: Enlaces
+  license: Contenido bajo CC BY 4.0 · Código bajo MIT
+notFound:
+  title: Página no encontrada
+  back: Volver a la página principal
+language:
+  name: Español
+  en: inglés
+  es: español
+  ca: catalán

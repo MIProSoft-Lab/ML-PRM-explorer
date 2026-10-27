@@ -50,30 +50,31 @@ const keys: UiKey[] = [
   'tailor.copyLink',
   'tailor.rationale',
   'tailor.excluded',
-  'tailor.start.all',
-  'tailor.start.none',
+  'tailor.start-all',
+  'tailor.start-none',
   'tailor.project',
   'tailor.version',
   'process.activities',
   'process.producedBy',
   'nav.lifecycles',
   'modal.details',
-  'tailor.phase.new',
-  'tailor.phase.name',
-  'tailor.phase.up',
-  'tailor.phase.down',
-  'tailor.phase.remove',
-  'tailor.phase.description',
-  'tailor.phase.returnsTo',
-  'tailor.phase.noReturn',
-  'tailor.phase.returnNote',
-  'tailor.phase.drop',
-  'tailor.phase.addProcess',
-  'tailor.phase.unassign',
-  'tailor.phase.none',
-  'tailor.phase.of',
-  'tailor.unassigned.none',
-  'tailor.phases.summary',
+  'tailor.phase-new',
+  'tailor.phase-name',
+  'tailor.phase-up',
+  'tailor.phase-down',
+  'tailor.phase-remove',
+  'tailor.phase-description',
+  'tailor.phase-returnsTo',
+  'tailor.phase-noReturn',
+  'tailor.phase-returnNote',
+  'tailor.phase-drop',
+  'tailor.phase-addProcess',
+  'tailor.phase-unassign',
+  'tailor.phase-none',
+  'tailor.phase-of',
+  'tailor.unassigned',
+  'tailor.unassigned-none',
+  'tailor.phases-summary',
   'tailor.untitled',
   'lc.iterative',
   'lc.diagram',
@@ -116,10 +117,10 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     <section class="no-print">
       <div class="tabs" role="tablist">
         <button type="button" role="tab" id="tab-processes" data-tab="processes" aria-controls="panel-processes" aria-selected="true">
-          {t('tailor.tab.processes')}
+          {t('tailor.tab-processes')}
         </button>
         <button type="button" role="tab" id="tab-phases" data-tab="phases" aria-controls="panel-phases" aria-selected="false" tabindex="-1">
-          {t('tailor.tab.phases')} <span id="phase-count" class="count"></span>
+          {t('tailor.tab-phases')} <span id="phase-count" class="count"></span>
         </button>
       </div>
 
@@ -132,13 +133,13 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
       </div>
 
       <div id="panel-phases" role="tabpanel" aria-labelledby="tab-phases" hidden>
-        <p class="small muted prose">{t('tailor.phases.intro')}</p>
+        <p class="small muted prose">{t('tailor.phases-intro')}</p>
         <label class="lc-description">
           <span class="small muted">{t('tailor.lcDescription')}</span>
           <textarea id="lc-description" rows="2"></textarea>
         </label>
         <ol id="phases" class="phase-list"></ol>
-        <p><button type="button" id="add-phase">+ {t('tailor.phase.add')}</button></p>
+        <p><button type="button" id="add-phase">+ {t('tailor.phase-add')}</button></p>
         <section class="unassigned">
           <h2 class="label">{t('tailor.unassigned')}</h2>
           <ul id="unassigned" class="pc-procs dropzone" data-drop=""></ul>
@@ -169,7 +170,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 
   <section id="preview-section" class="no-print" hidden>
     <h2 class="preview-title">{t('tailor.preview')}</h2>
-    <p id="preview-empty" class="muted small">{t('tailor.preview.empty')}</p>
+    <p id="preview-empty" class="muted small">{t('tailor.preview-empty')}</p>
     <div id="preview">
       <LifecycleDiagram locale={locale} />
     </div>
@@ -364,15 +365,15 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
   const procOf = (id: string) => version(state.version).processes.find((p) => p.id === id);
   const phaseOf = (id: string) => state.phases.find((p) => p.processes.includes(id));
   const unassigned = () => version(state.version).processes.filter((p) => state.selected.has(p.id) && !phaseOf(p.id));
-  const phaseLabel = (p: Phase, i: number) => `${String(i + 1).padStart(2, '0')} ${p.name || s('tailor.phase.new', { n: i + 1 })}`;
+  const phaseLabel = (p: Phase, i: number) => `${String(i + 1).padStart(2, '0')} ${p.name || s('tailor.phase-new', { n: i + 1 })}`;
 
   function phaseSelect(id: string) {
     if (!state.phases.length || !state.selected.has(id)) return '';
     const current = phaseOf(id)?.id ?? '';
-    const options = [`<option value="">${esc(s('tailor.phase.none'))}</option>`]
+    const options = [`<option value="">${esc(s('tailor.phase-none'))}</option>`]
       .concat(state.phases.map((p, i) => `<option value="${esc(p.id)}" ${p.id === current ? 'selected' : ''}>${esc(phaseLabel(p, i))}</option>`))
       .join('');
-    return `<select class="phase-select" data-phase-of="${id}" aria-label="${esc(s('tailor.phase.of', { id }))}">${options}</select>`;
+    return `<select class="phase-select" data-phase-of="${id}" aria-label="${esc(s('tailor.phase-of', { id }))}">${options}</select>`;
   }
 
   function renderList() {
@@ -407,7 +408,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     if (!p) return '';
     return `<li class="pchip origin-${p.origin}" draggable="true" data-pid="${id}" data-from="${esc(from)}" data-hover-process="${id}" data-hover-version="${state.version}">
       <span class="num">${id}</span><span class="pchip-name">${esc(p.name)}</span>
-      ${from ? `<button type="button" class="pchip-x" data-unassign="${id}" data-from="${esc(from)}" aria-label="${esc(s('tailor.phase.unassign', { id }))}">×</button>` : ''}
+      ${from ? `<button type="button" class="pchip-x" data-unassign="${id}" data-from="${esc(from)}" aria-label="${esc(s('tailor.phase-unassign', { id }))}">×</button>` : ''}
     </li>`;
   };
 
@@ -419,35 +420,35 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
           .map((o, k) => (o.id === p.id ? '' : `<option value="${esc(o.id)}" ${o.id === p.returnsTo ? 'selected' : ''}>${esc(phaseLabel(o, k))}</option>`))
           .join('');
         const add = free.length
-          ? `<select class="pc-add" data-add-to="${esc(p.id)}"><option value="">${esc(s('tailor.phase.addProcess'))}</option>${free
+          ? `<select class="pc-add" data-add-to="${esc(p.id)}"><option value="">${esc(s('tailor.phase-addProcess'))}</option>${free
               .map((f) => `<option value="${f.id}">${f.id} ${esc(f.name)}</option>`)
               .join('')}</select>`
           : '';
         return `<li class="phase-card" data-phase="${esc(p.id)}">
           <div class="pc-head">
             <span class="pc-step">${String(i + 1).padStart(2, '0')}</span>
-            <input type="text" class="pc-name" data-field="name" value="${esc(p.name)}" placeholder="${esc(s('tailor.phase.new', { n: i + 1 }))}" aria-label="${esc(s('tailor.phase.name'))}">
+            <input type="text" class="pc-name" data-field="name" value="${esc(p.name)}" placeholder="${esc(s('tailor.phase-new', { n: i + 1 }))}" aria-label="${esc(s('tailor.phase-name'))}">
             <span class="pc-tools">
-              <button type="button" data-move="-1" ${i === 0 ? 'disabled' : ''} aria-label="${esc(s('tailor.phase.up'))}" title="${esc(s('tailor.phase.up'))}">↑</button>
-              <button type="button" data-move="1" ${i === state.phases.length - 1 ? 'disabled' : ''} aria-label="${esc(s('tailor.phase.down'))}" title="${esc(s('tailor.phase.down'))}">↓</button>
-              <button type="button" data-remove aria-label="${esc(s('tailor.phase.remove'))}" title="${esc(s('tailor.phase.remove'))}">✕</button>
+              <button type="button" data-move="-1" ${i === 0 ? 'disabled' : ''} aria-label="${esc(s('tailor.phase-up'))}" title="${esc(s('tailor.phase-up'))}">↑</button>
+              <button type="button" data-move="1" ${i === state.phases.length - 1 ? 'disabled' : ''} aria-label="${esc(s('tailor.phase-down'))}" title="${esc(s('tailor.phase-down'))}">↓</button>
+              <button type="button" data-remove aria-label="${esc(s('tailor.phase-remove'))}" title="${esc(s('tailor.phase-remove'))}">✕</button>
             </span>
           </div>
-          <ul class="pc-procs dropzone" data-drop="${esc(p.id)}">${p.processes.map((id) => chip(id, p.id)).join('') || `<li class="pc-empty small muted">${esc(s('tailor.phase.drop'))}</li>`}</ul>
+          <ul class="pc-procs dropzone" data-drop="${esc(p.id)}">${p.processes.map((id) => chip(id, p.id)).join('') || `<li class="pc-empty small muted">${esc(s('tailor.phase-drop'))}</li>`}</ul>
           ${add}
           <div class="pc-options small">
             <label><input type="checkbox" data-field="iterative" ${p.iterative ? 'checked' : ''}> ↻ ${esc(s('lc.iterative'))}</label>
-            <label>↩ ${esc(s('tailor.phase.returnsTo'))}
-              <select data-field="returnsTo"><option value="">${esc(s('tailor.phase.noReturn'))}</option>${others}</select></label>
-            <label class="pc-note" ${p.returnsTo ? '' : 'hidden'}>${esc(s('tailor.phase.returnNote'))}
+            <label>↩ ${esc(s('tailor.phase-returnsTo'))}
+              <select data-field="returnsTo"><option value="">${esc(s('tailor.phase-noReturn'))}</option>${others}</select></label>
+            <label class="pc-note" ${p.returnsTo ? '' : 'hidden'}>${esc(s('tailor.phase-returnNote'))}
               <input type="text" data-field="returnNote" value="${esc(p.returnNote)}"></label>
           </div>
-          <details class="small" ${p.description ? 'open' : ''}><summary class="muted">${esc(s('tailor.phase.description'))}</summary>
+          <details class="small" ${p.description ? 'open' : ''}><summary class="muted">${esc(s('tailor.phase-description'))}</summary>
             <textarea data-field="description" rows="2">${esc(p.description)}</textarea></details>
         </li>`;
       })
       .join('');
-    unassignedList.innerHTML = free.map((p) => chip(p.id, '')).join('') || `<li class="pc-empty small muted">${esc(s('tailor.unassigned.none'))}</li>`;
+    unassignedList.innerHTML = free.map((p) => chip(p.id, '')).join('') || `<li class="pc-empty small muted">${esc(s('tailor.unassigned-none'))}</li>`;
     $('#phase-count').textContent = state.phases.length ? `(${state.phases.length})` : '';
     renderPreview();
     renderSummary();
@@ -466,7 +467,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
         procHref: (id) => `${data.base}${v}/processes/${id}/`,
         phases: state.phases.map((p, i) => ({
           ...p,
-          name: p.name || s('tailor.phase.new', { n: i + 1 }),
+          name: p.name || s('tailor.phase-new', { n: i + 1 }),
           procs: p.processes.map(procOf).filter((x): x is Proc => !!x),
         })),
       },
@@ -501,7 +502,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     $('#summary').textContent = s('tailor.selected', { n: state.selected.size, total: v.processes.length, a: acts });
     const phaseSummary = $('#phase-summary');
     phaseSummary.hidden = !state.phases.length;
-    phaseSummary.textContent = s('tailor.phases.summary', { n: state.phases.length, u: unassigned().length });
+    phaseSummary.textContent = s('tailor.phases-summary', { n: state.phases.length, u: unassigned().length });
     $<HTMLButtonElement>('#export-yaml').disabled = !state.phases.length;
     for (const p of v.processes) {
       const el = list.querySelector(`[data-count="${p.id}"]`);
@@ -525,7 +526,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
   function renderStartOptions() {
     const lcs = data.lifecycles.filter((l) => l.version === state.version);
     $<HTMLSelectElement>('#start').innerHTML =
-      `<option value="">—</option><option value="all">${s('tailor.start.all')}</option><option value="none">${s('tailor.start.none')}</option>` +
+      `<option value="">—</option><option value="all">${s('tailor.start-all')}</option><option value="none">${s('tailor.start-none')}</option>` +
       (lcs.length ? `<optgroup label="${esc(s('nav.lifecycles'))}">${lcs.map((l) => `<option value="lc:${l.id}">${esc(l.name)}</option>`).join('')}</optgroup>` : '');
   }
 
@@ -790,7 +791,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     }));
   }
 
-  const phaseName = (p: Phase) => p.name || s('tailor.phase.new', { n: state.phases.indexOf(p) + 1 });
+  const phaseName = (p: Phase) => p.name || s('tailor.phase-new', { n: state.phases.indexOf(p) + 1 });
 
   /** The included processes grouped by phase, in lifecycle order; those without a phase come last. */
   function groups() {
@@ -814,7 +815,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
         out += ph ? `## ${String(state.phases.indexOf(ph) + 1).padStart(2, '0')} ${phaseName(ph)}${ph.iterative ? ` (↻ ${s('lc.iterative')})` : ''}\n\n` : `## ${s('tailor.unassigned')}\n\n`;
         if (ph?.description) out += `${ph.description}\n\n`;
         const back = ph?.returnsTo && state.phases.find((x) => x.id === ph.returnsTo);
-        if (back) out += `↩ ${s('tailor.phase.returnsTo')} ${phaseName(back)}${ph!.returnNote ? `: ${ph!.returnNote}` : ''}\n\n`;
+        if (back) out += `↩ ${s('tailor.phase-returnsTo')} ${phaseName(back)}${ph!.returnNote ? `: ${ph!.returnNote}` : ''}\n\n`;
       }
       for (const x of g.rows) {
         out += `${phased ? '###' : '##'} ${x.p.id} ${x.p.name}\n\n${x.p.purpose}\n\n`;

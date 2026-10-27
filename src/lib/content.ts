@@ -3,7 +3,7 @@
 // message that names the file and the field.
 import { z } from 'astro/zod';
 import { parse } from 'yaml';
-import { defaultLocale, locales, type Locale } from '../i18n/ui';
+import { defaultLocale, locales, validateUi, type Locale } from '../i18n/ui';
 
 const files = import.meta.glob<string>('/content/**/*.yaml', {
   query: '?raw',
@@ -289,7 +289,7 @@ export function getWorkProducts(version: string, locale: Locale): WorkProduct[] 
 
 /** Cross-reference checks the schemas cannot express. Returns error messages. */
 export function validate(): string[] {
-  const errors: string[] = [];
+  const errors: string[] = validateUi();
   const studyIds = new Set(studies.map((s) => s.id));
   const refKeys = new Set(references.map((r) => r.key));
   if (!versions.some((v) => v.id === defaultVersion)) errors.push(`versions.yaml: default version ${defaultVersion} does not exist`);

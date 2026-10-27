@@ -15,6 +15,9 @@ const v = getVersion(version);
 
 const wps = new Map(getWorkProducts(version, locale).map((w) => [w.id, w]));
 const name = (pid: string) => getProcess(version, pid, locale).data.name;
+// Workshop decisions with a label; anything else, such as "–", is shown as written.
+const decisions = ['adopted', 'partial', 'rejected', 'deferred'];
+const decisionLabel = (d: string) => (decisions.includes(d) ? t(`decision.${d}`) : d);
 
 // Traceability lives in the version that was traced against the standards.
 const traced = p.standards
@@ -69,7 +72,7 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
 
   <dl class="sheet title-block">
     <div>
-      <dt class="label">{t('process.sheet.process')}</dt>
+      <dt class="label">{t('process.sheet-process')}</dt>
       <dd class="mono">{p.id}</dd>
     </div>
     <div>
@@ -78,10 +81,10 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
     </div>
     <div>
       <dt class="label">{t('map.legend')}</dt>
-      <dd><span class={`badge origin-${p.origin}`} title={t(`origin.${p.origin}.long`)}>{t(`origin.${p.origin}`)}</span></dd>
+      <dd><span class={`badge origin-${p.origin}`} title={t(`origin.${p.origin}-long`)}>{t(`origin.${p.origin}`)}</span></dd>
     </div>
     <div>
-      <dt class="label">{t('process.sheet.sheet')}</dt>
+      <dt class="label">{t('process.sheet-sheet')}</dt>
       <dd class="mono">{String(i + 1).padStart(2, '0')} / {String(ids.length).padStart(2, '0')}</dd>
     </div>
     {
@@ -171,7 +174,7 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
                         )}
                       </div>
                       <div class="io-tags">
-                        {wp && <span class="badge">{t(`wp.type.${wp.type}`)}</span>}
+                        {wp && <span class="badge">{t(`wp.type-${wp.type}`)}</span>}
                         {io.optional && <span class="badge">{t('process.optional')}</span>}
                       </div>
                       {io.description && <p class="io-desc" set:html={inline(io.description)} />}
@@ -331,7 +334,7 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
                 <li>
                   <div class="change-head">
                     <strong class="mono">{c.annotation}</strong>
-                    <span class={`badge decision-${c.decision.replace(/\s+/g, '-')}`}>{t(`decision.${c.decision}` as any) ?? c.decision}</span>
+                    <span class={`badge decision-${c.decision.replace(/\s+/g, '-')}`}>{decisionLabel(c.decision)}</span>
                     {c.raisedElsewhere && <span class="badge">{t('process.raisedElsewhere')}</span>}
                     {(c.redVotes != null || c.yellowVotes != null) && (
                       <span class="votes small muted">

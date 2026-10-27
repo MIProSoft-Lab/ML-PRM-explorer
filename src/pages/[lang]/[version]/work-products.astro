@@ -24,7 +24,7 @@ const types = ['information-item', 'artifact', 'record'] as const;
     <input id="q" type="search" placeholder={t('wp.filter')} autocomplete="off" />
     <div class="pills" role="group" aria-label={t('wp.type')}>
       <button type="button" data-type="" aria-pressed="true">{t('wp.all')}</button>
-      {types.map((ty) => <button type="button" data-type={ty} aria-pressed="false">{t(`wp.type.${ty}`)}</button>)}
+      {types.map((ty) => <button type="button" data-type={ty} aria-pressed="false">{t(`wp.type-${ty}`)}</button>)}
     </div>
   </div>
 
@@ -46,7 +46,7 @@ const types = ['information-item', 'artifact', 'record'] as const;
                 <strong>{w.name}</strong>
               </td>
               <td>
-                <span class="badge">{t(`wp.type.${w.type}`)}</span>
+                <span class="badge">{t(`wp.type-${w.type}`)}</span>
               </td>
               <td>
                 {w.producers.length ? (

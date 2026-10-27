@@ -1,7 +1,7 @@
 // Sveltia CMS configuration, generated so that every PRM version in
 // content/versions.yaml gets its own collections in the admin panel.
 import type { APIRoute } from 'astro';
-import { stringify } from 'yaml';
+import { parse, stringify } from 'yaml';
 import { versions } from '../../lib/content';
 import { locales, defaultLocale } from '../../i18n/ui';
 
@@ -94,7 +94,7 @@ const processFields = [
       { name: 'text', label: 'Annotation', widget: 'text', ...tr },
       { name: 'redVotes', label: 'Red votes', widget: 'number', value_type: 'int', required: false, ...dup },
       { name: 'yellowVotes', label: 'Yellow votes', widget: 'number', value_type: 'int', required: false, ...dup },
-      { name: 'decision', label: 'Decision', widget: 'select', options: ['adopted', 'partially adopted', 'rejected', 'deferred'], ...dup },
+      { name: 'decision', label: 'Decision', widget: 'select', options: ['adopted', 'partial', 'rejected', 'deferred', '–'], ...dup },
       {
         name: 'changes',
         label: 'Changes made',
@@ -110,6 +110,44 @@ const processFields = [
     ],
   },
 ];
+
+// Interface text: one group per section of content/ui/en.yaml, so a string
+// added there shows up here without changing this file.
+const uiFile = import.meta.glob<string>('/content/ui/en.yaml', { query: '?raw', import: 'default', eager: true })['/content/ui/en.yaml'];
+const sectionLabels: Record<string, string> = {
+  nav: 'Navigation and header',
+  home: 'Home page',
+  origin: 'Process origins',
+  map: 'Process map',
+  process: 'Process page',
+  decision: 'Workshop decisions',
+  change: 'Workshop changes',
+  wp: 'Work products',
+  compare: 'Compare versions',
+  lc: 'Lifecycle models',
+  tailor: 'Lifecycle builder',
+  modal: 'Process details window',
+  tip: 'Process hover card',
+  refs: 'References',
+  i18n: 'Translation notice',
+  footer: 'Footer',
+  notFound: 'Page not found',
+  language: 'Language names',
+};
+const uiFields = Object.entries(parse(uiFile) as Record<string, Record<string, string>>).map(([section, strings]) => ({
+  name: section,
+  label: sectionLabels[section] ?? section,
+  widget: 'object',
+  collapsed: true,
+  ...tr,
+  fields: Object.entries(strings).map(([key, text]) => ({
+    name: key,
+    label: key,
+    widget: text.length > 70 ? 'text' : 'string',
+    required: false,
+    ...tr,
+  })),
+}));
 
 const lifecycleFields = [
   { name: 'id', label: 'ID', widget: 'string', hint: 'Lowercase with hyphens; also the file name.', ...dup },
@@ -184,6 +222,14 @@ export const GET: APIRoute = () => {
         create: true,
         i18n: true,
         fields: lifecycleFields,
+      },
+      {
+        name: 'interface',
+        label: 'Interface text',
+        description: 'Menus, buttons and page texts of the site. Words in braces, such as {n}, are filled in by the site: keep them as they are. A text left empty is shown in English.',
+        format: 'yaml',
+        i18n: true,
+        files: [{ name: 'strings', label: 'Interface text', file: 'content/ui/{{locale}}.yaml', i18n: true, fields: uiFields }],
       },
       {
         name: 'settings',
