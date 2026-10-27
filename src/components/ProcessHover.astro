@@ -1,0 +1,188 @@
+---
+// Card with a summary of a process, shown when the pointer rests on, or the
+// keyboard focuses, anything that leads to a process: links to a process page
+// and elements marked with data-process or data-hover-process plus the matching
+// data-version or data-hover-version. Included once, by the layout.
+import { useTranslations, href, type Locale, type UiKey } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const keys: UiKey[] = [
+  'modal.loading',
+  'tip.counts',
+  'tip.from',
+  'tip.to',
+  'origin.standards-and-literature',
+  'origin.standards-only',
+  'origin.decomposed',
+];
+const strings = JSON.stringify(Object.fromEntries(keys.map((k) => [k, t(k)])));
+---
+
+<div id="process-hover" class="process-hover" role="tooltip" hidden data-base={href(locale)} data-strings={strings}>
+  <div class="ph-head">
+    <span class="ph-id num"></span>
+    <strong class="ph-name"></strong>
+  </div>
+  <div class="ph-body"></div>
+</div>
+
+<script>
+  import { load } from '../lib/process-modal';
+
+  const card = document.getElementById('process-hover')!;
+  const body = card.querySelector<HTMLElement>('.ph-body')!;
+  const base = card.dataset.base!;
+  const strings = JSON.parse(card.dataset.strings!) as Record<string, string>;
+  const s = (k: string, vars: Record<string, string | number> = {}) =>
+    Object.entries(vars).reduce((acc, [key, v]) => acc.replace(`{${key}}`, String(v)), strings[k] ?? k);
+  const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  const selector = 'a[href*="/processes/"], [data-process][data-version], [data-hover-process][data-hover-version]';
+  const processHref = /\/([^/]+)\/processes\/(P\d+)\/?(?:[?#].*)?$/;
+
+  /** The version and process an element leads to, if any. */
+  function target(el: Element | null) {
+    const link = el?.closest<HTMLElement>(selector);
+    // The lifecycle diagram shows its own tooltip on its processes.
+    if (!link || link.closest('[data-tip-title], .process-modal')) return null;
+    const { process, version, hoverProcess, hoverVersion } = link.dataset;
+    if (process && version) return { link, version, id: process };
+    if (hoverProcess && hoverVersion) return { link, version: hoverVersion, id: hoverProcess };
+    const m = link.getAttribute('href')?.match(processHref);
+    return m ? { link, version: m[1], id: m[2] } : null;
+  }
+
+  let current: HTMLElement | null = null;
+  let timer = 0;
+
+  /** Place the card below the element, or above it when there is no room. */
+  function place(link: HTMLElement) {
+    const a = link.getBoundingClientRect();
+    const r = card.getBoundingClientRect();
+    const below = a.bottom + 8 + r.height <= innerHeight - 8;
+    const top = below ? a.bottom + 8 : Math.max(8, a.top - 8 - r.height);
+    const left = Math.min(Math.max(8, a.left), innerWidth - r.width - 8);
+    card.style.top = `${top}px`;
+    card.style.left = `${left}px`;
+  }
+
+  const list = (label: string, ids: string[]) =>
+    ids.length ? `<p class="ph-links"><span class="label">${label}</span> ${ids.map((id) => `<span class="chip"><span class="num">${id}</span></span>`).join(' ')}</p>` : '';
+
+  async function show(link: HTMLElement, version: string, id: string) {
+    current = link;
+    card.querySelector('.ph-id')!.textContent = id;
+    card.querySelector('.ph-name')!.textContent = '';
+    body.innerHTML = `<p class="muted">${s('modal.loading')}</p>`;
+    card.hidden = false;
+    place(link);
+    let d;
+    try {
+      d = (await load(base, version)).find((x) => x.id === id);
+    } catch {}
+    if (current !== link) return;
+    if (!d) return hide();
+    const from = [...new Set(d.inputs.flatMap((i) => i.producers))].filter((p) => p !== id).sort();
+    const to = [...new Set(d.outputs.flatMap((o) => o.consumers))].sort();
+    card.querySelector('.ph-name')!.textContent = d.name;
+    body.innerHTML = `
+      <p><span class="badge origin-${d.origin}">${esc(s(`origin.${d.origin}`))}</span> <span class="num">${esc(version)}</span></p>
+      <p class="ph-purpose">${d.purpose}</p>
+      <p class="ph-counts small muted">${esc(s('tip.counts', { o: d.outcomes.length, a: d.activities.length, i: d.inputs.length, u: d.outputs.length }))}</p>
+      ${list(s('tip.from'), from)}
+      ${list(s('tip.to'), to)}`;
+    place(link);
+  }
+
+  function hide() {
+    clearTimeout(timer);
+    current = null;
+    card.hidden = true;
+  }
+
+  document.addEventListener('pointerover', (e) => {
+    if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+    const t = target(e.target as Element);
+    if (t?.link === current) return;
+    clearTimeout(timer);
+    if (!t) return hide();
+    // Wait for the pointer to rest, so moving across a list does not flash cards.
+    timer = window.setTimeout(() => show(t.link, t.version, t.id), current ? 80 : 350);
+  });
+  document.addEventListener('pointerout', (e) => {
+    const to = e.relatedTarget as Element | null;
+    if (current && to && current.contains(to)) return;
+    if (!target(to)) hide();
+  });
+  document.addEventListener('focusin', (e) => {
+    const t = target(e.target as Element);
+    if (!t || !(e.target as HTMLElement).matches(':focus-visible')) return;
+    clearTimeout(timer);
+    show(t.link, t.version, t.id);
+  });
+  document.addEventListener('focusout', hide);
+  document.addEventListener('pointerdown', hide);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hide();
+  });
+  addEventListener('scroll', hide, { passive: true, capture: true });
+</script>
+
+<style>
+  .process-hover {
+    position: fixed;
+    z-index: 30;
+    width: min(360px, calc(100vw - 16px));
+    padding: 10px 12px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    pointer-events: none;
+  }
+
+  .process-hover[hidden] {
+    display: none;
+  }
+
+  .ph-head {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+
+  .ph-body :global(p) {
+    margin: 0 0 6px;
+  }
+
+  .ph-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .ph-body :global(.ph-purpose) {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .ph-body :global(.ph-links) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .ph-body :global(.ph-links .label) {
+    margin-right: 2px;
+  }
+</style>

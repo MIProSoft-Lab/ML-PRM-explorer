@@ -51,7 +51,7 @@ const types = ['information-item', 'artifact', 'record'] as const;
                 {w.producers.length ? (
                   <span class="chips">
                     {w.producers.map((l) => (
-                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#output-${w.id}`} title={name(l.process)}>
+                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#output-${w.id}`}>
                         <span class="num">{l.process}</span>
                         {name(l.process)}
                       </a>
@@ -65,7 +65,7 @@ const types = ['information-item', 'artifact', 'record'] as const;
                 {w.consumers.length ? (
                   <span class="chips">
                     {w.consumers.map((l) => (
-                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#input-${w.id}`} title={name(l.process)}>
+                      <a class="chip" href={`${href(locale, version, 'processes', l.process)}#input-${w.id}`}>
                         <span class="num">{l.process}</span>
                         {name(l.process)}
                       </a>

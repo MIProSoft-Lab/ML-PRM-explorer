@@ -173,6 +173,9 @@ const en = {
   'modal.close': 'Close',
   'modal.loading': 'Loading…',
   'modal.loadError': 'The details could not be loaded.',
+  'tip.counts': '{o} outcomes · {a} activities · {i} inputs · {u} outputs',
+  'tip.from': 'Takes inputs from',
+  'tip.to': 'Feeds outputs to',
 
   'refs.title': 'References',
   'refs.studies': 'Primary studies of the systematic literature review',
@@ -356,6 +359,9 @@ const es: Partial<Record<UiKey, string>> = {
   'modal.close': 'Cerrar',
   'modal.loading': 'Cargando…',
   'modal.loadError': 'No se han podido cargar los detalles.',
+  'tip.counts': '{o} resultados · {a} actividades · {i} entradas · {u} salidas',
+  'tip.from': 'Recibe entradas de',
+  'tip.to': 'Entrega salidas a',
 
   'refs.title': 'Referencias',
   'refs.studies': 'Estudios primarios de la revisión sistemática de la literatura',
@@ -537,6 +543,9 @@ const ca: Partial<Record<UiKey, string>> = {
   'modal.close': 'Tanca',
   'modal.loading': 'S\'està carregant…',
   'modal.loadError': 'No s\'han pogut carregar els detalls.',
+  'tip.counts': '{o} resultats · {a} activitats · {i} entrades · {u} sortides',
+  'tip.from': 'Rep entrades de',
+  'tip.to': 'Lliura sortides a',
 
   'refs.title': 'Referències',
   'refs.studies': 'Estudis primaris de la revisió sistemàtica de la literatura',

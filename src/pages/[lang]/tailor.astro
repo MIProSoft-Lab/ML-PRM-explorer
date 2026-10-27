@@ -204,10 +204,10 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
           )
           .join('');
         return `<li class="proc ${on ? '' : 'off'}" data-id="${p.id}">
-          <div class="proc-head">
+          <div class="proc-head" data-hover-process="${p.id}" data-hover-version="${state.version}">
             <label class="proc-label"><input type="checkbox" data-proc="${p.id}" ${on ? 'checked' : ''}>
               <span class="dot origin-${p.origin}"></span><span class="num">${p.id}</span> <strong>${esc(p.name)}</strong></label>
-            <button type="button" class="info" data-info="${p.id}" aria-label="${esc(s('modal.details', { name: p.name }))}" title="${esc(s('modal.details', { name: p.name }))}">i</button>
+            <button type="button" class="info" data-info="${p.id}" aria-label="${esc(s('modal.details', { name: p.name }))}">i</button>
           </div>
           <details><summary class="small muted">${s('process.activities')} (<span data-count="${p.id}"></span>)</summary><ul class="acts">${acts}</ul></details>
           <label class="rationale small" ${on ? 'hidden' : ''}><span>${s('tailor.rationale')}</span>

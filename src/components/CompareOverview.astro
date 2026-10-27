@@ -44,7 +44,7 @@ const rows = ids.map((id) => {
   {
     rows.map((r) => (
       <li>
-        <a class="card row" href={href(locale, 'compare', slug, r.id)}>
+        <a class="card row" href={href(locale, 'compare', slug, r.id)} data-hover-process={r.id} data-hover-version={r.inTo ? to : from}>
           <span class="num">{r.id}</span>
           <span class="name">{r.name}</span>
           <span class="summary small">

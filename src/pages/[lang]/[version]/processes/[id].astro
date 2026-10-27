@@ -180,7 +180,7 @@ const num = (key: string) => String(sections.findIndex(([k]) => k === key) + 1).
                         {links && links.length > 0 ? (
                           <span class="chips">
                             {links.map((l) => (
-                              <a class="chip" href={href(locale, version, 'processes', l.process)} title={name(l.process)}>
+                              <a class="chip" href={href(locale, version, 'processes', l.process)}>
                                 <span class="num">{l.process}</span>
                                 <span class="link-name">{name(l.process)}</span>
                               </a>

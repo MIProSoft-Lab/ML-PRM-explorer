@@ -54,7 +54,7 @@ const origins = ['standards-and-literature', 'standards-only', 'decomposed'] as 
             <ol class="column">
               {col.map(({ p, search }) => (
                 <li data-search={search}>
-                  <a class="node" href={href(locale, version, 'processes', p.id)} title={t(`origin.${p.origin}.long`)}>
+                  <a class="node" href={href(locale, version, 'processes', p.id)}>
                     <span class={`node-tab origin-${p.origin}`}>
                       <span>{p.id}</span>
                       <span>

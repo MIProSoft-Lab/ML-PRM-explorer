@@ -2,7 +2,7 @@
 // Pages create one with createProcessModal() and call open() with a process.
 // The tailoring page passes hooks to show the include and activity checkboxes.
 
-interface Details {
+export interface Details {
   id: string;
   name: string;
   origin: string;
@@ -31,7 +31,7 @@ const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 // One request per version and page load, shared by every modal on the page.
 const cache = new Map<string, Promise<Details[]>>();
 
-function load(base: string, version: string) {
+export function load(base: string, version: string) {
   if (!cache.has(version)) {
     const request = fetch(`${base}${version}/processes.json`).then((r) => {
       if (!r.ok) throw new Error(String(r.status));
