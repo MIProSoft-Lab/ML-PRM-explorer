@@ -1,4 +1,4 @@
-# ML Process Reference Model explorer
+# MLProcessMap
 
 A website to explore the Process Reference Model (PRM) for Machine Learning from the doctoral thesis. Anyone can browse it without signing in; admins edit the model from `/admin` with their GitHub account.
 
