@@ -215,6 +215,11 @@ footer:
 notFound:
   title: Pàgina no trobada
   back: Torna a la pàgina principal
+edition:
+  thesis: Edició de la tesi
+  banner: "La versió d'aquest lloc descrita a la tesi doctoral. Rep correccions i traduccions, però no funcions noves."
+  goLive: Ves a la versió actual
+  thesisLink: Versió descrita a la tesi
 language:
   name: Català
   en: anglès

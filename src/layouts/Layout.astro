@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { site, pick, validate, versions, defaultVersion } from '../lib/content';
+import { edition, otherEditionUrl } from '../lib/edition';
 import ProcessHover from '../components/ProcessHover.astro';
 import { useTranslations, languageNames, languageIn, locales, href, type Locale } from '../i18n/ui';
 
@@ -42,6 +43,7 @@ const nav = [
   ['references', href(locale, 'references')],
 ] as const;
 const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env.PUBLIC_REPO}` : undefined;
+const otherEdition = otherEditionUrl && `${otherEditionUrl}${locale}/`;
 ---
 
 <!doctype html>
@@ -52,6 +54,8 @@ const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env
     <title>{pageTitle}</title>
     <meta name="description" content={description ?? pick(site.intro, locale)} />
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    {/* Searches lead to the live edition; the thesis edition is reached from the thesis. */}
+    {edition === 'thesis' && <meta name="robots" content="noindex" />}
     {languageLinks.map((l) => <link rel="alternate" hreflang={l.locale} href={l.href} />)}
     <script is:inline>
       // Apply the saved theme before the first paint. Without a saved choice
@@ -64,6 +68,17 @@ const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env
   </head>
   <body>
     <a class="skip" href="#main">{t('nav.skip')}</a>
+    {
+      edition === 'thesis' && (
+        <div class="edition-banner">
+          <div class="container">
+            <span class="label">{t('edition.thesis')}</span>
+            <span>{t('edition.banner')}</span>
+            {otherEdition && <a href={otherEdition}>{t('edition.goLive')} →</a>}
+          </div>
+        </div>
+      )
+    }
     <header class="site-header">
       <div class="container bar">
         <a class="brand" href={href(locale)}>
@@ -168,6 +183,12 @@ const repo = import.meta.env.PUBLIC_REPO ? `https://github.com/${import.meta.env
             {repo && <a href={repo}>{t('footer.source')}</a>}
             {repo && ' · '}
             <a href={`${base}/admin/`}>{t('nav.admin')}</a>
+            {edition === 'live' && otherEdition && (
+              <>
+                {' · '}
+                <a href={otherEdition}>{t('edition.thesisLink')}</a>
+              </>
+            )}
           </div>
         </div>
       </div>

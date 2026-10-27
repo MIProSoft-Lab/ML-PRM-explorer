@@ -1,8 +1,14 @@
 name: Build and deploy
 
+# The site is published in two editions from this repository: the live tool,
+# from main, at the root of the site, and the edition described in the doctoral
+# thesis, from the thesis branch, at /thesis/. GitHub Pages replaces the whole
+# site on each deploy, so a push to either branch builds both. Keep this file
+# the same on both branches.
+
 on:
   push:
-    branches: [main]
+    branches: [main, thesis]
   pull_request:
   workflow_dispatch:
 
@@ -16,7 +22,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  # A pull request is built on its own, to check it.
+  check:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,21 +32,70 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  build:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: live
+      - id: thesis
+        name: Look for the thesis branch
+        run: |
+          if git -C live ls-remote --exit-code --heads origin thesis > /dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.thesis.outputs.exists == 'true'
+        with:
+          ref: thesis
+          path: thesis
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: '*/package-lock.json'
       - id: pages
         uses: actions/configure-pages@v5
-      - run: npm ci
       # The build validates the content and fails on broken references, so a
       # bad edit from the admin panel never reaches the published site.
-      - run: npm run build
+      - name: Build the live edition
+        working-directory: live
+        run: |
+          npm ci
+          npm run build
         env:
           SITE_URL: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
           PUBLIC_REPO: ${{ github.repository }}
-          PUBLIC_REPO_BRANCH: ${{ github.event.repository.default_branch }}
+          PUBLIC_REPO_BRANCH: main
           PUBLIC_CMS_AUTH_URL: ${{ vars.CMS_AUTH_URL }}
+          PUBLIC_EDITION: live
+          PUBLIC_OTHER_EDITION_URL: ${{ steps.thesis.outputs.exists == 'true' && format('{0}/thesis/', steps.pages.outputs.base_path) || '' }}
+      - name: Build the thesis edition
+        if: steps.thesis.outputs.exists == 'true'
+        working-directory: thesis
+        run: |
+          npm ci
+          npm run build
+          mv dist ../live/dist/thesis
+        env:
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}/thesis
+          PUBLIC_REPO: ${{ github.repository }}
+          PUBLIC_REPO_BRANCH: thesis
+          PUBLIC_CMS_AUTH_URL: ${{ vars.CMS_AUTH_URL }}
+          PUBLIC_EDITION: thesis
+          PUBLIC_OTHER_EDITION_URL: ${{ steps.pages.outputs.base_path }}/
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: live/dist
 
   deploy:
     if: github.event_name != 'pull_request'

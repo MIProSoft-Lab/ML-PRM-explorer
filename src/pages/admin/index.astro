@@ -5,6 +5,7 @@
 import '../../styles/admin.css';
 import { site, pick } from '../../lib/content';
 import { defaultLocale } from '../../i18n/ui';
+import { edition } from '../../lib/edition';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -15,7 +16,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
-    <title>{pick(site.title, defaultLocale)} admin</title>
+    <title>{pick(site.title, defaultLocale)} {edition === 'thesis' ? 'thesis edition admin' : 'admin'}</title>
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <script is:inline>
       // Share the light/dark choice with the site, in both directions. The site

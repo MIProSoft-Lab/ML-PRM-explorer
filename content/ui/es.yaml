@@ -215,6 +215,11 @@ footer:
 notFound:
   title: Página no encontrada
   back: Volver a la página principal
+edition:
+  thesis: Edición de la tesis
+  banner: La versión de este sitio descrita en la tesis doctoral. Recibe correcciones y traducciones, pero no funciones nuevas.
+  goLive: Ir a la versión actual
+  thesisLink: Versión descrita en la tesis
 language:
   name: Español
   en: inglés

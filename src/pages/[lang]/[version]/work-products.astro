@@ -106,7 +106,7 @@ const types = ['information-item', 'artifact', 'record'] as const;
       apply();
     });
   }
-  const target = location.hash && document.getElementById(location.hash.slice(1));
+  const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
   target?.classList.add('highlight');
 </script>
 

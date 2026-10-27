@@ -91,7 +91,30 @@ It reads `tables/prm/v1`, `tables/prm/v2`, the PRM overview, information items, 
 
 1. Push the repository to GitHub with `main` as the default branch.
 2. In **Settings → Pages**, set **Source** to **GitHub Actions**.
-3. Every push to `main` builds and deploys the site; pull requests are built to check them.
+3. In **Settings → Environments → github-pages → Deployment branches and tags**, allow `main` and `thesis`.
+4. Every push to `main` or `thesis` builds and deploys the site; pull requests are built to check them.
+
+## Live and thesis editions
+
+The site is published in two editions from this repository:
+
+| Edition | Branch | Address | Admin |
+| --- | --- | --- | --- |
+| Live: the tool as it keeps evolving | `main` | `/` | `/admin/` |
+| Thesis: the version described in the doctoral thesis | `thesis` | `/thesis/` | `/thesis/admin/` |
+
+The thesis edition receives corrections and translations but no new features. It shows a banner that links to the live edition, and search engines do not index it; the live edition links to it from the footer. GitHub Pages publishes one site per repository, so the deploy workflow builds both branches on every push to either of them; keep `.github/workflows/deploy.yml` the same on both. The edition of a build is set by `PUBLIC_EDITION` (`live` or `thesis`, see `src/lib/edition.ts`); a local build is the live edition.
+
+**Fixes and translations go to `thesis` first**, through `/thesis/admin/` or a commit on the branch, and are then carried to the live edition by merging:
+
+```sh
+git switch main
+git merge thesis
+```
+
+Git only stops for a conflict where `main` has changed the same lines since, which is resolved once. Never merge `main` into `thesis`: that would bring the live edition's features into the thesis edition.
+
+To cite the thesis edition, publish a GitHub release from `thesis` (e.g. `thesis-1.0`) with the repository connected to [Zenodo](https://zenodo.org/), which archives the release and gives it a DOI. Later corrections can be released as `thesis-1.1` and so on, under the same Zenodo record.
 
 ## Admin access
 

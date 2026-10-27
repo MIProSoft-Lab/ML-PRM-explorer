@@ -3,6 +3,7 @@
 import type { APIRoute } from 'astro';
 import { parse, stringify } from 'yaml';
 import { versions, site, pick } from '../../lib/content';
+import { edition } from '../../lib/edition';
 import { locales, defaultLocale } from '../../i18n/ui';
 
 const dup = { i18n: 'duplicate' as const };
@@ -132,6 +133,7 @@ const sectionLabels: Record<string, string> = {
   i18n: 'Translation notice',
   footer: 'Footer',
   notFound: 'Page not found',
+  edition: 'Live and thesis editions',
   language: 'Language names',
 };
 const uiFields = Object.entries(parse(uiFile) as Record<string, Record<string, string>>).map(([section, strings]) => ({
@@ -195,7 +197,7 @@ export const GET: APIRoute = () => {
     // domain plus the project path of a GitHub Pages site, e.g. /<repo>/.
     ...(siteUrl ? { site_url: siteUrl, display_url: siteUrl } : {}),
     // The sign-in page and the header show the site's name and icon.
-    app_title: pick(site.title, defaultLocale),
+    app_title: `${pick(site.title, defaultLocale)}${edition === 'thesis' ? ' · thesis edition' : ''}`,
     logo: { src: `${import.meta.env.BASE_URL.replace(/\/$/, '')}/favicon.svg` },
     media_folder: 'public/uploads',
     public_folder: '/uploads',

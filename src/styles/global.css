@@ -297,6 +297,34 @@ code,
   color: var(--surface);
 }
 
+/* Shown above the header in the thesis edition */
+.edition-banner {
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.edition-banner .container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.edition-banner .label {
+  color: inherit;
+  opacity: 0.75;
+}
+
+.edition-banner a {
+  color: inherit;
+  font-weight: 600;
+  margin-left: auto;
+}
+
 .switchers {
   display: flex;
   gap: 10px;
