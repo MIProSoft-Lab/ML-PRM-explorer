@@ -169,6 +169,14 @@ tailor:
   yaml: Model de cicle de vida (YAML)
   yamlNote: El fitxer YAML fa servir el format de les plantilles de cicle de vida, perquè un administrador pugui publicar el teu model en aquest lloc.
   untitled: Model de cicle de vida sense títol
+  import: Importa
+  import-note: Obre un model de cicle de vida exportat des d'aquesta pàgina com a JSON, YAML o CSV. Substitueix el model que estàs editant, així que copia'n abans l'enllaç si el vols conservar.
+  import-open: Obre un fitxer
+  import-done: "S'ha obert {file}."
+  import-csv: Un fitxer CSV només desa els processos, les activitats i els noms de les fases, així que revisa la versió del PRM, l'ordre de les fases i els bucles.
+  import-skipped: "El PRM {v} no té {ids}, així que s'han deixat fora."
+  import-version: "El fitxer és de la versió {v} del PRM, que aquest lloc no té."
+  import-error: Aquest fitxer no és un model de cicle de vida exportat des d'aquesta pàgina.
   include: Inclou-lo al model de cicle de vida
 modal:
   details: Detalls de {name}

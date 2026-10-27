@@ -76,6 +76,11 @@ const keys: UiKey[] = [
   'tailor.unassigned-none',
   'tailor.phases-summary',
   'tailor.untitled',
+  'tailor.import-done',
+  'tailor.import-csv',
+  'tailor.import-skipped',
+  'tailor.import-version',
+  'tailor.import-error',
   'lc.iterative',
   'lc.diagram',
   'lc.diagramDesc',
@@ -161,6 +166,13 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
           <button type="button" id="copy" class="primary button">{t('tailor.copyLink')}</button>
         </div>
         <p class="small muted">{t('tailor.yamlNote')}</p>
+        <h2>{t('tailor.import')}</h2>
+        <p class="small muted">{t('tailor.import-note')}</p>
+        <div class="exports">
+          <button type="button" id="import">{t('tailor.import-open')}</button>
+          <input type="file" id="import-file" accept=".json,.yaml,.yml,.csv,application/json,application/yaml,text/csv" hidden />
+        </div>
+        <p id="import-status" class="small" role="status" hidden></p>
         <h2>{t('tailor.missingInputs')}</h2>
         <p class="small muted">{t('tailor.missingInputsNote')}</p>
         <ul id="missing" class="missing small"></ul>
@@ -956,6 +968,181 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
     }
   });
 
+  // --- Import -----------------------------------------------------------
+
+  /** A model read from a file, before it is checked against the PRM version. */
+  type Imported = {
+    version: string;
+    project: string;
+    description: string;
+    selected: string[];
+    excluded: string[];
+    rationale: Record<string, string>;
+    phases: Phase[];
+    /** Read from a CSV file, which leaves out part of the model. */
+    csv?: boolean;
+  };
+
+  /** An error whose message can be shown as it is. */
+  class ImportError extends Error {}
+
+  const str = (x: unknown) => (x == null ? '' : String(x));
+
+  /** The JSON export, or a lifecycle file (YAML) in the format of content/lifecycles. */
+  function fromObject(x: any): Imported {
+    if (!x || typeof x !== 'object' || !(Array.isArray(x.phases) || Array.isArray(x.processes))) throw new Error('Not a lifecycle model');
+    const phases: Phase[] = (Array.isArray(x.phases) ? x.phases : []).map((p: any, i: number) =>
+      phase({
+        id: str(p?.id) || `phase-${i + 1}`,
+        name: str(p?.name),
+        description: str(p?.description),
+        processes: Array.isArray(p?.processes) ? p.processes.map(String) : [],
+        iterative: !!p?.iterative,
+        returnsTo: str(p?.returnsTo),
+        returnNote: str(p?.returnNote),
+      }),
+    );
+    // A lifecycle file only lists the processes of its phases; the JSON export lists every process.
+    const procs: any[] | null = Array.isArray(x.processes) ? x.processes.filter((p: any) => p && typeof p === 'object') : null;
+    const kept = procs?.filter((p) => p.included !== false);
+    const name = str(x.name);
+    return {
+      version: str(x.prmVersion),
+      project: name === s('tailor.untitled') ? '' : name,
+      description: str(x.description),
+      selected: kept ? kept.map((p) => str(p.id)) : phases.flatMap((p) => p.processes),
+      excluded: (kept ?? []).flatMap((p) =>
+        Array.isArray(p.activities) ? p.activities.filter((a: any) => a?.included === false).map((a: any) => `${p.id}.${a.id}`) : [],
+      ),
+      rationale: Object.fromEntries((procs ?? []).filter((p) => p.included === false && p.rationale).map((p) => [str(p.id), str(p.rationale)])),
+      phases,
+    };
+  }
+
+  /** Rows of fields; reads the CSV export and spreadsheets that save it with semicolons. */
+  function parseCsv(text: string) {
+    const sep = /^[^\n]*;/.test(text) && !/^[^\n]*,/.test(text) ? ';' : ',';
+    const rows: string[][] = [];
+    let row: string[] = [];
+    let field = '';
+    let quoted = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (quoted) {
+        if (c === '"' && text[i + 1] === '"') field += text[i++];
+        else if (c === '"') quoted = false;
+        else field += c;
+      } else if (c === '"') quoted = true;
+      else if (c === sep) {
+        row.push(field);
+        field = '';
+      } else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = '';
+      } else field += c;
+    }
+    if (field || row.length) rows.push([...row, field]);
+    return rows.filter((r) => r.some(Boolean));
+  }
+
+  /**
+   * The CSV export. It has no PRM version, so it is taken from the file name the export
+   * gives it (…-v2.csv) or else the version being edited, and no phase order or loops.
+   */
+  function fromCsv(text: string, file: string): Imported {
+    const [head, ...lines] = parseCsv(text);
+    const col = Object.fromEntries(['process_id', 'phase', 'activity_id', 'included', 'rationale'].map((k) => [k, head?.indexOf(k) ?? -1]));
+    if (Object.values(col).some((i) => i < 0)) throw new Error('Not a lifecycle model');
+    const named = file.match(/-([^-]+)\.csv$/i)?.[1];
+    const v = data.versions.find((x) => x.id === named) ?? version(state.version);
+    const yes = (x: string) => /^(yes|true|1)$/i.test(x.trim());
+    const selected = new Set<string>();
+    const excluded: string[] = [];
+    const rationale: Record<string, string> = {};
+    const phases: Phase[] = [];
+    for (const r of lines) {
+      const id = r[col.process_id]?.trim();
+      if (!id) continue;
+      const name = r[col.phase]?.trim() ?? '';
+      // A process is in the model when it is in a phase or keeps an activity.
+      if (name || yes(r[col.included] ?? '')) selected.add(id);
+      if (!yes(r[col.included] ?? '')) excluded.push(`${id}.${r[col.activity_id]?.trim()}`);
+      if (r[col.rationale]) rationale[id] = r[col.rationale];
+      if (!name) continue;
+      let ph = phases.find((p) => p.name === name);
+      if (!ph) phases.push((ph = phase({ id: `phase-${phases.length + 1}`, name })));
+      if (!ph.processes.includes(id)) ph.processes.push(id);
+    }
+    return {
+      version: v.id,
+      project: '',
+      description: '',
+      selected: [...selected],
+      excluded: excluded.filter((key) => selected.has(key.split('.')[0])),
+      rationale: Object.fromEntries(Object.entries(rationale).filter(([id]) => !selected.has(id))),
+      phases,
+      csv: true,
+    };
+  }
+
+  async function readModel(text: string, file: string): Promise<Imported> {
+    text = text.replace(/^﻿/, '');
+    if (/^\s*"?process_id"?[,;]/.test(text)) return fromCsv(text, file);
+    if (/^\s*\{/.test(text)) return fromObject(JSON.parse(text));
+    const { parse } = await import('yaml');
+    return fromObject(parse(text));
+  }
+
+  /** Replace the model being edited and show it. */
+  function load(next: State) {
+    state = next;
+    syncPhases();
+    $<HTMLInputElement>('#project').value = state.project;
+    $<HTMLTextAreaElement>('#lc-description').value = state.description;
+    $<HTMLSelectElement>('#version').value = state.version;
+    renderStartOptions();
+    renderList();
+    showTab(state.tab);
+  }
+
+  const importFile = $<HTMLInputElement>('#import-file');
+  const importStatus = $('#import-status');
+  $('#import').addEventListener('click', () => importFile.click());
+
+  importFile.addEventListener('change', async () => {
+    const file = importFile.files?.[0];
+    importFile.value = '';
+    if (!file) return;
+    const messages: string[] = [];
+    try {
+      const m = await readModel(await file.text(), file.name);
+      const v = data.versions.find((x) => x.id === m.version);
+      if (!v) throw new ImportError(s('tailor.import-version', { v: m.version || '?' }));
+      const ids = new Set(v.processes.map((p) => p.id));
+      const unknown = [...new Set([...m.selected, ...m.phases.flatMap((p) => p.processes)])].filter((id) => !ids.has(id));
+      load({
+        version: v.id,
+        project: m.project,
+        description: m.description,
+        selected: new Set(m.selected.filter((id) => ids.has(id))),
+        excluded: new Set(m.excluded),
+        rationale: m.rationale,
+        phases: m.phases,
+        tab: m.phases.length ? 'phases' : 'processes',
+      });
+      messages.push(s('tailor.import-done', { file: file.name }));
+      if (m.csv) messages.push(s('tailor.import-csv'));
+      if (unknown.length) messages.push(s('tailor.import-skipped', { v: v.id, ids: unknown.join(', ') }));
+    } catch (e) {
+      messages.push(e instanceof ImportError ? e.message : s('tailor.import-error'));
+    }
+    importStatus.textContent = messages.join(' ');
+    importStatus.hidden = false;
+  });
+
   // --- Process details, in a modal --------------------------------------
 
   const modal = createProcessModal({
@@ -986,12 +1173,7 @@ const strings = Object.fromEntries(keys.map((k) => [k, t(k)]));
 
   // --- Start ------------------------------------------------------------
 
-  $<HTMLInputElement>('#project').value = state.project;
-  $<HTMLTextAreaElement>('#lc-description').value = state.description;
-  $<HTMLSelectElement>('#version').value = state.version;
-  renderStartOptions();
-  renderList();
-  showTab(state.tab);
+  load(state);
 </script>
 
 <style>

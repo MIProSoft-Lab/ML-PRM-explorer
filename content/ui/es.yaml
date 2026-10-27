@@ -169,6 +169,14 @@ tailor:
   yaml: Modelo de ciclo de vida (YAML)
   yamlNote: El archivo YAML usa el formato de las plantillas de ciclo de vida, para que un administrador pueda publicar tu modelo en este sitio.
   untitled: Modelo de ciclo de vida sin título
+  import: Importar
+  import-note: Abre un modelo de ciclo de vida exportado desde esta página como JSON, YAML o CSV. Sustituye el modelo que estás editando, así que copia antes su enlace si quieres conservarlo.
+  import-open: Abrir un archivo
+  import-done: "Se ha abierto {file}."
+  import-csv: Un archivo CSV solo guarda los procesos, las actividades y los nombres de las fases, así que revisa la versión del PRM, el orden de las fases y los bucles.
+  import-skipped: "El PRM {v} no tiene {ids}, así que se han dejado fuera."
+  import-version: "El archivo es de la versión {v} del PRM, que este sitio no tiene."
+  import-error: Este archivo no es un modelo de ciclo de vida exportado desde esta página.
   include: Incluir en el modelo de ciclo de vida
 modal:
   details: Detalles de {name}

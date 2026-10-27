@@ -172,6 +172,14 @@ tailor:
   yaml: Lifecycle model (YAML)
   yamlNote: The YAML file uses the format of the lifecycle templates, so an admin can publish your model on this site.
   untitled: Untitled lifecycle model
+  import: Import
+  import-note: Open a lifecycle model exported from this page as JSON, YAML or CSV. It replaces the model you are editing, so copy its link first if you want to keep it.
+  import-open: Open a file
+  import-done: "Opened {file}."
+  import-csv: A CSV file keeps only the processes, activities and phase names, so check the PRM version, the order of the phases and the loops.
+  import-skipped: "PRM {v} has no {ids}, so they were left out."
+  import-version: "The file is for PRM version {v}, which this site does not have."
+  import-error: This file is not a lifecycle model exported from this page.
   include: Include in the lifecycle model
 modal:
   details: Details of {name}
