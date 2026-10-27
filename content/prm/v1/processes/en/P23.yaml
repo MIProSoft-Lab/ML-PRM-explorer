@@ -46,8 +46,8 @@ inputs:
   - a
   - b
   - e
-- workProduct: monitoring-records
-  name: Monitoring Records
+- workProduct: monitoring-record
+  name: Monitoring Record
   description: Drift, performance, and incident information.
   serves:
   - c

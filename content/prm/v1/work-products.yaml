@@ -92,9 +92,6 @@ workProducts:
 - id: monitoring-record
   type: record
   external: false
-- id: monitoring-records
-  type: information-item
-  external: false
 - id: operation-records
   type: record
   external: false

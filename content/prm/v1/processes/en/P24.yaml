@@ -34,8 +34,8 @@ inputs:
   serves:
   - b
   - c
-- workProduct: monitoring-records
-  name: Monitoring Records
+- workProduct: monitoring-record
+  name: Monitoring Record
   description: Drift and performance evidence.
   serves:
   - b
