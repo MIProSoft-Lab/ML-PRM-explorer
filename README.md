@@ -57,7 +57,13 @@ content/
 
 Text fields accept `*emphasis*` and `**bold**`.
 
-The build checks the content and stops with a message naming the file when something is inconsistent: an input that serves an outcome letter that does not exist, an activity that cites an unknown study or reference, a lifecycle that lists a process missing from its PRM version, a translation whose outcomes, activities, inputs or outputs differ from the English file, or interface text that does not match `content/ui/en.yaml`.
+The build checks the content and stops with a message naming the file when something is inconsistent: a file that is not valid YAML or misses a field, a file in a place the site does not read, an input that serves an outcome letter that does not exist, an activity that cites an unknown study or reference, a lifecycle that lists a process missing from its PRM version, a translation whose outcomes, activities, inputs or outputs differ from the English file, or interface text that does not match `content/ui/en.yaml`. To list every problem without building the site:
+
+```sh
+npm run check:content
+```
+
+The shape of each file is in `src/lib/content/schemas.ts`; the other checks are rules in `src/lib/validation/rules/`, each with a test in `src/lib/validation/validation.test.ts` (`npm test`).
 
 ### Translations
 
