@@ -11,6 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
+    "check:content": "tsx scripts/check-content.ts",
+    "test": "vitest run",
     "import-thesis": "python3 scripts/import_thesis.py",
     "new-version": "node scripts/new-version.mjs"
   },
@@ -22,5 +24,9 @@
     "yaml": "2.9.1"
   },
   "private": true,
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "tsx": "4.23.15",
+    "vitest": "4.1.12"
+  }
 }

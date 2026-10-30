@@ -33,6 +33,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # --if-present: a branch from before these scripts existed still builds.
+      - run: npm run check:content --if-present
+      - run: npm test --if-present
       - run: npm run build
 
   build:
@@ -63,12 +66,14 @@ jobs:
           cache-dependency-path: '*/package-lock.json'
       - id: pages
         uses: actions/configure-pages@v5
-      # The build validates the content and fails on broken references, so a
-      # bad edit from the admin panel never reaches the published site.
+      # The content is checked before each build, and the build fails on it
+      # too, so a bad edit from the admin panel never reaches the published
+      # site. check:content lists every problem at once.
       - name: Build the live edition
         working-directory: live
         run: |
           npm ci
+          npm run check:content --if-present
           npm run build
         env:
           SITE_URL: ${{ steps.pages.outputs.origin }}
@@ -83,6 +88,7 @@ jobs:
         working-directory: thesis
         run: |
           npm ci
+          npm run check:content --if-present
           npm run build
           mv dist ../live/dist/thesis
         env:

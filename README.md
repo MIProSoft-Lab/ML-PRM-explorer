@@ -57,7 +57,33 @@ content/
 
 Text fields accept `*emphasis*` and `**bold**`.
 
-The build checks the content and stops with a message naming the file when something is inconsistent: an input that serves an outcome letter that does not exist, an activity that cites an unknown study or reference, a lifecycle that lists a process missing from its PRM version, a translation whose outcomes, activities, inputs or outputs differ from the English file, or interface text that does not match `content/ui/en.yaml`.
+### Content checks
+
+The build checks the content against the rules below. An error stops the build with a message naming the file; a warning points at a place where the model may be unsound and is left to the author's judgement, so it is listed but does not stop the build.
+
+| Rule | Severity | What it checks |
+|---|---|---|
+| `files` | error | Every required file exists, every file is in a place the site reads, is valid YAML and matches its schema, and every translation has an English file. |
+| `versions` | error | The default version exists, no version is called `latest`, every version has English process files, and its topology places each of its processes exactly once. |
+| `process-id` | error | The `id` in a process file matches the name of the file. |
+| `process-unique-ids` | error | A process names each outcome and activity once, and lists a work product once among its inputs and once among its outputs. |
+| `process-outcomes` | error | The inputs and outputs of a process serve outcomes of that process. |
+| `citations` | error | Activities cite studies in `studies.yaml` and references in `references.yaml`, and a study points to a reference that exists. |
+| `work-product-flow` | error | Every input is an output of a process of the same version or is marked `external` in its `work-products.yaml`, an external work product is not produced by any process, a work product has the same name everywhere, and `work-products.yaml` lists no unused work product. |
+| `process-translations` | error | A translated process has the same outcomes, activities, inputs and outputs as the English one. |
+| `lifecycles` | error | A lifecycle uses a PRM version that exists, its phases list processes of that version, and phases return to phases that exist. |
+| `ui-translations` | error | Translated interface strings exist in `content/ui/en.yaml` and use the same `{placeholders}`. |
+| `outcome-evidence` | warning | Every outcome of a process is served by at least one of its outputs, the work product an assessor would look at to see it was achieved. |
+| `work-product-dead-ends` | warning | Every work product a process produces is an input of another process, except records, which are kept as evidence of what was done. |
+| `lifecycle-dataflow` | warning | In a lifecycle, every required input of a process is external or produced in the same phase, an earlier one, or a later one that returns to it. |
+
+To list every error and warning without building the site:
+
+```sh
+npm run check:content
+```
+
+The shape of each file is in `src/lib/content/schemas.ts`; the other checks are rules in `src/lib/validation/rules/`, each with a test in `src/lib/validation/validation.test.ts` (`npm test`).
 
 ### Translations
 

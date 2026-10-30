@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
-import { site, pick, validate, versions, defaultVersion } from '../lib/content';
+import { site, pick, versions, defaultVersion, contentFiles } from '../lib/content';
+import { validate, formatIssues, errors } from '../lib/validation';
 import { edition, otherEditionUrl } from '../lib/edition';
 import ProcessHover from '../components/ProcessHover.astro';
 import { useTranslations, languageNames, languageIn, locales, href, type Locale } from '../i18n/ui';
@@ -22,9 +23,10 @@ const t = useTranslations(locale);
 const siteTitle = pick(site.title, locale);
 const pageTitle = title ? `${title} · ${siteTitle}` : siteTitle;
 
-// Fail the build on broken cross-references, once per build.
-const errors = (globalThis as any).__prmValidation ??= validate();
-if (errors.length) throw new Error(`Content errors:\n${errors.join('\n')}`);
+// Fail the build on content errors, once per build. Warnings are left to
+// npm run check:content.
+const issues = errors((globalThis as any).__prmValidation ??= validate(contentFiles));
+if (issues.length) throw new Error(`Content errors (run npm run check:content to list them again):\n\n${formatIssues(issues)}`);
 
 // Same page in the other languages.
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
