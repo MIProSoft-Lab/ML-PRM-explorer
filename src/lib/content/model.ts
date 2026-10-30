@@ -15,6 +15,7 @@ import {
   type Lifecycle,
   type Process,
   type Version,
+  type WorkProductMeta,
 } from './schemas';
 import { deriveWorkProducts, type WorkProduct } from './work-products';
 import type { z } from 'astro/zod';
@@ -79,11 +80,15 @@ export function createContent(files: ContentFiles) {
     return l;
   }
 
+  /** The type and scope of the work products of a version, from work-products.yaml. */
+  function workProductMeta(version: string): WorkProductMeta[] {
+    const path = paths.workProducts(version);
+    return files[path] !== undefined ? load(path, workProductsSchema).workProducts : [];
+  }
+
   /** Work products of a version, with the processes that produce and use them. */
   function getWorkProducts(version: string, locale: Locale): WorkProduct[] {
-    const path = paths.workProducts(version);
-    const meta = files[path] !== undefined ? load(path, workProductsSchema).workProducts : [];
-    return deriveWorkProducts(getProcesses(version, locale).map((p) => p.data), meta, locale);
+    return deriveWorkProducts(getProcesses(version, locale).map((p) => p.data), workProductMeta(version), locale);
   }
 
   /** The interface strings of a language as "section.key" → text, or undefined when it has no file. */
@@ -109,6 +114,7 @@ export function createContent(files: ContentFiles) {
     getProcesses,
     lifecycleIds,
     getLifecycle,
+    workProductMeta,
     getWorkProducts,
     uiStrings,
   };

@@ -3,7 +3,7 @@
 // the schemas cannot express: references between files, translations, etc.
 import type { ContentFiles } from '../content/files';
 import type { Content } from '../content/model';
-import type { Reporter } from './issues';
+import type { Reporter, Severity } from './issues';
 
 export interface RuleContext {
   files: ContentFiles;
@@ -16,5 +16,7 @@ export interface Rule {
   id: string;
   /** What the rule makes sure of, in one sentence. */
   description: string;
+  /** An error fails the build; a warning is listed and left to the author's judgement. */
+  severity: Severity;
   check(ctx: RuleContext): void;
 }

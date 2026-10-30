@@ -39,7 +39,12 @@ export function fixture(): Fixture {
     '/content/references.yaml': { references: [{ key: 'smith2024', authors: 'Smith, A.', title: 'Paper', year: 2024 }] },
     '/content/ui/en.yaml': { nav: { processes: 'Processes', count: '{n} processes' } },
     '/content/ui/es.yaml': { nav: { processes: 'Procesos', count: '{n} procesos' } },
-    '/content/prm/v1/work-products.yaml': { workProducts: [{ id: 'plan', type: 'artifact' }] },
+    '/content/prm/v1/work-products.yaml': {
+      workProducts: [
+        { id: 'goals', type: 'information-item', external: true },
+        { id: 'plan', type: 'record' },
+      ],
+    },
     '/content/prm/v1/processes/en/P01.yaml': process('P01'),
     '/content/prm/v1/processes/en/P02.yaml': process('P02'),
     '/content/prm/v1/processes/es/P01.yaml': { ...process('P01'), name: 'Proceso P01' },

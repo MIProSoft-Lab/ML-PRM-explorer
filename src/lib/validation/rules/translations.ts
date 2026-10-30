@@ -17,6 +17,7 @@ function structure(p: Process) {
 export const processTranslations: Rule = {
   id: 'process-translations',
   description: 'A translated process has the same outcomes, activities, inputs and outputs as the English one.',
+  severity: 'error',
   check({ content, report }) {
     for (const { file, version, locale, id, process } of processFiles(content)) {
       if (locale === defaultLocale) continue;
@@ -37,6 +38,7 @@ const placeholders = (s: string) =>
 export const uiTranslations: Rule = {
   id: 'ui-translations',
   description: 'Translated interface strings exist in English and use the same {placeholders}.',
+  severity: 'error',
   check({ content, report }) {
     const en = content.uiStrings(defaultLocale) ?? {};
     const enFile = display(paths.ui(defaultLocale));

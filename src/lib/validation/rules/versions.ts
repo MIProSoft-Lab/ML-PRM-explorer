@@ -4,7 +4,8 @@ import type { Rule } from '../rule';
 
 export const versions: Rule = {
   id: 'versions',
-  description: 'The default version exists, no version is called "latest", and every version has processes for each process in its topology.',
+  description: 'The default version exists, no version is called "latest", and the topology of every version places each of its processes exactly once.',
+  severity: 'error',
   check({ content, report }) {
     const file = paths.versions;
     if (!content.versions.some((v) => v.id === content.defaultVersion)) {
@@ -16,11 +17,12 @@ export const versions: Rule = {
     for (const v of content.versions) {
       const ids = new Set(content.processIds(v.id));
       if (ids.size === 0) report(paths.processDir(v.id, defaultLocale), `version ${v.id} has no English process files`);
-      for (const group of v.topology) {
-        for (const column of group.columns) {
-          for (const id of column) if (!ids.has(id)) report(file, `${v.id} topology lists ${id}, which has no file`);
-        }
+      const placed = v.topology.flatMap((g) => g.columns.flat());
+      for (const id of new Set(placed)) {
+        if (!ids.has(id)) report(file, `${v.id} topology lists ${id}, which has no file`);
+        if (placed.indexOf(id) !== placed.lastIndexOf(id)) report(file, `${v.id} topology lists ${id} more than once`);
       }
+      for (const id of ids) if (!placed.includes(id)) report(file, `${v.id} topology does not list ${id}`);
     }
   },
 };
