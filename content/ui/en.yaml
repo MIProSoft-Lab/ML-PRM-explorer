@@ -24,12 +24,28 @@ home:
   superseded: superseded
   draft: draft
   processes: processes
-  whatYouCanDo: What you can do here
   card-map: "Browse the process map and read each process: purpose, outcomes, activities, inputs and outputs."
   card-flow: Follow the work products to see which process produces each input and which processes use each output.
   card-lifecycles: See how lifecycle models arrange the processes of the PRM into phases and iterations.
   card-tailor: "Build a custom lifecycle model for your project: choose the processes, arrange them into phases and loops, and export it."
   card-compare: See what changed between versions of the PRM and why.
+  card-references: See the primary studies of the systematic literature review and the specialized literature that the processes cite.
+  overview: What you will find here
+  thesisHeading: Part of a doctoral thesis
+  thesisText: "This site publishes the Process Reference Model developed in the doctoral thesis *{title}*. The thesis studies how ML development is described in academia and industry, compares it with the international lifecycle standards, and proposes a process reference model evaluated with practitioners."
+  author: Author
+  supervisor: Supervisor
+  supervisors: Supervisors
+  year: Year
+  originHeading: How the PRM was built
+  cite: How to cite
+  citeText: "If you use the PRM in your work, cite the thesis:"
+  copy: Copy
+  copied: Copied
+  groupHeading: Research group
+  researchLines: Research lines
+  people: People
+  groupLink: Group page at the UIB
 origin:
   standards-and-literature: Standards and literature
   standards-only: Standards only

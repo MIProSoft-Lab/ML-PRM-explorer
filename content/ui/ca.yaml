@@ -21,12 +21,28 @@ home:
   superseded: substituïda
   draft: esborrany
   processes: processos
-  whatYouCanDo: Què hi pots fer
   card-map: "Recorre el mapa de processos i consulta cada procés: propòsit, resultats, activitats, entrades i sortides."
   card-flow: Segueix els productes de treball per veure quin procés produeix cada entrada i quins processos fan servir cada sortida.
   card-lifecycles: Mira com els models de cicle de vida organitzen els processos del PRM en fases i iteracions.
   card-tailor: "Crea un model de cicle de vida a mida per al teu projecte: tria els processos, organitza'ls en fases i bucles, i exporta'l."
   card-compare: Consulta què ha canviat entre versions del PRM i per què.
+  card-references: Consulta els estudis primaris de la revisió sistemàtica de la literatura i la literatura especialitzada que citen els processos.
+  overview: Què hi trobaràs
+  thesisHeading: Part d'una tesi doctoral
+  thesisText: "Aquest lloc publica el Model de Referència de Processos desenvolupat a la tesi doctoral *{title}*. La tesi estudia com es descriu el desenvolupament de ML a l'àmbit acadèmic i a la indústria, el compara amb les normes internacionals de cicle de vida i proposa un model de referència de processos avaluat amb professionals."
+  author: Autor
+  supervisor: Director
+  supervisors: Directors
+  year: Any
+  originHeading: Com es va construir el PRM
+  cite: Com citar
+  citeText: "Si utilitzes el PRM a la teva feina, cita la tesi:"
+  copy: Copia
+  copied: Copiat
+  groupHeading: Grup de recerca
+  researchLines: Línies de recerca
+  people: Persones
+  groupLink: Pàgina del grup a la UIB
 origin:
   standards-and-literature: Normes i literatura
   standards-only: Només normes

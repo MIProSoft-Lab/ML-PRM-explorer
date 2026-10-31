@@ -56,28 +56,28 @@
 
 :root:root[data-theme='dark'] {
   color-scheme: dark;
-  --ink: #b9c4a8;
-  --grid-minor: rgb(200 220 180 / 4%);
-  --grid-major: rgb(200 220 180 / 8%);
-  --sui-background-color-1-hsl: 94 15% 9%;
-  --sui-background-color-2-hsl: 96 14% 7%;
-  --sui-background-color-3-hsl: 93 17% 12%;
-  --sui-background-color-4-hsl: 93 17% 12%;
-  --sui-background-color-5-hsl: 92 17% 20%;
-  --sui-foreground-color-1-hsl: 79 25% 87%;
-  --sui-foreground-color-2-hsl: 82 21% 79%;
-  --sui-foreground-color-3-hsl: 85 12% 62%;
-  --sui-foreground-color-4-hsl: 87 9% 49%;
-  --sui-foreground-color-5-hsl: 87 10% 39%;
-  --sui-border-color-1-hsl: 84 19% 71%;
-  --sui-border-color-2-hsl: 90 11% 35%;
-  --sui-border-color-3-hsl: 90 14% 23%;
+  --ink: #878c80;
+  --grid-minor: rgb(220 225 210 / 3%);
+  --grid-major: rgb(220 225 210 / 6%);
+  --sui-background-color-1-hsl: 90 4% 10%;
+  --sui-background-color-2-hsl: 90 6% 7%;
+  --sui-background-color-3-hsl: 90 6% 13%;
+  --sui-background-color-4-hsl: 90 6% 13%;
+  --sui-background-color-5-hsl: 84 6% 17%;
+  --sui-foreground-color-1-hsl: 70 11% 89%;
+  --sui-foreground-color-2-hsl: 78 10% 80%;
+  --sui-foreground-color-3-hsl: 73 5% 63%;
+  --sui-foreground-color-4-hsl: 80 4% 49%;
+  --sui-foreground-color-5-hsl: 82 4% 38%;
+  --sui-border-color-1-hsl: 82 6% 66%;
+  --sui-border-color-2-hsl: 85 5% 53%;
+  --sui-border-color-3-hsl: 90 6% 20%;
   --sui-primary-accent-color: #9cc67c;
   --sui-primary-accent-color-light: #b5d999;
   --sui-primary-accent-color-dark: #86b166;
   --sui-primary-accent-color-text: #a7d386;
   --sui-primary-accent-color-inverted: #10170b;
-  --sui-focus-ring-color: #b08968;
+  --sui-focus-ring-color: #c49a76;
 }
 
 /* --- Sign-in page ------------------------------------------------------- */

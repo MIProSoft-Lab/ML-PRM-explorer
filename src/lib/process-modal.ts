@@ -133,6 +133,14 @@ export function createProcessModal(options: ModalOptions = {}) {
   });
 
   dialog.querySelector('.pm-close')!.addEventListener('click', () => dialog.close());
+  // Escape closes the dialog. Browsers do this for modal dialogs on their own,
+  // but not all of them reliably (some skip it when the dialog was opened
+  // without a fresh user gesture), so handle it here too.
+  dialog.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !dialog.open) return;
+    e.preventDefault();
+    dialog.close();
+  });
   // A click on the backdrop, outside the dialog box, closes it.
   dialog.addEventListener('click', (e) => {
     if (e.target === dialog) dialog.close();

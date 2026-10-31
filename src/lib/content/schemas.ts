@@ -130,8 +130,47 @@ export const referencesSchema = z.object({
 export const siteSchema = z.object({
   title: localized,
   author: z.string(),
+  // Contact address of the author, shown in the footer.
+  email: z.string().optional(),
   institution: z.string().optional(),
   intro: localized,
+  // The doctoral thesis the site is part of, shown on the home page.
+  thesis: z
+    .object({
+      title: z.string(),
+      year: z.union([z.string(), z.number()]).transform(String),
+      supervisors: z.array(z.string()).default([]),
+    })
+    .optional(),
+  // The research group behind the PRM.
+  group: z
+    .object({
+      name: z.string(),
+      fullName: localized,
+      description: localized,
+      url: localized.optional(),
+      researchLines: z.array(localized).default([]),
+    })
+    .optional(),
+  // The people involved in the project, in the order they are shown.
+  people: z
+    .array(
+      z.object({
+        name: z.string(),
+        role: localized,
+        url: z.string().optional(),
+      }),
+    )
+    .default([]),
+  // The stages of the research that produced the PRM, in order.
+  timeline: z
+    .array(
+      z.object({
+        title: localized,
+        text: localized,
+      }),
+    )
+    .default([]),
 });
 
 /** Interface strings: sections of "key: text". An empty file has none. */
