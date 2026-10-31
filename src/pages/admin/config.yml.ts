@@ -254,6 +254,7 @@ export const GET: APIRoute = () => {
             fields: [
               localizedText('title', 'Title'),
               { name: 'author', label: 'Author', widget: 'string' },
+              { name: 'email', label: 'Author email', widget: 'string', required: false, hint: 'Shown in the footer.' },
               { name: 'institution', label: 'Institution', widget: 'string', required: false },
               localizedText('intro', 'Introduction', 'text'),
               {

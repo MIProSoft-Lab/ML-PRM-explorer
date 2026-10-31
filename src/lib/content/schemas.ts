@@ -130,6 +130,8 @@ export const referencesSchema = z.object({
 export const siteSchema = z.object({
   title: localized,
   author: z.string(),
+  // Contact address of the author, shown in the footer.
+  email: z.string().optional(),
   institution: z.string().optional(),
   intro: localized,
   // The doctoral thesis the site is part of, shown on the home page.

@@ -43,13 +43,6 @@ home:
   researchLines: Líneas de investigación
   people: Personas
   groupLink: Página del grupo en la UIB
-  useHeading: Para quién es
-  use-practitioners: Para profesionales
-  use-practitioners-text: Usa los procesos como lista de comprobación para un proyecto de ML. Elige los que necesita tu proyecto, organízalos en fases y exporta el resultado para compartirlo con tu equipo.
-  use-researchers: Para investigadores
-  use-researchers-text: Relaciona cada proceso con las normas y los estudios de los que procede, mira cómo ha cambiado el modelo entre versiones y propón nuevas versiones o traducciones a través del repositorio abierto.
-  use-standards: Junto con las normas
-  use-standards-text: El PRM mantiene los nombres y la estructura de ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 e ISO/IEC 5338, de modo que puede utilizarse junto con ellas en una organización que ya las sigue.
 origin:
   standards-and-literature: Normas y literatura
   standards-only: Solo normas

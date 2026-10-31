@@ -46,13 +46,6 @@ home:
   researchLines: Research lines
   people: People
   groupLink: Group page at the UIB
-  useHeading: Who it is for
-  use-practitioners: For practitioners
-  use-practitioners-text: Use the processes as a checklist for an ML project. Choose the ones your project needs, arrange them into phases, and export the result to share it with your team.
-  use-researchers: For researchers
-  use-researchers-text: Trace each process to the standards and studies it comes from, see how the model changed between versions, and propose new versions or translations through the open repository.
-  use-standards: Alongside the standards
-  use-standards-text: The PRM keeps the names and structure of ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 and ISO/IEC 5338, so it can be used together with them in an organization that already follows them.
 origin:
   standards-and-literature: Standards and literature
   standards-only: Standards only

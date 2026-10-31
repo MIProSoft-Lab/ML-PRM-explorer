@@ -167,6 +167,12 @@ const otherEdition = otherEditionUrl && `${otherEditionUrl}${locale}/`;
           <div>
             <span class="label">{t('footer.thesis')}</span>
             {site.author}
+            {site.email && (
+              <>
+                <br />
+                <a href={`mailto:${site.email}`}>{site.email}</a>
+              </>
+            )}
           </div>
           {
             site.institution && (

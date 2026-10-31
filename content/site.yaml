@@ -3,6 +3,7 @@ title:
   es: MLProcessMap
   ca: MLProcessMap
 author: Antonio Crespí Tobeña
+email: antonio.crespi@uib.eu
 institution: Universitat de les Illes Balears
 intro:
   en: >-
@@ -11,17 +12,16 @@ intro:
     purpose, outcomes, activities, inputs, and outputs. It keeps the names and structure of ISO/IEC/IEEE
     12207, ISO/IEC/IEEE 15288, and ISO/IEC 5338, so it can be used alongside them.
   es: >-
-    Un Modelo de Referencia de Procesos (PRM) para el ciclo de vida del Machine Learning. Siguiendo
-    ISO/IEC 33004 e ISO/IEC/IEEE 24774, se centra en el grupo de procesos técnicos y especifica cada
+    Un Modelo de Referencia de Procesos (PRM) para el ciclo de vida de Machine Learning. Siguiendo
+    las directrices de ISO/IEC 33004 e ISO/IEC/IEEE 24774, se centra en el grupo de procesos técnicos y especifica cada
     proceso con su propósito, resultados, actividades, entradas y salidas. Mantiene los nombres y la
     estructura de ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 e ISO/IEC 5338, de modo que puede utilizarse
-    junto con ellas.
+    de forma conjunta.
   ca: >-
-    Un Model de Referència de Processos (PRM) per al cicle de vida del Machine Learning. Seguint
-    ISO/IEC 33004 i ISO/IEC/IEEE 24774, se centra en el grup de processos tècnics i especifica cada
+    Un Model de Referència de Processos (PRM) per al cicle de vida de Machine Learning. Seguint
+    les directrius de ISO/IEC 33004 i ISO/IEC/IEEE 24774, se centra en el grup de processos tècnics i especifica cada
     procés amb el seu propòsit, resultats, activitats, entrades i sortides. Manté els noms i l'estructura
-    d'ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 i ISO/IEC 5338, de manera que es pot utilitzar juntament
-    amb elles.
+    d'ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 i ISO/IEC 5338, de manera que es pot utilitzar de forma conjunta.
 # The doctoral thesis this site is part of.
 thesis:
   title: A Process Reference Model for Machine Learning Applications
@@ -30,7 +30,7 @@ thesis:
     - Antoni Lluís Mesquida Calafat
 # The research group behind the PRM.
 group:
-  name: MiProSoft
+  name: MIProSoft
   fullName:
     en: Software Project Improvement and Innovation
     es: Mejora e Innovación en Proyectos de Software
@@ -38,16 +38,13 @@ group:
   description:
     en: >-
       A research group of the Universitat de les Illes Balears that works on software project management,
-      software quality, and the assessment and improvement of software processes, including the
-      engineering of systems that use artificial intelligence.
+      software quality, and the assessment and improvement of software processes.
     es: >-
       Un grupo de investigación de la Universitat de les Illes Balears que trabaja en la dirección de
-      proyectos de software, la calidad del software y la evaluación y mejora de procesos de software,
-      incluida la ingeniería de sistemas que utilizan inteligencia artificial.
+      proyectos de software, la calidad del software y la evaluación y mejora de procesos de software.
     ca: >-
       Un grup de recerca de la Universitat de les Illes Balears que treballa en la direcció de projectes
-      de programari, la qualitat del programari i l'avaluació i millora de processos de programari,
-      inclosa l'enginyeria de sistemes que utilitzen intel·ligència artificial.
+      de programari, la qualitat del programari i l'avaluació i millora de processos de programari.
   url:
     en: https://www.uib.eu/research/structures/structure/MiProSoft/
     es: https://www.uib.es/recerca/estructures/estructura/MiProSoft/
@@ -77,9 +74,9 @@ people:
       ca: Doctorand, autor de la tesi
   - name: Antoni Lluís Mesquida Calafat
     role:
-      en: Thesis supervisor, principal investigator of MiProSoft
-      es: Director de la tesis, investigador principal de MiProSoft
-      ca: Director de la tesi, investigador principal de MiProSoft
+      en: Thesis supervisor, senior lecturer, and principal investigator of MIProSoft
+      es: Director de la tesis, profesor tituar de universidad e investigador principal de MIProSoft
+      ca: Director de la tesi, professor titular d'Universitat i investigador principal de MIProSoft
   - name: Antonia Mas Pichaco
     role:
       en: Full Professor
@@ -108,37 +105,37 @@ timeline:
       ca: Revisió sistemàtica de la literatura
     text:
       en: Collected the ML lifecycle models proposed in academic and industrial sources and extracted the processes that compose them.
-      es: Recopiló los modelos de ciclo de vida de ML propuestos en fuentes académicas e industriales y extrajo los procesos que los componen.
-      ca: Va recopilar els models de cicle de vida de ML proposats en fonts acadèmiques i industrials i en va extreure els processos que els componen.
+      es: Recopilación de los modelos de ciclo de vida de ML propuestos en fuentes académicas e industriales y extracción de los procesos que los componen.
+      ca: Recopilació dels models de cicle de vida de ML proposats en fonts acadèmiques i industrials i extracció dels processos que els componen.
   - title:
       en: Comparison with the standards
       es: Comparación con las normas
       ca: Comparació amb les normes
     text:
       en: Mapped those processes against ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 and ISO/IEC 5338, to see where both sources agree and where they differ.
-      es: Contrastó esos procesos con ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 e ISO/IEC 5338, para ver dónde coinciden ambas fuentes y dónde difieren.
-      ca: Va contrastar aquests processos amb ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 i ISO/IEC 5338, per veure on coincideixen les dues fonts i on difereixen.
+      es: Contraste de esos procesos con ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 e ISO/IEC 5338, para ver dónde coinciden ambas fuentes y dónde difieren.
+      ca: Contrast d'aquests processos amb ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 i ISO/IEC 5338, per veure on coincideixen les dues fonts i on difereixen.
   - title:
       en: PRM v1
       es: PRM v1
       ca: PRM v1
     text:
-      en: Specified each process with its purpose, outcomes, activities, inputs and outputs, following ISO/IEC 33004 and ISO/IEC/IEEE 24774.
-      es: Especificó cada proceso con su propósito, resultados, actividades, entradas y salidas, siguiendo ISO/IEC 33004 e ISO/IEC/IEEE 24774.
-      ca: Va especificar cada procés amb el seu propòsit, resultats, activitats, entrades i sortides, seguint ISO/IEC 33004 i ISO/IEC/IEEE 24774.
+      en: Specified each process with its purpose, outcomes, activities, inputs and outputs, following the guidelines of ISO/IEC 33004 and ISO/IEC/IEEE 24774.
+      es: Especificación de cada proceso con su propósito, resultados, actividades, entradas y salidas, siguiendo las directrices de ISO/IEC 33004 e ISO/IEC/IEEE 24774.
+      ca: Especificació de cada procés amb el seu propòsit, resultats, activitats, entrades i sortides, seguint les directrius de ISO/IEC 33004 i ISO/IEC/IEEE 24774.
   - title:
       en: Expert workshop
-      es: Taller de expertos
-      ca: Taller d'experts
+      es: Evaluación con expertos
+      ca: Avaluació amb experts
     text:
       en: Practitioners from different areas of the ML lifecycle reviewed the processes of the first version.
-      es: Profesionales de distintas áreas del ciclo de vida del ML revisaron los procesos de la primera versión.
-      ca: Professionals de diferents àrees del cicle de vida del ML van revisar els processos de la primera versió.
+      es: Revisión de los procesos de la primera versión con profesionales de distintas áreas del ciclo de vida del ML.
+      ca: Revisió dels processos de la primera versió amb professionals de diferents àrees del cicle de vida del ML.
   - title:
       en: PRM v2
       es: PRM v2
       ca: PRM v2
     text:
       en: Refined the processes with the feedback of the workshop. It is the current version of the PRM.
-      es: Refinó los procesos con las aportaciones del taller. Es la versión actual del PRM.
-      ca: Va refinar els processos amb les aportacions del taller. És la versió actual del PRM.
+      es: Refinamiento de los procesos con las aportaciones del taller. Es la versión actual del PRM.
+      ca: Refinament dels processos amb les aportacions del taller. És la versió actual del PRM.

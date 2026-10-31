@@ -20,12 +20,6 @@ const cards = [
   ['nav.references', 'home.card-references', href(locale, 'references')],
 ] as const;
 
-const uses = [
-  ['home.use-practitioners', 'home.use-practitioners-text', href(locale, 'tailor'), 'nav.tailor'],
-  ['home.use-researchers', 'home.use-researchers-text', href(locale, 'compare'), 'nav.compare'],
-  ['home.use-standards', 'home.use-standards-text', href(locale, defaultVersion), 'nav.processes'],
-] as const;
-
 // The citation of the thesis, as text and as BibTeX. The surname is everything
 // after the first given name, as in "Crespí Tobeña".
 const [given, ...surnames] = site.author.split(' ');
@@ -187,21 +181,6 @@ const thesisEdition = edition === 'live' && otherEditionUrl ? `${otherEditionUrl
         ))
       }
     </ol>
-  </section>
-
-  <section class="block" aria-labelledby="uses">
-    <h2 id="uses">{t('home.useHeading')}</h2>
-    <ul class="uses">
-      {
-        uses.map(([title, text, url, link]) => (
-          <li>
-            <h3>{t(title)}</h3>
-            <p class="muted">{t(text)}</p>
-            <a href={url}>{t(link)} →</a>
-          </li>
-        ))
-      }
-    </ul>
   </section>
 
   <section class="block" aria-labelledby="versions">
@@ -458,24 +437,6 @@ const thesisEdition = edition === 'live' && otherEditionUrl ? `${otherEditionUrl
   .sheet-body {
     padding: 10px 12px 14px;
     font-size: 0.93rem;
-  }
-
-  .uses {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-    gap: 24px;
-  }
-
-  .uses h3 {
-    margin: 0 0 6px;
-    font-size: 1rem;
-  }
-
-  .uses p {
-    margin: 0 0 8px;
   }
 
   .revisions td {
