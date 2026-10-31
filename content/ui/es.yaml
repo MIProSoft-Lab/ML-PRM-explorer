@@ -21,12 +21,35 @@ home:
   superseded: sustituida
   draft: borrador
   processes: procesos
-  whatYouCanDo: Qué puedes hacer aquí
   card-map: "Recorre el mapa de procesos y consulta cada proceso: propósito, resultados, actividades, entradas y salidas."
   card-flow: Sigue los productos de trabajo para ver qué proceso produce cada entrada y qué procesos usan cada salida.
   card-lifecycles: Mira cómo los modelos de ciclo de vida organizan los procesos del PRM en fases e iteraciones.
   card-tailor: "Crea un modelo de ciclo de vida a medida para tu proyecto: elige los procesos, organízalos en fases y bucles, y expórtalo."
   card-compare: Consulta qué ha cambiado entre versiones del PRM y por qué.
+  card-references: Consulta los estudios primarios de la revisión sistemática de la literatura y la literatura especializada que citan los procesos.
+  overview: Qué encontrarás aquí
+  thesisHeading: Parte de una tesis doctoral
+  thesisText: "Este sitio publica el Modelo de Referencia de Procesos desarrollado en la tesis doctoral *{title}*. La tesis estudia cómo se describe el desarrollo de ML en el ámbito académico y en la industria, lo compara con las normas internacionales de ciclo de vida y propone un modelo de referencia de procesos evaluado con profesionales."
+  author: Autor
+  supervisor: Director
+  supervisors: Directores
+  year: Año
+  originHeading: Cómo se construyó el PRM
+  cite: Cómo citar
+  citeText: "Si utilizas el PRM en tu trabajo, cita la tesis:"
+  copy: Copiar
+  copied: Copiado
+  groupHeading: Grupo de investigación
+  researchLines: Líneas de investigación
+  people: Personas
+  groupLink: Página del grupo en la UIB
+  useHeading: Para quién es
+  use-practitioners: Para profesionales
+  use-practitioners-text: Usa los procesos como lista de comprobación para un proyecto de ML. Elige los que necesita tu proyecto, organízalos en fases y exporta el resultado para compartirlo con tu equipo.
+  use-researchers: Para investigadores
+  use-researchers-text: Relaciona cada proceso con las normas y los estudios de los que procede, mira cómo ha cambiado el modelo entre versiones y propón nuevas versiones o traducciones a través del repositorio abierto.
+  use-standards: Junto con las normas
+  use-standards-text: El PRM mantiene los nombres y la estructura de ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 e ISO/IEC 5338, de modo que puede utilizarse junto con ellas en una organización que ya las sigue.
 origin:
   standards-and-literature: Normas y literatura
   standards-only: Solo normas

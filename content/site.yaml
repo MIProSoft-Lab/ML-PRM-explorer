@@ -22,3 +22,123 @@ intro:
     procés amb el seu propòsit, resultats, activitats, entrades i sortides. Manté els noms i l'estructura
     d'ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 i ISO/IEC 5338, de manera que es pot utilitzar juntament
     amb elles.
+# The doctoral thesis this site is part of.
+thesis:
+  title: A Process Reference Model for Machine Learning Applications
+  year: 2026
+  supervisors:
+    - Antoni Lluís Mesquida Calafat
+# The research group behind the PRM.
+group:
+  name: MiProSoft
+  fullName:
+    en: Software Project Improvement and Innovation
+    es: Mejora e Innovación en Proyectos de Software
+    ca: Millora i Innovació en Projectes de Programari
+  description:
+    en: >-
+      A research group of the Universitat de les Illes Balears that works on software project management,
+      software quality, and the assessment and improvement of software processes, including the
+      engineering of systems that use artificial intelligence.
+    es: >-
+      Un grupo de investigación de la Universitat de les Illes Balears que trabaja en la dirección de
+      proyectos de software, la calidad del software y la evaluación y mejora de procesos de software,
+      incluida la ingeniería de sistemas que utilizan inteligencia artificial.
+    ca: >-
+      Un grup de recerca de la Universitat de les Illes Balears que treballa en la direcció de projectes
+      de programari, la qualitat del programari i l'avaluació i millora de processos de programari,
+      inclosa l'enginyeria de sistemes que utilitzen intel·ligència artificial.
+  url:
+    en: https://www.uib.eu/research/structures/structure/MiProSoft/
+    es: https://www.uib.es/recerca/estructures/estructura/MiProSoft/
+    ca: https://www.uib.cat/recerca/estructures/estructura/MiProSoft/
+  researchLines:
+    - en: Project management. Lean and agile project management
+      es: Dirección de proyectos. Lean & Agile project management
+      ca: Direcció de projectes. Lean & Agile project management
+    - en: Intelligent systems engineering
+      es: Ingeniería de sistemas inteligentes
+      ca: Enginyeria de sistemes intel·ligents
+    - en: Artificial intelligence applications for software projects
+      es: Aplicaciones de la inteligencia artificial para proyectos de software
+      ca: Aplicacions de la intel·ligència artificial per a projectes de programari
+    - en: Software engineering. Software quality
+      es: Ingeniería del software. Calidad del software
+      ca: Enginyeria del programari. Qualitat del programari
+    - en: Software process assessment and improvement
+      es: Evaluación y mejora de procesos de software
+      ca: Avaluació i millora de processos de programari
+# The people involved in the project, in the order they are shown.
+people:
+  - name: Antonio Crespí Tobeña
+    role:
+      en: PhD candidate, author of the thesis
+      es: Doctorando, autor de la tesis
+      ca: Doctorand, autor de la tesi
+  - name: Antoni Lluís Mesquida Calafat
+    role:
+      en: Thesis supervisor, principal investigator of MiProSoft
+      es: Director de la tesis, investigador principal de MiProSoft
+      ca: Director de la tesi, investigador principal de MiProSoft
+  - name: Antonia Mas Pichaco
+    role:
+      en: Full Professor
+      es: Catedrática de Universidad
+      ca: Catedràtica d'Universitat
+  - name: Maria Monserrat Barceló
+    role:
+      en: Assistant Professor
+      es: Profesora Ayudante Doctora
+      ca: Professora Ajudant Doctora
+  - name: Antoni Bennasar Garau
+    role:
+      en: PhD researcher
+      es: Personal investigador en formación
+      ca: Personal investigador en formació
+  - name: José David Pérez Cañellas
+    role:
+      en: PhD researcher
+      es: Personal investigador en formación
+      ca: Personal investigador en formació
+# The stages of the research that produced the PRM, in order.
+timeline:
+  - title:
+      en: Systematic literature review
+      es: Revisión sistemática de la literatura
+      ca: Revisió sistemàtica de la literatura
+    text:
+      en: Collected the ML lifecycle models proposed in academic and industrial sources and extracted the processes that compose them.
+      es: Recopiló los modelos de ciclo de vida de ML propuestos en fuentes académicas e industriales y extrajo los procesos que los componen.
+      ca: Va recopilar els models de cicle de vida de ML proposats en fonts acadèmiques i industrials i en va extreure els processos que els componen.
+  - title:
+      en: Comparison with the standards
+      es: Comparación con las normas
+      ca: Comparació amb les normes
+    text:
+      en: Mapped those processes against ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 and ISO/IEC 5338, to see where both sources agree and where they differ.
+      es: Contrastó esos procesos con ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 e ISO/IEC 5338, para ver dónde coinciden ambas fuentes y dónde difieren.
+      ca: Va contrastar aquests processos amb ISO/IEC/IEEE 12207, ISO/IEC/IEEE 15288 i ISO/IEC 5338, per veure on coincideixen les dues fonts i on difereixen.
+  - title:
+      en: PRM v1
+      es: PRM v1
+      ca: PRM v1
+    text:
+      en: Specified each process with its purpose, outcomes, activities, inputs and outputs, following ISO/IEC 33004 and ISO/IEC/IEEE 24774.
+      es: Especificó cada proceso con su propósito, resultados, actividades, entradas y salidas, siguiendo ISO/IEC 33004 e ISO/IEC/IEEE 24774.
+      ca: Va especificar cada procés amb el seu propòsit, resultats, activitats, entrades i sortides, seguint ISO/IEC 33004 i ISO/IEC/IEEE 24774.
+  - title:
+      en: Expert workshop
+      es: Taller de expertos
+      ca: Taller d'experts
+    text:
+      en: Practitioners from different areas of the ML lifecycle reviewed the processes of the first version.
+      es: Profesionales de distintas áreas del ciclo de vida del ML revisaron los procesos de la primera versión.
+      ca: Professionals de diferents àrees del cicle de vida del ML van revisar els processos de la primera versió.
+  - title:
+      en: PRM v2
+      es: PRM v2
+      ca: PRM v2
+    text:
+      en: Refined the processes with the feedback of the workshop. It is the current version of the PRM.
+      es: Refinó los procesos con las aportaciones del taller. Es la versión actual del PRM.
+      ca: Va refinar els processos amb les aportacions del taller. És la versió actual del PRM.
